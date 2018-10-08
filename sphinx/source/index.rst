@@ -6,11 +6,39 @@
 Welcome to Deploying Cloud Foundry on Private Cloud's documentation!
 ====================================================================
 
+.. image:: /images/0.png
+   :alt: EniWARE
+   :scale: 90%
+   :align: right
+   :target: http://eniware.org
+
+
+:Version:
+        |release|
+
+:Language:
+         en
+
+:Description:
+         EniWARE
+		 Deploying Cloud Foundry on Private Cloud
+
+:Author:
+         EniWARE
+
+:Rendered:
+         |today|
+      
+
+**Contents:**
+
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 3
 
-
+   MAAS
+   Juju
+   OpenStack
+   BOSH
 
 Indices and tables
 ==================
