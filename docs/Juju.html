@@ -1,0 +1,304 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>2. Install Juju &mdash; Deploying Cloud Foundry on Private Cloud 1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="OpenStack" href="OpenStack.html" />
+    <link rel="prev" title="1. Install MAAS" href="MAAS.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Deploying Cloud Foundry on Private Cloud
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="MAAS.html">1. Install MAAS</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">2. Install Juju</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#package-installation">2.1. Package installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#client-configuration">2.2. Client configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#testing-the-environment">2.3. Testing the environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#next-steps">2.4. Next steps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="OpenStack.html">OpenStack</a></li>
+<li class="toctree-l1"><a class="reference internal" href="BOSH.html">BOSH</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Deploying Cloud Foundry on Private Cloud</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>2. Install Juju</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/Juju.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="install-juju">
+<span id="id1"></span><h1>2. Install Juju<a class="headerlink" href="#install-juju" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="https://jujucharms.com/about">Juju</a> is an open source application modelling tool that allows you to deploy, configure, scale and operate your software on public and private clouds.</p>
+<p>In the <a class="reference internal" href="MAAS.html#install-maas"><span class="std std-ref">previous step</span></a>, we installed, deployed and configured MAAS to use as a foundation for Juju to deploy a fully fledged OpenStack cloud.</p>
+<p>We are now going to install and configure the following two core components of Juju to use our MAAS deployment:</p>
+<ul class="simple">
+<li>The <em>controller</em> is the management node for a cloud environment. We will be using the MAAS node we tagged with <strong>juju</strong> to host the Juju controller.</li>
+<li>The <em>client</em> is used by the operator to talk to one or more controllers, managing one or more different cloud environments. As long as it can access the controller, almost any machine and operating system can run the Juju client.</li>
+</ul>
+<div class="section" id="package-installation">
+<span id="juju-package"></span><h2>2.1. Package installation<a class="headerlink" href="#package-installation" title="Permalink to this headline">¶</a></h2>
+<p>We’re going to start by installing the Juju client on a machine running Ubuntu 16.04 LTS (Xenial) with network access to the MAAS deployment. For other installation options, see <a class="reference external" href="https://docs.jujucharms.com/2.4/en/getting-started">Getting started with Juju</a>.
+To install Juju, enter the following in the terminal:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">add</span><span class="o">-</span><span class="n">apt</span><span class="o">-</span><span class="n">repository</span> <span class="o">-</span><span class="n">u</span> <span class="n">ppa</span><span class="p">:</span><span class="n">juju</span><span class="o">/</span><span class="n">stable</span>
+<span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="n">juju</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="client-configuration">
+<span id="juju-client"></span><h2>2.2. Client configuration<a class="headerlink" href="#client-configuration" title="Permalink to this headline">¶</a></h2>
+<p>The Juju client needs two pieces of information before it can control our MAAS deployment.</p>
+<ol class="arabic simple">
+<li>A cloud definition for the MAAS deployment. This definition will include where MAAS can be found and how Juju can authenticate itself with it.</li>
+<li>A separate credentials definition that’s used when accessing MAAS. This links the authentication details to the cloud definition.</li>
+</ol>
+<p>To create the cloud definition, type <code class="docutils literal notranslate"><span class="pre">juju</span> <span class="pre">add-cloud</span> <span class="pre">mymaas</span></code> to add a cloud called <strong>mymaas</strong>. This will produce output similar to the following:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Cloud</span> <span class="n">Types</span>
+  <span class="n">maas</span>
+  <span class="n">manual</span>
+  <span class="n">openstack</span>
+  <span class="n">vsphere</span>
+
+<span class="n">Select</span> <span class="n">cloud</span> <span class="nb">type</span><span class="p">:</span>
+</pre></div>
+</div>
+<p>Enter <code class="docutils literal notranslate"><span class="pre">maas</span></code> as the cloud type and you will be asked for the API endpoint URL. This URL is the same as the URL used to access the MAAS web UI in the previous step: <strong>http://&lt;your.maas.ip&gt;:5240/MAAS/</strong>.</p>
+<p>With the endpoint added, Juju will inform you that <strong>mymass</strong> was successfully added. The next step is to add credentials. This is initiated by typing <code class="docutils literal notranslate"><span class="pre">juju</span> <span class="pre">add-credential</span> <span class="pre">mymaas</span></code>. Enter <code class="docutils literal notranslate"><span class="pre">admin</span></code> when asked for a credential name.
+Juju will output the following:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Enter</span> <span class="n">credential</span> <span class="n">name</span><span class="p">:</span> <span class="n">admin</span>
+
+<span class="n">Using</span> <span class="n">auth</span><span class="o">-</span><span class="nb">type</span> <span class="s2">&quot;oauth1&quot;</span><span class="o">.</span>
+
+<span class="n">Enter</span> <span class="n">maas</span><span class="o">-</span><span class="n">oauth</span><span class="p">:</span>
+</pre></div>
+</div>
+<p>The <strong>oauth1</strong> credential value is the MAAS API key for the <strong>admin</strong> user. To retrieve this, login to the MAAS web UI and click on the <strong>admin</strong> username near the top right. This will show the user preferences page. The top field will hold your MAAS keys:</p>
+<div class="figure" id="install-juju-maaskey">
+<img alt="MAAS API key" src="_images/2-install-juju_maaskey.png" />
+</div>
+<p>Copy and paste this key into the terminal and press return. You will be informed that credentials have been added for cloud <strong>mymaas</strong>.
+You can check the cloud definition has been added with the <code class="docutils literal notranslate"><span class="pre">juju</span> <span class="pre">clouds</span></code> command, and you can list credentials with the <code class="docutils literal notranslate"><span class="pre">juju</span> <span class="pre">credentials</span></code> command.</p>
+</div>
+<div class="section" id="testing-the-environment">
+<span id="juju-testing-environment"></span><h2>2.3. Testing the environment<a class="headerlink" href="#testing-the-environment" title="Permalink to this headline">¶</a></h2>
+<p>The Juju client now has everything it needs to instruct MAAS to deploy a Juju controller.</p>
+<p>But before we move on to deploying OpenStack, it’s worth checking that everything is working first. To do this, we’ll simply ask Juju to create a new controller for our cloud:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">juju</span> <span class="n">bootstrap</span> <span class="o">--</span><span class="n">constraints</span> <span class="n">tags</span><span class="o">=</span><span class="n">juju</span> <span class="n">mymaas</span> <span class="n">maas</span><span class="o">-</span><span class="n">controller</span>
+</pre></div>
+</div>
+<p>The constraint in the above command will ask MAAS to use any nodes tagged with juju to host the controller for the Juju client. We tagged this node within MAAS in the <a class="reference internal" href="MAAS.html#install-maas-commission-nodes"><span class="std std-ref">previous step</span></a>.</p>
+<p>The output to a successful bootstrap will look similar to the following:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Creating</span> <span class="n">Juju</span> <span class="n">controller</span> <span class="s2">&quot;maas-controller&quot;</span> <span class="n">on</span> <span class="n">mymaas</span>
+<span class="n">Looking</span> <span class="k">for</span> <span class="n">packaged</span> <span class="n">Juju</span> <span class="n">agent</span> <span class="n">version</span> <span class="mf">2.2</span><span class="o">-</span><span class="n">alpha1</span> <span class="k">for</span> <span class="n">amd64</span>
+<span class="n">Launching</span> <span class="n">controller</span> <span class="n">instance</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="n">on</span> <span class="n">mymaas</span><span class="o">...</span>
+ <span class="o">-</span> <span class="mi">7</span><span class="n">cm8tm</span> <span class="p">(</span><span class="n">arch</span><span class="o">=</span><span class="n">amd64</span> <span class="n">mem</span><span class="o">=</span><span class="mi">2</span><span class="n">G</span> <span class="n">cores</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">Fetching</span> <span class="n">Juju</span> <span class="n">GUI</span> <span class="mf">2.4</span><span class="o">.</span><span class="mi">4</span>
+<span class="n">Waiting</span> <span class="k">for</span> <span class="n">address</span>
+<span class="n">Attempting</span> <span class="n">to</span> <span class="n">connect</span> <span class="n">to</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">100.106</span><span class="p">:</span><span class="mi">22</span>
+<span class="n">Bootstrap</span> <span class="n">agent</span> <span class="n">now</span> <span class="n">started</span>
+<span class="n">Contacting</span> <span class="n">Juju</span> <span class="n">controller</span> <span class="n">at</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">100.106</span> <span class="n">to</span> <span class="n">verify</span> <span class="n">accessibility</span><span class="o">...</span>
+<span class="n">Bootstrap</span> <span class="n">complete</span><span class="p">,</span> <span class="s2">&quot;maas-controller&quot;</span> <span class="n">controller</span> <span class="n">now</span> <span class="n">available</span><span class="o">.</span>
+<span class="n">Controller</span> <span class="n">machines</span> <span class="n">are</span> <span class="ow">in</span> <span class="n">the</span> <span class="s2">&quot;controller&quot;</span> <span class="n">model</span><span class="o">.</span>
+<span class="n">Initial</span> <span class="n">model</span> <span class="s2">&quot;default&quot;</span> <span class="n">added</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>If you’re monitoring the nodes view of the MAAS web UI, you will notice that the node we tagged with <strong>juju</strong> starts deploying Ubuntu 16.04 LTS automatically, which will be used to host the Juju controller.</p>
+</div>
+<div class="section" id="next-steps">
+<h2>2.4. Next steps<a class="headerlink" href="#next-steps" title="Permalink to this headline">¶</a></h2>
+<p>We’ve now installed the Juju client and given it enough details to control our MAAS deployment, which we’ve tested by bootstrapping a new Juju controller. The next step will be to use Juju to deploy and link the various components required by OpenStack.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="OpenStack.html" class="btn btn-neutral float-right" title="OpenStack" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="MAAS.html" class="btn btn-neutral" title="1. Install MAAS" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, EniWARE.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
