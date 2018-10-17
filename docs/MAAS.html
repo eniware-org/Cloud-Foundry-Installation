@@ -86,11 +86,16 @@
 <li class="toctree-l2"><a class="reference internal" href="#on-boarding">1.3. On-boarding</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#connectivity-and-images">1.4. Connectivity and images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#ssh-key">1.5. SSH key</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#networking">1.6. Networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#networking">1.6. Networking</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#extending-a-reserved-dynamic-ip-range">Extending a reserved dynamic IP range</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#enabling-dhcp">Enabling DHCP</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#images">1.7. Images</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#adding-nodes">1.8. Adding nodes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#commission-nodes">1.9. Commission nodes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#next-steps">1.10. Next steps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#network-services">1.8. Network services</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#adding-nodes">1.9. Adding nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#commission-nodes">1.10. Commission nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#next-steps">1.11. Next steps</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="Juju.html">2. Install Juju</a></li>
@@ -173,27 +178,27 @@ MAAS can work at any scale, from a test deployment using a handful of machines t
 </ul>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">See <a class="reference external" href="https://docs.maas.io/2.1/en/intro-concepts">Concepts and Terms</a> in the MAAS documentation for clarification on the terminology used within MAAS.</p>
+<p class="last">See <a class="reference external" href="https://docs.maas.io">Concepts and Terms</a> in the MAAS documentation for clarification on the terminology used within MAAS.</p>
 </div>
 <div class="section" id="requirements">
 <span id="maas-requirements"></span><h2>1.1. Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
-<p>The minimum requirements for the machines that run MAAS vary widely depending on local implementation and usage. The minimum requirements for the machines that run MAAS are considered in the <a class="reference external" href="https://docs.maas.io/2.2/en/#minimum-requirements">MAAS documentation</a>.</p>
+<p>The minimum requirements for the machines that run MAAS vary widely depending on local implementation and usage. The minimum requirements for the machines that run MAAS are considered in the <a class="reference external" href="https://docs.maas.io/2.4/en/intro-requirements">MAAS documentation</a>.</p>
 <p>The hardware that will be used for the purpose of this documentation is based on the following specifications:</p>
 <ul class="simple">
-<li>1 x MAAS Rack with Region controller: 8GB RAM, 2 CPUs, 1 NIC, 40GB storage</li>
-<li>1 x Juju node: 4GB RAM, 2 CPUs, 1 NIC, 40GB storage</li>
-<li>4 x OpenStack cloud nodes: 8GB RAM, 2 CPUs, 2 NICs, 80GB storage</li>
+<li>1 x MAAS Rack with Region controller: 8GB RAM, 2 CPUs, 2 NIC (one for IPMI and one for the network), 40GB storage</li>
 </ul>
 <p>Your hardware could differ considerably from the above and both MAAS and Juju will easily adapt. The Juju node could operate perfectly adequately with half the RAM (this would need to be defined as a bootstrap constraint) and adding more nodes will obviously improve performance.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">It will be used the web UI whenever possible. However it can also be used <a class="reference external" href="https://docs.ubuntu.com/maas/2.2/en/manage-cli">CLI</a> and the <a class="reference external" href="https://docs.ubuntu.com/maas/2.2/en/api">API</a>.</p>
+<p class="last">It will be used the web UI whenever possible. However it can also be used <a class="reference external" href="https://docs.maas.io/2.4/en/manage-cli">CLI</a> and the <a class="reference external" href="https://docs.maas.io/2.4/en/api">API</a>.</p>
 </div>
 </div>
 <div class="section" id="installation">
 <span id="maas-installation"></span><h2>1.2. Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>First, you need to have fresh install of <a class="reference external" href="http://releases.ubuntu.com/16.04/">Ubuntu Server 16.04 TLS</a> on the machine that will be hosting both the MAAS Rack and Region Controllers.</p>
+<p>First, you need to have fresh install of <a class="reference external" href="http://releases.ubuntu.com/18.04/">Ubuntu Server 18.04 LTS</a> on the machine that will be hosting both the MAAS Rack and Region Controllers.</p>
+<p>In our case, as a hosting machine is used VM machine created in <strong>ESXi 6.5</strong> (<a class="reference external" href="https://www.vmware.com/products/esxi-and-esx.html">VMware ESXi</a>). You can use the ESXi client <a class="reference external" href="https://www.vmware.com/go/download-vsphere#open_source">vSphere Client</a>.</p>
 <p>The configuration of the network is depends on your own infrastructure (see the <a class="reference external" href="https://help.ubuntu.com/lts/serverguide/network-configuration.html">Ubuntu Server Network Configuration</a> documentation for further details on modifying your network configuration).</p>
+<p>For the purposes of this documentation, the IP address configured for the MAAS machine hosted on Ubuntu is set to be <code class="docutils literal notranslate"><span class="pre">192.168.40.16</span></code>.</p>
 <p>To update the package database and install MAAS, issue the following commands:</p>
 <div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span> <span class="n">update</span>
 <span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="n">maas</span>
@@ -219,7 +224,7 @@ Now you sign in with the login credentials, and the web interface will launch th
 <p>There are two steps left necessary for MAAS to get up and running. Unless you have specific requirements, most of these options can be left at their default values:</p>
 <ul class="simple">
 <li>Connectivity: important services that default to being outside of your network. These include package archives and the DNS forwarder.</li>
-<li>Ubuntu: for deployed nodes, MAAS needs to import the versions and image architectures. Specify 16.04 LTS as well as 14.04 LTS to add additional image.</li>
+<li>Ubuntu: for deployed nodes, MAAS needs to import the versions and image architectures. Specify 18.04 LTS as well as 16.04 LTS to add additional image.</li>
 </ul>
 <div class="figure" id="install-maas-images">
 <img alt="Ubuntu images" src="_images/1-install-maas_images.png" />
@@ -231,7 +236,7 @@ Now you sign in with the login credentials, and the web interface will launch th
 <div class="figure" id="install-maas-sshkeys">
 <img alt="SSH key import" src="_images/1-install-maas_sshkeys.png" />
 </div>
-<p>Adding SSH keys completes this initial MAAS configuration. Click Go to the dashboard to move to the MAAS dashboard and the device discovery process</p>
+<p>Adding SSH keys completes this initial MAAS configuration. Press <strong>Go</strong> to the dashboard to move to the MAAS dashboard and the device discovery process</p>
 <p>You can generate a local SSH public/private key pair from the Linux account you are using for managing MAAS. When asked for a passphrase, leave it blank.</p>
 <div class="code highlight-default notranslate"><div class="highlight"><pre><span></span>ssh-keygen –t rsa
 </pre></div>
@@ -240,28 +245,63 @@ Now you sign in with the login credentials, and the web interface will launch th
 </div>
 <div class="section" id="networking">
 <span id="install-maas-networking"></span><h2>1.6. Networking<a class="headerlink" href="#networking" title="Permalink to this headline">¶</a></h2>
-<p>By default, MAAS will monitor local network traffic and report any devices it discovers on the <strong>Device discovery</strong> page of the web UI. This page is basic and is the first one to load after finishing installation.</p>
+<p>By default, MAAS will monitor local network traffic and report any devices it discovers on the <strong>Network discovery</strong> page of the web UI. This page is basic and is the first one to load after finishing installation.</p>
 <div class="figure" id="install-maas-discovery">
-<img alt="Device discovery" src="_images/1-install-maas_discovery.png" />
+<img alt="Network discovery" src="_images/1-install-maas_discovery.png" />
 </div>
 <p>Before taking the configuration further, you need to tell MAAS about your network and how y’d like connections to be configured.</p>
+<div class="section" id="extending-a-reserved-dynamic-ip-range">
+<span id="install-maas-dhcp1"></span><h3>Extending a reserved dynamic IP range<a class="headerlink" href="#extending-a-reserved-dynamic-ip-range" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you do not have DHCP reserved ranges in your network, you can skip to the step <a class="reference internal" href="#install-maas-dhcp2"><span class="std std-ref">Enabling DHCP</span></a>.</p>
+</div>
+<p>If DHCP reserved ranges are defined in your network, you have to set the appropriate settings described below.</p>
 <p>These options are managed from the <strong>Subnets</strong> page of the web UI. The subnets page defaults to listing connections by fabric and MAAS creates one fabric per physical NIC on the MAAS server. Once you are set up a machine with a single NIC, a single fabric will be be listed linked to the external subnet.</p>
-<p>To the subnet that will going to manage the nodes, you need to add DHCP. This is done by selecting <strong>untagged</strong> VLAN the subnet to the right of <strong>fabric-0</strong>.</p>
-<p>The page that appears will be labelled something similar to <strong>Default VLAN in fabric-0</strong>. From here, click the <strong>Take action</strong> button at the top right and select <strong>Provide DHCP</strong>. A new pane will appear that allows you to specify the start and end IP addresses for the DHCP range. Select <strong>Provide DHCP</strong> to accept the default values. The VLAN summary should now show DHCP as <strong>Enabled</strong>.</p>
+<p>You should select the <strong>untagged</strong> VLAN the subnet to the right of <strong>fabric-0</strong> and add in the <strong>Reserved ranges</strong> field the reserved portions of the subnet to the dynamic IP range:</p>
+<div class="figure" id="install-maas-ranges">
+<img alt="DHCP reserved ranges" src="_images/1-install-maas_ranges.png" />
+</div>
+<p>Furthermore, since DHCP is enabled on a VLAN basis and a VLAN can contain multiple subnets, it is possible to add a portion from those subnets as well. Just select the subnet under the ‘Subnets’ page and reserve a dynamic range.</p>
+</div>
+<div class="section" id="enabling-dhcp">
+<span id="install-maas-dhcp2"></span><h3>Enabling DHCP<a class="headerlink" href="#enabling-dhcp" title="Permalink to this headline">¶</a></h3>
+<p>You can add DHCP by selecting <strong>untagged</strong> VLAN the subnet to the right of <strong>fabric-0</strong>.</p>
+<p>The page that appears will be labelled something similar to <strong>Default VLAN in fabric-0</strong>. From here, click the <strong>Take action</strong> button at the top right and select <strong>Provide DHCP</strong>.</p>
+<p>If you do not have reserved ranges of IP addresses, a new pane will appear that allows you to specify the start and end IP addresses for the DHCP range. Select <strong>Provide DHCP</strong> to accept the default values. The VLAN summary should now show DHCP as <strong>Enabled</strong>.</p>
+<p>If you have reserved ranges of IP addresses, a new pane will appear that shows us the current <strong>Rack controller</strong>. Select <strong>Provide DHCP</strong> to accept the settings and the VLAN summary should now show DHCP as <strong>Enabled</strong>.</p>
 <div class="figure" id="install-maas-dhcp">
 <img alt="Provide DHCP" src="_images/1-install-maas_dhcp.png" />
+</div>
 </div>
 </div>
 <div class="section" id="images">
 <span id="install-maas-ubuntu-images"></span><h2>1.7. Images<a class="headerlink" href="#images" title="Permalink to this headline">¶</a></h2>
 <p>You have already downloaded the images you need as part of the on-boarding process, but it’s worth checking that both the images you requested are available. To do this, select the <strong>Images</strong> page from the top menu of the web UI.</p>
-<p>The <strong>Images</strong> page allows you to download new images, use a custom source for images, and check on the status of any images currently downloaded. These appear at the bottom, and both 16.04 LTS and 14.04 LTS should be listed with a status of <strong>Synced</strong>.</p>
+<p>The <strong>Images</strong> page allows you to download new images, use a custom source for images, and check on the status of any images currently downloaded. These appear at the bottom, and both 18.04 LTS and 16.04 LTS should be listed with a status of <strong>Synced</strong>.</p>
 <div class="figure" id="install-maas-imagestatus">
 <img alt="Image status" src="_images/1-install-maas_imagestatus.png" />
 </div>
 </div>
+<div class="section" id="network-services">
+<span id="install-maas-services"></span><h2>1.8. Network services<a class="headerlink" href="#network-services" title="Permalink to this headline">¶</a></h2>
+<p>Before <a class="reference internal" href="#install-maas-nodes"><span class="std std-ref">adding new nodes</span></a>, it is necessary to configure the network services.
+From the <strong>Settings</strong> menu select <strong>Network services</strong>.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">In the <strong>Proxy</strong> field for <strong>HTTP proxy used by MAAS to download images</strong> is celected <strong>MAAS Built-in</strong> by default. It is necessary to select <strong>Do not use a proxy</strong>.</p>
+</div>
+<div class="figure" id="install-maas-proxy">
+<img alt="Proxy settings" src="_images/1-install-maas_proxy.png" />
+</div>
+<p>In the <strong>DNS</strong> field, it is necessary to set <strong>Upstream DNS used to resolve domains not managed by this MAAS</strong>.
+In our case, we assign DNS address <code class="docutils literal notranslate"><span class="pre">8.8.8.8</span></code> (which is <a class="reference external" href="https://developers.google.com/speed/public-dns/docs/using">Google Public DNS IP addresses</a>).</p>
+<div class="figure" id="install-maas-dns">
+<img alt="DNS settings" src="_images/1-install-maas_dns.png" />
+</div>
+</div>
 <div class="section" id="adding-nodes">
-<span id="install-maas-nodes"></span><h2>1.8. Adding nodes<a class="headerlink" href="#adding-nodes" title="Permalink to this headline">¶</a></h2>
+<span id="install-maas-nodes"></span><h2>1.9. Adding nodes<a class="headerlink" href="#adding-nodes" title="Permalink to this headline">¶</a></h2>
 <p>MAAS is now ready to accept new nodes. To do this, first ensure your four cloud nodes and single Juju node are set to boot from a PXE image. Now simply power them on. MAAS will add these new nodes automatically by taking the following steps:</p>
 <ul class="simple">
 <li>Detect each new node on the network</li>
@@ -269,7 +309,7 @@ Now you sign in with the login credentials, and the web interface will launch th
 <li>Add each node to the <strong>Nodes</strong> page with a status of <strong>New</strong></li>
 </ul>
 <p>While it is not the most appropriate way, at this stage it is advisable to include each node individually in order to trace each one strictly.</p>
-<p>In order to fully manage a deployment, MAAS needs to be able power cycle each node. This is why MAAS will attempt to power each node off during the discovery phase. If your hardware does not power off, it’s likely that it’s not using an IPMI based BMC and you will need to edit a node’s power configuration to enable MAAS to control its power. See the <a class="reference external" href="https://docs.maas.io/2.2/en/nodes-power-types">MAAS documentation</a> for more information on power types, including a <a class="reference external" href="https://docs.maas.io/2.2/en/nodes-power-types#bmc-driver-support">table</a> showing a feature comparison for the supported BMC drivers.</p>
+<p>In order to fully manage a deployment, MAAS needs to be able power cycle each node. This is why MAAS will attempt to power each node off during the discovery phase. If your hardware does not power off, it’s likely that it’s not using an IPMI based BMC and you will need to edit a node’s power configuration to enable MAAS to control its power. See the <a class="reference external" href="https://docs.maas.io/2.4/en/nodes-power-types">MAAS documentation</a> for more information on power types, including a <a class="reference external" href="https://docs.maas.io/2.4/en/nodes-power-types#bmc-driver-support">table</a> showing a feature comparison for the supported BMC drivers.</p>
 <p>To edit a node’s power configuration, click on the arbitrary name your machine has been given in the <strong>Nodes</strong> page. This will open the configuration page for that specific machine. <strong>Power</strong> is the second section from the top.</p>
 <p>Use the drop-down <strong>Power type</strong> menu to open the configuration options for your node’s specific power configuration and enter any further details that the configuration may require.</p>
 <div class="figure" id="install-maas-power">
@@ -278,7 +318,7 @@ Now you sign in with the login credentials, and the web interface will launch th
 <p>When you make the necessary changes, click <strong>Save changes</strong>. The machine can now be turned off from the <strong>Take option</strong> menu in the top right.</p>
 </div>
 <div class="section" id="commission-nodes">
-<span id="install-maas-commission-nodes"></span><h2>1.9. Commission nodes<a class="headerlink" href="#commission-nodes" title="Permalink to this headline">¶</a></h2>
+<span id="install-maas-commission-nodes"></span><h2>1.10. Commission nodes<a class="headerlink" href="#commission-nodes" title="Permalink to this headline">¶</a></h2>
 <p>From the <strong>Nodes</strong> page, select all the check boxes for all the machines in a <strong>New</strong> state and use the <strong>Take action</strong> menu to select <strong>Commission</strong>. After a few minutes, successfully commissioned nodes will change their status to <strong>Ready</strong>. The CPU cores, RAM, number of drives and storage fields should now correctly reflect the hardware on each node.</p>
 <p>For more information on the different states and actions for a node, see <a class="reference external" href="https://docs.maas.io/2.1/en/intro-concepts#node-actions">Node actions</a> in the MAAS documentation.</p>
 <p>You are now almost at the stage where you can let Juju do its thing. But before you take that next step, you are going to rename and tag the newly added nodes so that you can instruct Juju which machines to use for which purpose.</p>
@@ -347,7 +387,7 @@ Now you sign in with the login credentials, and the web interface will launch th
 </table>
 </div>
 <div class="section" id="next-steps">
-<span id="install-maas-next"></span><h2>1.10. Next steps<a class="headerlink" href="#next-steps" title="Permalink to this headline">¶</a></h2>
+<span id="install-maas-next"></span><h2>1.11. Next steps<a class="headerlink" href="#next-steps" title="Permalink to this headline">¶</a></h2>
 <p>Everything is now configured and ready for our next step. This will involve deploying the Juju controller onto its own node. From there, you will be using Juju and MAAS together to deploy OpenStack into the four remaining cloud nodes.</p>
 </div>
 </div>

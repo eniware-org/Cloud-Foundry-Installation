@@ -16,7 +16,7 @@ The typical MAAS environment includes as a framework for deployment the followin
 
 
 .. note::
-	See `Concepts and Terms <https://docs.maas.io/2.1/en/intro-concepts>`_ in the MAAS documentation for clarification on the terminology used within MAAS.
+	See `Concepts and Terms <https://docs.maas.io>`_ in the MAAS documentation for clarification on the terminology used within MAAS.
 
 	
 	
@@ -25,18 +25,17 @@ The typical MAAS environment includes as a framework for deployment the followin
 1.1. Requirements
 ------------------
 
-The minimum requirements for the machines that run MAAS vary widely depending on local implementation and usage. The minimum requirements for the machines that run MAAS are considered in the `MAAS documentation <https://docs.maas.io/2.2/en/#minimum-requirements>`_.
+The minimum requirements for the machines that run MAAS vary widely depending on local implementation and usage. The minimum requirements for the machines that run MAAS are considered in the `MAAS documentation <https://docs.maas.io/2.4/en/intro-requirements>`_.
 
 The hardware that will be used for the purpose of this documentation is based on the following specifications:
 
-* 1 x MAAS Rack with Region controller: 8GB RAM, 2 CPUs, 1 NIC, 40GB storage
-* 1 x Juju node: 4GB RAM, 2 CPUs, 1 NIC, 40GB storage
-* 4 x OpenStack cloud nodes: 8GB RAM, 2 CPUs, 2 NICs, 80GB storage
+* 1 x MAAS Rack with Region controller: 8GB RAM, 2 CPUs, 2 NIC (one for IPMI and one for the network), 40GB storage
 
 Your hardware could differ considerably from the above and both MAAS and Juju will easily adapt. The Juju node could operate perfectly adequately with half the RAM (this would need to be defined as a bootstrap constraint) and adding more nodes will obviously improve performance.
 
 .. note::
-	It will be used the web UI whenever possible. However it can also be used `CLI <https://docs.ubuntu.com/maas/2.2/en/manage-cli>`_ and the `API <https://docs.ubuntu.com/maas/2.2/en/api>`_.
+	It will be used the web UI whenever possible. However it can also be used `CLI <https://docs.maas.io/2.4/en/manage-cli>`_ and the `API <https://docs.maas.io/2.4/en/api>`_.
+
 
 	
 .. _maas-installation:
@@ -44,9 +43,13 @@ Your hardware could differ considerably from the above and both MAAS and Juju wi
 1.2. Installation
 ------------------
 
-First, you need to have fresh install of `Ubuntu Server 16.04 TLS <http://releases.ubuntu.com/16.04/>`_ on the machine that will be hosting both the MAAS Rack and Region Controllers.
+First, you need to have fresh install of `Ubuntu Server 18.04 LTS <http://releases.ubuntu.com/18.04/>`_ on the machine that will be hosting both the MAAS Rack and Region Controllers.
 
-The configuration of the network is depends on your own infrastructure (see the `Ubuntu Server Network Configuration <https://help.ubuntu.com/lts/serverguide/network-configuration.html>`_ documentation for further details on modifying your network configuration). 
+In our case, as a hosting machine is used VM machine created in **ESXi 6.5** (`VMware ESXi <https://www.vmware.com/products/esxi-and-esx.html>`_). You can use the ESXi client `vSphere Client <https://www.vmware.com/go/download-vsphere#open_source>`_.
+
+The configuration of the network is depends on your own infrastructure (see the `Ubuntu Server Network Configuration <https://help.ubuntu.com/lts/serverguide/network-configuration.html>`_ documentation for further details on modifying your network configuration).
+
+For the purposes of this documentation, the IP address configured for the MAAS machine hosted on Ubuntu is set to be ``192.168.40.16``.
 
 To update the package database and install MAAS, issue the following commands:
 
@@ -65,6 +68,7 @@ An ussername, password and email address should be filled in.
 After that you need to specify if you want to import an SSH key. MAAS uses the public SSH key of a user to manage and secure access to deployed nodes. If you want to skip this, press ``Enter``. In the next step you can do this from the web UI.
 
 
+
 .. _maas-onboarding:
 
 1.3. On-boarding
@@ -78,7 +82,10 @@ Now you sign in with the login credentials, and the web interface will launch th
 .. figure:: /images/1-install-maas_welcome.png
    :alt: Welcome to MAAS
 
-   
+ 
+
+
+ 
    
 .. _maas-connectivity:   
    
@@ -87,14 +94,15 @@ Now you sign in with the login credentials, and the web interface will launch th
 There are two steps left necessary for MAAS to get up and running. Unless you have specific requirements, most of these options can be left at their default values:
 
 * Connectivity: important services that default to being outside of your network. These include package archives and the DNS forwarder.
-* Ubuntu: for deployed nodes, MAAS needs to import the versions and image architectures. Specify 16.04 LTS as well as 14.04 LTS to add additional image.
+* Ubuntu: for deployed nodes, MAAS needs to import the versions and image architectures. Specify 18.04 LTS as well as 16.04 LTS to add additional image.
 
 .. _install-maas-images:
 
 .. figure:: /images/1-install-maas_images.png
    :alt: Ubuntu images
 
-  
+ 
+ 
   
 .. _maas-ssh:
    
@@ -110,7 +118,7 @@ You have several options for importing your public SSH key(s). One is to import 
 
 
 
-Adding SSH keys completes this initial MAAS configuration. Click Go to the dashboard to move to the MAAS dashboard and the device discovery process
+Adding SSH keys completes this initial MAAS configuration. Press **Go** to the dashboard to move to the MAAS dashboard and the device discovery process
 
 
 You can generate a local SSH public/private key pair from the Linux account you are using for managing MAAS. When asked for a passphrase, leave it blank.
@@ -123,30 +131,67 @@ This completes the initial setup of MAAS. Press **Go** button to the dashboard t
 
 
 
+
+
+
 .. _install-maas-networking:
 
 1.6. Networking
 -----------------
    
-By default, MAAS will monitor local network traffic and report any devices it discovers on the **Device discovery** page of the web UI. This page is basic and is the first one to load after finishing installation.   
+By default, MAAS will monitor local network traffic and report any devices it discovers on the **Network discovery** page of the web UI. This page is basic and is the first one to load after finishing installation.   
 
 .. _install-maas-discovery:
 
 .. figure:: /images/1-install-maas_discovery.png
-   :alt: Device discovery
+   :alt: Network discovery
 
 Before taking the configuration further, you need to tell MAAS about your network and how y’d like connections to be configured.
 
+
+
+.. _install-maas-dhcp1:
+
+Extending a reserved dynamic IP range
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. note:: If you do not have DHCP reserved ranges in your network, you can skip to the step :ref:`Enabling DHCP <install-maas-dhcp2>`.
+
+If DHCP reserved ranges are defined in your network, you have to set the appropriate settings described below.
+
 These options are managed from the **Subnets** page of the web UI. The subnets page defaults to listing connections by fabric and MAAS creates one fabric per physical NIC on the MAAS server. Once you are set up a machine with a single NIC, a single fabric will be be listed linked to the external subnet.
 
-To the subnet that will going to manage the nodes, you need to add DHCP. This is done by selecting **untagged** VLAN the subnet to the right of **fabric-0**.
+You should select the **untagged** VLAN the subnet to the right of **fabric-0** and add in the **Reserved ranges** field the reserved portions of the subnet to the dynamic IP range: 
 
-The page that appears will be labelled something similar to **Default VLAN in fabric-0**. From here, click the **Take action** button at the top right and select **Provide DHCP**. A new pane will appear that allows you to specify the start and end IP addresses for the DHCP range. Select **Provide DHCP** to accept the default values. The VLAN summary should now show DHCP as **Enabled**.
+
+.. _install-maas-ranges:
+
+.. figure:: /images/1-install-maas_ranges.png
+   :alt: DHCP reserved ranges
+
+
+Furthermore, since DHCP is enabled on a VLAN basis and a VLAN can contain multiple subnets, it is possible to add a portion from those subnets as well. Just select the subnet under the 'Subnets' page and reserve a dynamic range.
+
+
+.. _install-maas-dhcp2:
+
+Enabling DHCP
+^^^^^^^^^^^^^^
+
+You can add DHCP by selecting **untagged** VLAN the subnet to the right of **fabric-0**.
+
+The page that appears will be labelled something similar to **Default VLAN in fabric-0**. From here, click the **Take action** button at the top right and select **Provide DHCP**. 
+
+If you do not have reserved ranges of IP addresses, a new pane will appear that allows you to specify the start and end IP addresses for the DHCP range. Select **Provide DHCP** to accept the default values. The VLAN summary should now show DHCP as **Enabled**.
+
+If you have reserved ranges of IP addresses, a new pane will appear that shows us the current **Rack controller**. Select **Provide DHCP** to accept the settings and the VLAN summary should now show DHCP as **Enabled**.
 
 .. _install-maas-dhcp:
 
 .. figure:: /images/1-install-maas_dhcp.png
    :alt: Provide DHCP
+
+
 
    
    
@@ -157,7 +202,7 @@ The page that appears will be labelled something similar to **Default VLAN in fa
 
 You have already downloaded the images you need as part of the on-boarding process, but it’s worth checking that both the images you requested are available. To do this, select the **Images** page from the top menu of the web UI.
 
-The **Images** page allows you to download new images, use a custom source for images, and check on the status of any images currently downloaded. These appear at the bottom, and both 16.04 LTS and 14.04 LTS should be listed with a status of **Synced**.
+The **Images** page allows you to download new images, use a custom source for images, and check on the status of any images currently downloaded. These appear at the bottom, and both 18.04 LTS and 16.04 LTS should be listed with a status of **Synced**.
 
 .. _install-maas-imagestatus:
 
@@ -165,10 +210,43 @@ The **Images** page allows you to download new images, use a custom source for i
    :alt: Image status
 
 
+   
+   
+   
+.. _install-maas-services:
+   
+1.8. Network services
+----------------------
 
+Before :ref:`adding new nodes <install-maas-nodes>`, it is necessary to configure the network services.
+From the **Settings** menu select **Network services**.
+
+.. warning:: In the **Proxy** field for **HTTP proxy used by MAAS to download images** is celected **MAAS Built-in** by default. It is necessary to select **Do not use a proxy**.
+
+
+.. _install-maas-proxy:
+
+.. figure:: /images/1-install-maas_proxy.png
+   :alt: Proxy settings
+
+
+In the **DNS** field, it is necessary to set **Upstream DNS used to resolve domains not managed by this MAAS**.
+In our case, we assign DNS address ``8.8.8.8`` (which is `Google Public DNS IP addresses <https://developers.google.com/speed/public-dns/docs/using>`_).
+
+
+.. _install-maas-dns:
+
+.. figure:: /images/1-install-maas_dns.png
+   :alt: DNS settings
+
+   
+   
+
+   
+   
 .. _install-maas-nodes:
    
-1.8. Adding nodes
+1.9. Adding nodes
 -------------------
 
 MAAS is now ready to accept new nodes. To do this, first ensure your four cloud nodes and single Juju node are set to boot from a PXE image. Now simply power them on. MAAS will add these new nodes automatically by taking the following steps:
@@ -179,7 +257,7 @@ MAAS is now ready to accept new nodes. To do this, first ensure your four cloud 
 
 While it is not the most appropriate way, at this stage it is advisable to include each node individually in order to trace each one strictly.
 
-In order to fully manage a deployment, MAAS needs to be able power cycle each node. This is why MAAS will attempt to power each node off during the discovery phase. If your hardware does not power off, it’s likely that it’s not using an IPMI based BMC and you will need to edit a node’s power configuration to enable MAAS to control its power. See the `MAAS documentation <https://docs.maas.io/2.2/en/nodes-power-types>`_ for more information on power types, including a `table <https://docs.maas.io/2.2/en/nodes-power-types#bmc-driver-support>`_ showing a feature comparison for the supported BMC drivers.
+In order to fully manage a deployment, MAAS needs to be able power cycle each node. This is why MAAS will attempt to power each node off during the discovery phase. If your hardware does not power off, it’s likely that it’s not using an IPMI based BMC and you will need to edit a node’s power configuration to enable MAAS to control its power. See the `MAAS documentation <https://docs.maas.io/2.4/en/nodes-power-types>`_ for more information on power types, including a `table <https://docs.maas.io/2.4/en/nodes-power-types#bmc-driver-support>`_ showing a feature comparison for the supported BMC drivers.
 
 To edit a node’s power configuration, click on the arbitrary name your machine has been given in the **Nodes** page. This will open the configuration page for that specific machine. **Power** is the second section from the top.
 
@@ -196,7 +274,7 @@ When you make the necessary changes, click **Save changes**. The machine can now
 
 .. _install-maas-commission-nodes:
 
-1.9. Commission nodes
+1.10. Commission nodes
 -----------------------
 
 From the **Nodes** page, select all the check boxes for all the machines in a **New** state and use the **Take action** menu to select **Commission**. After a few minutes, successfully commissioned nodes will change their status to **Ready**. The CPU cores, RAM, number of drives and storage fields should now correctly reflect the hardware on each node.
@@ -237,7 +315,7 @@ A common picture of the state of the nodes that have already been added to the M
 
 .. _install-maas-next:
    
-1.10. Next steps
+1.11. Next steps
 -----------------
 
 Everything is now configured and ready for our next step. This will involve deploying the Juju controller onto its own node. From there, you will be using Juju and MAAS together to deploy OpenStack into the four remaining cloud nodes.   
