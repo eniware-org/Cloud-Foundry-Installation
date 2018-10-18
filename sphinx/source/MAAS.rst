@@ -253,47 +253,122 @@ MAAS is now ready to accept new nodes. To do this, first ensure your four cloud 
 
 * Detect each new node on the network
 * Probe and log each node’s hardware (using an ephemeral boot image)
-* Add each node to the **Nodes** page with a status of **New**
+* Add each node to the **Machines** page with a status of **New**
 
 While it is not the most appropriate way, at this stage it is advisable to include each node individually in order to trace each one strictly.
 
-In order to fully manage a deployment, MAAS needs to be able power cycle each node. This is why MAAS will attempt to power each node off during the discovery phase. If your hardware does not power off, it’s likely that it’s not using an IPMI based BMC and you will need to edit a node’s power configuration to enable MAAS to control its power. See the `MAAS documentation <https://docs.maas.io/2.4/en/nodes-power-types>`_ for more information on power types, including a `table <https://docs.maas.io/2.4/en/nodes-power-types#bmc-driver-support>`_ showing a feature comparison for the supported BMC drivers.
+In order for MAAS to fully manage a node it must be able to power cycle it. This is done via a communication channel with the `BMC <https://en.wikipedia.org/wiki/Intelligent_Platform_Management_Interface#Baseboard_management_controller>`_ card of the node's underlying system. A newly added node is therefore incomplete until its power type has been configured.
 
-To edit a node’s power configuration, click on the arbitrary name your machine has been given in the **Nodes** page. This will open the configuration page for that specific machine. **Power** is the second section from the top.
+.. note:: See the `MAAS documentation <https://docs.maas.io/2.4/en/nodes-power-types>`_ for more information on power types, including a `table <https://docs.maas.io/2.4/en/nodes-power-types#bmc-driver-support>`_ showing a feature comparison for the supported BMC drivers.
 
-Use the drop-down **Power type** menu to open the configuration options for your node’s specific power configuration and enter any further details that the configuration may require.
+To configure a node's power type, begin by clicking on the node from the **Machines** page of the web UI followed by its **Configuration** tab. Scroll down for **Power configuration**. If the power type is undefined the following will be displayed:
+
+.. _install-maas-error:
+
+.. figure:: /images/1-install-maas_error.png
+   :alt: Power type error 
+
+
+Choose a type in the dropdown menu that corresponds to the node's underlying machine's BMC card.
+
    
 .. _install-maas-power:
 
 .. figure:: /images/1-install-maas_power.png
    :alt: Power configuration  
 
-When you make the necessary changes, click **Save changes**. The machine can now be turned off from the **Take option** menu in the top right.   
+Use the drop-down **Power type** menu to open the configuration options for your node’s specific power configuration and enter any further details that the configuration may require.
+When you make the necessary changes, click **Save changes**. The machine can now be turned off from the **Take option** menu in the top right.  
+
+By default, the machine gets a random name. It is recommended that the name of each new machine be edited in accordance with its intended purpose. This can be done by selecting the corresponding machine from the **Machines** page.
+A **Machine summary** field opens where in the upper left corner we have to click and change the name of the selected machine and save the change with the **Save** button:
    
+.. _install-maas-rename:
 
+.. figure:: /images/1-install-maas_rename.png
+   :alt: Rename machine 
 
+   
+   
+   
+   
 .. _install-maas-commission-nodes:
 
 1.10. Commission nodes
 -----------------------
 
-From the **Nodes** page, select all the check boxes for all the machines in a **New** state and use the **Take action** menu to select **Commission**. After a few minutes, successfully commissioned nodes will change their status to **Ready**. The CPU cores, RAM, number of drives and storage fields should now correctly reflect the hardware on each node.
+Once a node is added to MAAS (see :ref:`Adding nodes <install-maas-nodes>`) the next logical step is to *commission* it.
 
-For more information on the different states and actions for a node, see `Node actions <https://docs.maas.io/2.1/en/intro-concepts#node-actions>`_ in the MAAS documentation.
+To commission, the underlying machine needs to be configured to netboot (this should already have been done during the enlistment stage). Such a machine will undergo the following process:
 
-You are now almost at the stage where you can let Juju do its thing. But before you take that next step, you are going to rename and tag the newly added nodes so that you can instruct Juju which machines to use for which purpose.
+ 1) DHCP server is contacted
+ 2) kernel and initrd are received over TFTP
+ 3) machine boots
+ 4) initrd mounts a Squashfs image ephemerally over HTTP
+ 5) cloud-init runs commissioning scripts
+ 6) machine shuts down
 
-To change the name of a node, select it from the **Nodes** page and use the editable name field in the top right. All nodes will automatically be suffixed with **.maas**. Click on **Save** to save the change.
+The commissioning scripts will talk to the region API server to ensure that everything is in order and that eventual deployment will succeed.
 
-Tags are normally used to identify nodes with specific hardware, such GPUs for GPU-accelerated CUDA processing. This allows Juju to target these capabilities when deploying applications that may use them. But they can also be used for organisational and management purposes. This is how you are going to use them, by adding a **compute** tag to the four cloud nodes and a juju tag to the node that will act as the Juju controller.
+The image used is, by default, the latest Ubuntu LTS release and should not require changing. However, it can be configured in the **Settings** page of the web UI by selecting the **General** tab and scrolling down to the **Commissioning** section.
 
-Tags are added from the **Machine summary** section of the same individual node page we used to rename a node. Click **Edit** on this section and look for **Tags**. A tag is added by entering a name for the tag in the empty field and clicking **Save changes**.   
+To commission, on the **Machines** page, select a node and choose **Commission** under the **Take action** drop-down menu.
+
+
+.. _install-maas-commission:
+
+.. figure:: /images/1-install-maas_commission.png
+   :alt: Commission nodes
+
+You have the option of selecting some extra parameters (checkboxes) and performing hardware tests.
+These options include:
+
+* **Allow SSH access and prevent machine powering off**: Machines are normally powered off after commissioning. This option keeps the machine on and enables SSH so you can access the machine.
+* **Retain network configuration**: When enabled, preserves any custom network settings previously configured for the machine. See :ref:`Networking <install-maas-networking>` for more information.
+* **Retain storage configuration**: When enabled, preserves any storage settings previously configured for the machine. See `Storage <https://docs.maas.io/2.4/en/installconfig-storage>`_ for more details.
+* **Update firmware**: Runs scripts tagged with *update_firmware*. See `Testing scripts <https://docs.maas.io/2.4/en/nodes-scripts#automatic-script-selection-by-hardware-type>`_ for more details.
+* **Configure HBA**: Runs scripts tagged with *configure_hba*. As above, see `Testing scripts <https://docs.maas.io/2.4/en/nodes-scripts#automatic-script-selection-by-hardware-type>`_ for further details.   
+
+
+
+.. _install-maas-commission-confirm:
+
+.. figure:: /images/1-install-maas_commission_confirm.png
+   :alt: Commission confirm
+  
+  
+  
+Click the **Hardware tests** field to reveal a drop-down list of tests to add and run during commissioning. See `Hardware testing <https://docs.maas.io/2.4/en/nodes-hw-testing>`_) for more information on hardware testing scripts.
+
+From the **Hardware tests** field, we deactivate ``smartctl-validate``, which will speed up work as SMART health for all drivers in paralell will not be validated.  
+
+
+
+.. _install-maas-hardware_test:
+
+.. figure:: /images/1-install-maas_hardware_test.png
+   :alt: Hardware tests
+
+
+Finalise the directive by hitting **Commission machine**.   
+While a node is commissioning its status will change to *Commissioning*. During this time the node's network topology will be discovered. This will prompt one of the node's network interfaces to be connected to the fabric, VLAN, and subnet combination that will allow it to be configured. By default, a static IP address will be assigned out of the reserved IP range for the subnet. That is, an IP assignment mode of **Auto assign** will be used.   
+   
+After a few minutes, successfully commissioned nodes will change their status to **Ready**. The CPU cores, RAM, number of drives and storage fields should now correctly reflect the hardware on each node.
+
+
+`Tags <https://docs.maas.io/2.4/en/nodes-tags>`_ are normally used to identify nodes with specific hardware, such GPUs for GPU-accelerated CUDA processing. This allows Juju to target these capabilities when deploying applications that may use them. But they can also be used for organisational and management purposes. This is how you are going to use them, by adding a **compute** tag to the four cloud nodes and a juju tag to the node that will act as the Juju controller.
+
+Tags are added from the **Machine summary** section of the same individual node page we used to rename a node. Click **Edit** on the **Tags** section. A tag is added by activated **Edit** function in **Machine configuration** field and entering a name for the tag in the empty field and clicking **Save changes**.   
+
+
    
 .. _install-maas-tags:
 
 .. figure:: /images/1-install-maas_tags.png
    :alt: Adding tags 
 
+   
+   
 A common picture of the state of the nodes that have already been added to the MAAS. You can see the names, tags, and hardware information on each node:   
 
 +-------------------+------------+--------+-------+---------+-----------+
