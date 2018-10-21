@@ -85,7 +85,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#package-installation">2.1. Package installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#client-configuration">2.2. Client configuration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#testing-the-environment">2.3. Testing the environment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#next-steps">2.4. Next steps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#opening-the-juju-gui">2.4. Opening the Juju GUI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#next-steps">2.5. Next steps</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="OpenStack.html">3. Install OpenStack</a></li>
@@ -270,28 +271,37 @@ You can check the cloud definition has been added with the <code class="docutils
 </pre></div>
 </div>
 <p>If you’re monitoring the nodes view of the MAAS web UI, you will notice that the node we tagged with <strong>juju</strong> starts deploying Ubuntu 18.04 LTS automatically, which will be used to host the Juju controller.</p>
-<p>If you want to use the Juju web UI type the following command:</p>
+</div>
+<div class="section" id="opening-the-juju-gui">
+<span id="juju-opening-gui"></span><h2>2.4. Opening the Juju GUI<a class="headerlink" href="#opening-the-juju-gui" title="Permalink to this headline">¶</a></h2>
+<p>Juju has a <a class="reference external" href="https://docs.jujucharms.com/2.4/en/controllers-gui">graphical user interface (GUI)</a> available to help with the tasks of managing and monitoring your Juju environment. The GUI is a JavaScript and HTML web application that is encapsulated in its own charm. Once installed, the GUI will talk with Juju over a websocket to provide a real-time interface with the applications installed, the units that comprise them, and the machines available. Additionally, the GUI can talk with the charm store in order to search, browse, and deploy charms to your environment.</p>
+<p>To view the URL and login credentials for Juju GUI, use the following command:</p>
 <div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">juju</span> <span class="n">gui</span>
 </pre></div>
 </div>
 <p>The <strong>username</strong> and <strong>password</strong> will be displayed for log in Juju which will be something like this:</p>
 <div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GUI</span> <span class="mf">2.14</span><span class="o">.</span><span class="mi">0</span> <span class="k">for</span> <span class="n">model</span> <span class="s2">&quot;admin/default&quot;</span> <span class="ow">is</span> <span class="n">enabled</span> <span class="n">at</span><span class="p">:</span>
-<span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">40.52</span><span class="p">:</span><span class="mi">17070</span><span class="o">/</span><span class="n">gui</span><span class="o">/</span><span class="n">u</span><span class="o">/</span><span class="n">admin</span><span class="o">/</span><span class="n">default</span>
+  <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">40.52</span><span class="p">:</span><span class="mi">17070</span><span class="o">/</span><span class="n">gui</span><span class="o">/</span><span class="n">u</span><span class="o">/</span><span class="n">admin</span><span class="o">/</span><span class="n">default</span>
 <span class="n">Your</span> <span class="n">login</span> <span class="n">credential</span> <span class="ow">is</span><span class="p">:</span>
-<span class="n">username</span><span class="p">:</span> <span class="n">admin</span>
-<span class="n">password</span><span class="p">:</span> <span class="mf">1e4</span><span class="n">e614eee21b2e1355671300927ca52</span>
-
-
-
-    <span class="n">You</span> <span class="n">have</span> <span class="n">to</span> <span class="n">copy</span> <span class="n">the</span> <span class="o">**</span><span class="n">username</span><span class="o">**</span> <span class="ow">and</span> <span class="o">**</span><span class="n">password</span><span class="o">**</span> <span class="ow">and</span> <span class="n">enter</span> <span class="n">them</span> <span class="n">into</span> <span class="n">the</span> <span class="n">web</span> <span class="n">UI</span><span class="p">:</span>
+  <span class="n">username</span><span class="p">:</span> <span class="n">admin</span>
+  <span class="n">password</span><span class="p">:</span> <span class="mf">1e4</span><span class="n">e614eee21b2e1355671300927ca52</span>
 </pre></div>
 </div>
+<p>You have to open the GIU IP address in your braowser and to copy and enter the <strong>username</strong> and <strong>password</strong> into the GUI:</p>
 <div class="figure">
-<img alt="Juju web UI login page" src="_images/2-install-juju_gui.png" />
+<img alt="Juju GUI login page" src="_images/2-install-juju_gui.png" />
+</div>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p class="last">If you don’t want to copy and paste the URL manually, typing <code class="docutils literal notranslate"><span class="pre">juju</span> <span class="pre">gui</span> <span class="pre">--browser</span></code> will open the link in your default browser automatically.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you’d rather not have your login credentials displayed in the output of <code class="docutils literal notranslate"><span class="pre">juju</span> <span class="pre">gui</span></code>, they can be suppressed by adding the <code class="docutils literal notranslate"><span class="pre">--hide-credential</span></code> argument.</p>
 </div>
 </div>
 <div class="section" id="next-steps">
-<h2>2.4. Next steps<a class="headerlink" href="#next-steps" title="Permalink to this headline">¶</a></h2>
+<h2>2.5. Next steps<a class="headerlink" href="#next-steps" title="Permalink to this headline">¶</a></h2>
 <p>We’ve now installed the Juju client and given it enough details to control our MAAS deployment, which we’ve tested by bootstrapping a new Juju controller. The next step will be to use Juju to deploy and link the various components required by OpenStack.</p>
 </div>
 </div>

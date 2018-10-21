@@ -163,7 +163,15 @@ The output to a successful bootstrap will look similar to the following:
 
 If you’re monitoring the nodes view of the MAAS web UI, you will notice that the node we tagged with **juju** starts deploying Ubuntu 18.04 LTS automatically, which will be used to host the Juju controller.
 
-If you want to use the Juju web UI type the following command:
+
+.. _juju-opening-gui:
+
+2.4. Opening the Juju GUI
+-----------------------------
+
+Juju has a `graphical user interface (GUI) <https://docs.jujucharms.com/2.4/en/controllers-gui>`_ available to help with the tasks of managing and monitoring your Juju environment. The GUI is a JavaScript and HTML web application that is encapsulated in its own charm. Once installed, the GUI will talk with Juju over a websocket to provide a real-time interface with the applications installed, the units that comprise them, and the machines available. Additionally, the GUI can talk with the charm store in order to search, browse, and deploy charms to your environment.
+
+To view the URL and login credentials for Juju GUI, use the following command:
 
 .. code::
 
@@ -172,26 +180,28 @@ If you want to use the Juju web UI type the following command:
 The **username** and **password** will be displayed for log in Juju which will be something like this:
 
 .. code::
-
+    
     GUI 2.14.0 for model "admin/default" is enabled at:
-    https://192.168.40.52:17070/gui/u/admin/default
+      https://192.168.40.52:17070/gui/u/admin/default
     Your login credential is:
-    username: admin
-    password: 1e4e614eee21b2e1355671300927ca52
+      username: admin
+      password: 1e4e614eee21b2e1355671300927ca52
 
 
-	
-	You have to copy the **username** and **password** and enter them into the web UI:
+You have to open the GIU IP address in your braowser and to copy and enter the **username** and **password** into the GUI:
 
 
 .. figure:: /images/2-install-juju_gui.png
-   :alt: Juju web UI login page
+   :alt: Juju GUI login page
+
+.. tip:: If you don't want to copy and paste the URL manually, typing ``juju gui --browser`` will open the link in your default browser automatically.
+
+.. note:: If you'd rather not have your login credentials displayed in the output of ``juju gui``, they can be suppressed by adding the ``--hide-credential`` argument.
 
 
 
 
-
-2.4. Next steps
+2.5. Next steps
 ----------------
 
 We’ve now installed the Juju client and given it enough details to control our MAAS deployment, which we’ve tested by bootstrapping a new Juju controller. The next step will be to use Juju to deploy and link the various components required by OpenStack.
