@@ -19,13 +19,63 @@ We are now going to install and configure the following two core components of J
 2.1. Package installation
 ---------------------------
 
-We’re going to start by installing the Juju client on a machine running Ubuntu 16.04 LTS (Xenial) with network access to the MAAS deployment. For other installation options, see `Getting started with Juju <https://docs.jujucharms.com/2.4/en/getting-started>`_.
+We’re going to start by installing the **Juju client** on a VM machine created in `ESXI 6.5 <https://www.vmware.com/products/esxi-and-esx.html>`_ with the following parameters:
+
+* 1 x Juju node: 4GB RAM, 2 CPUs, 1 NIC, and 40 GB Storage
+* installed `Ubuntu Server 18.04 LTS <http://releases.ubuntu.com/18.04/>`_ with network access to the MAAS deployment.
+ 
+For other installation options, see `Getting started with Juju <https://docs.jujucharms.com/2.4/en/getting-started>`_.
+
+
+.. important:: When you install the operation system do not forget to install SSH agent (`Open SSH for Ubuntu Server 18.04 LTS <https://help.ubuntu.com/lts/serverguide/openssh-server.html.en>`_)!
+
+
 To install Juju, enter the following in the terminal:
 
 .. code::
 	
-	sudo add-apt-repository -u ppa:juju/stable
+	sudo add-apt-repository -yu ppa:juju/stable
 	sudo apt install juju
+
+.. note:: If you have problems to clone juju repository use the following command:
+
+ .. code::
+   
+   sudo apt install software-properties-common
+   
+   
+After the instalation is complete you can change the IP addres (if it necesary).
+
+Go to ``/etc/netplan/`` directory and edit the file ``01-netcfg.yaml``  using the following command:
+
+.. code::
+
+  sudo nano /etc/netplan/01-netcfg.yaml
+
+To stop DHCP use the **networkd** deamon to configure your network interface:
+
+.. code::
+
+    # This file describes the network interfaces available on your system
+    # For more information, see netplan(5).
+    network:
+      version: 2
+      renderer: networkd
+      ethernets:
+      ens160:
+        dhcp4: no
+        addresses: [192.168.40.17/24]
+        gateway4: 192.168.40.1
+        nameservers:
+        addresses: [8.8.8.8,8.8.4.4]
+
+		
+Save and apply your changes by running the command below:
+
+.. code::
+  
+  sudo netplan apply
+	
 
 
 .. _juju-client:	
@@ -99,19 +149,46 @@ The output to a successful bootstrap will look similar to the following:
 .. code::
 	
 	Creating Juju controller "maas-controller" on mymaas
-	Looking for packaged Juju agent version 2.2-alpha1 for amd64
+	Looking for packaged Juju agent version 2.4-alpha1 for amd64
 	Launching controller instance(s) on mymaas...
-	 - 7cm8tm (arch=amd64 mem=2G cores=2)
-	Fetching Juju GUI 2.4.4
+	 - 7cm8tm (arch=amd64 mem=48G cores=24)
+	Fetching Juju GUI 2.14.0
 	Waiting for address
-	Attempting to connect to 192.168.100.106:22
+	Attempting to connect to 192.168.40.185:22
 	Bootstrap agent now started
-	Contacting Juju controller at 192.168.100.106 to verify accessibility...
+	Contacting Juju controller at 192.168.40.185 to verify accessibility...
 	Bootstrap complete, "maas-controller" controller now available.
 	Controller machines are in the "controller" model.
 	Initial model "default" added.
 
-If you’re monitoring the nodes view of the MAAS web UI, you will notice that the node we tagged with **juju** starts deploying Ubuntu 16.04 LTS automatically, which will be used to host the Juju controller.
+If you’re monitoring the nodes view of the MAAS web UI, you will notice that the node we tagged with **juju** starts deploying Ubuntu 18.04 LTS automatically, which will be used to host the Juju controller.
+
+If you want to use the Juju web UI type the following command:
+
+.. code::
+
+    juju gui
+
+The **username** and **password** will be displayed for log in Juju which will be something like this:
+
+.. code::
+
+    GUI 2.14.0 for model "admin/default" is enabled at:
+    https://192.168.40.52:17070/gui/u/admin/default
+    Your login credential is:
+    username: admin
+    password: 1e4e614eee21b2e1355671300927ca52
+
+
+	
+	You have to copy the **username** and **password** and enter them into the web UI:
+
+
+.. figure:: /images/2-install-juju_gui.png
+   :alt: Juju web UI login page
+
+
+
 
 
 2.4. Next steps

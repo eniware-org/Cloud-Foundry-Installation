@@ -165,10 +165,50 @@
 </ul>
 <div class="section" id="package-installation">
 <span id="juju-package"></span><h2>2.1. Package installation<a class="headerlink" href="#package-installation" title="Permalink to this headline">¶</a></h2>
-<p>We’re going to start by installing the Juju client on a machine running Ubuntu 16.04 LTS (Xenial) with network access to the MAAS deployment. For other installation options, see <a class="reference external" href="https://docs.jujucharms.com/2.4/en/getting-started">Getting started with Juju</a>.
-To install Juju, enter the following in the terminal:</p>
-<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">add</span><span class="o">-</span><span class="n">apt</span><span class="o">-</span><span class="n">repository</span> <span class="o">-</span><span class="n">u</span> <span class="n">ppa</span><span class="p">:</span><span class="n">juju</span><span class="o">/</span><span class="n">stable</span>
+<p>We’re going to start by installing the <strong>Juju client</strong> on a VM machine created in <a class="reference external" href="https://www.vmware.com/products/esxi-and-esx.html">ESXI 6.5</a> with the following parameters:</p>
+<ul class="simple">
+<li>1 x Juju node: 4GB RAM, 2 CPUs, 1 NIC, and 40 GB Storage</li>
+<li>installed <a class="reference external" href="http://releases.ubuntu.com/18.04/">Ubuntu Server 18.04 LTS</a> with network access to the MAAS deployment.</li>
+</ul>
+<p>For other installation options, see <a class="reference external" href="https://docs.jujucharms.com/2.4/en/getting-started">Getting started with Juju</a>.</p>
+<div class="admonition important">
+<p class="first admonition-title">Important</p>
+<p class="last">When you install the operation system do not forget to install SSH agent (<a class="reference external" href="https://help.ubuntu.com/lts/serverguide/openssh-server.html.en">Open SSH for Ubuntu Server 18.04 LTS</a>)!</p>
+</div>
+<p>To install Juju, enter the following in the terminal:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">add</span><span class="o">-</span><span class="n">apt</span><span class="o">-</span><span class="n">repository</span> <span class="o">-</span><span class="n">yu</span> <span class="n">ppa</span><span class="p">:</span><span class="n">juju</span><span class="o">/</span><span class="n">stable</span>
 <span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="n">juju</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>If you have problems to clone juju repository use the following command:</p>
+<div class="code last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="n">software</span><span class="o">-</span><span class="n">properties</span><span class="o">-</span><span class="n">common</span>
+</pre></div>
+</div>
+</div>
+<p>After the instalation is complete you can change the IP addres (if it necesary).</p>
+<p>Go to <code class="docutils literal notranslate"><span class="pre">/etc/netplan/</span></code> directory and edit the file <code class="docutils literal notranslate"><span class="pre">01-netcfg.yaml</span></code>  using the following command:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">nano</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">netplan</span><span class="o">/</span><span class="mi">01</span><span class="o">-</span><span class="n">netcfg</span><span class="o">.</span><span class="n">yaml</span>
+</pre></div>
+</div>
+<p>To stop DHCP use the <strong>networkd</strong> deamon to configure your network interface:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># This file describes the network interfaces available on your system</span>
+<span class="c1"># For more information, see netplan(5).</span>
+<span class="n">network</span><span class="p">:</span>
+  <span class="n">version</span><span class="p">:</span> <span class="mi">2</span>
+  <span class="n">renderer</span><span class="p">:</span> <span class="n">networkd</span>
+  <span class="n">ethernets</span><span class="p">:</span>
+  <span class="n">ens160</span><span class="p">:</span>
+    <span class="n">dhcp4</span><span class="p">:</span> <span class="n">no</span>
+    <span class="n">addresses</span><span class="p">:</span> <span class="p">[</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">40.17</span><span class="o">/</span><span class="mi">24</span><span class="p">]</span>
+    <span class="n">gateway4</span><span class="p">:</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">40.1</span>
+    <span class="n">nameservers</span><span class="p">:</span>
+    <span class="n">addresses</span><span class="p">:</span> <span class="p">[</span><span class="mf">8.8</span><span class="o">.</span><span class="mf">8.8</span><span class="p">,</span><span class="mf">8.8</span><span class="o">.</span><span class="mf">4.4</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Save and apply your changes by running the command below:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">netplan</span> <span class="n">apply</span>
 </pre></div>
 </div>
 </div>
@@ -216,20 +256,39 @@ You can check the cloud definition has been added with the <code class="docutils
 <p>The constraint in the above command will ask MAAS to use any nodes tagged with juju to host the controller for the Juju client. We tagged this node within MAAS in the <a class="reference internal" href="MAAS.html#install-maas-commission-nodes"><span class="std std-ref">previous step</span></a>.</p>
 <p>The output to a successful bootstrap will look similar to the following:</p>
 <div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Creating</span> <span class="n">Juju</span> <span class="n">controller</span> <span class="s2">&quot;maas-controller&quot;</span> <span class="n">on</span> <span class="n">mymaas</span>
-<span class="n">Looking</span> <span class="k">for</span> <span class="n">packaged</span> <span class="n">Juju</span> <span class="n">agent</span> <span class="n">version</span> <span class="mf">2.2</span><span class="o">-</span><span class="n">alpha1</span> <span class="k">for</span> <span class="n">amd64</span>
+<span class="n">Looking</span> <span class="k">for</span> <span class="n">packaged</span> <span class="n">Juju</span> <span class="n">agent</span> <span class="n">version</span> <span class="mf">2.4</span><span class="o">-</span><span class="n">alpha1</span> <span class="k">for</span> <span class="n">amd64</span>
 <span class="n">Launching</span> <span class="n">controller</span> <span class="n">instance</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="n">on</span> <span class="n">mymaas</span><span class="o">...</span>
- <span class="o">-</span> <span class="mi">7</span><span class="n">cm8tm</span> <span class="p">(</span><span class="n">arch</span><span class="o">=</span><span class="n">amd64</span> <span class="n">mem</span><span class="o">=</span><span class="mi">2</span><span class="n">G</span> <span class="n">cores</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">Fetching</span> <span class="n">Juju</span> <span class="n">GUI</span> <span class="mf">2.4</span><span class="o">.</span><span class="mi">4</span>
+ <span class="o">-</span> <span class="mi">7</span><span class="n">cm8tm</span> <span class="p">(</span><span class="n">arch</span><span class="o">=</span><span class="n">amd64</span> <span class="n">mem</span><span class="o">=</span><span class="mi">48</span><span class="n">G</span> <span class="n">cores</span><span class="o">=</span><span class="mi">24</span><span class="p">)</span>
+<span class="n">Fetching</span> <span class="n">Juju</span> <span class="n">GUI</span> <span class="mf">2.14</span><span class="o">.</span><span class="mi">0</span>
 <span class="n">Waiting</span> <span class="k">for</span> <span class="n">address</span>
-<span class="n">Attempting</span> <span class="n">to</span> <span class="n">connect</span> <span class="n">to</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">100.106</span><span class="p">:</span><span class="mi">22</span>
+<span class="n">Attempting</span> <span class="n">to</span> <span class="n">connect</span> <span class="n">to</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">40.185</span><span class="p">:</span><span class="mi">22</span>
 <span class="n">Bootstrap</span> <span class="n">agent</span> <span class="n">now</span> <span class="n">started</span>
-<span class="n">Contacting</span> <span class="n">Juju</span> <span class="n">controller</span> <span class="n">at</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">100.106</span> <span class="n">to</span> <span class="n">verify</span> <span class="n">accessibility</span><span class="o">...</span>
+<span class="n">Contacting</span> <span class="n">Juju</span> <span class="n">controller</span> <span class="n">at</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">40.185</span> <span class="n">to</span> <span class="n">verify</span> <span class="n">accessibility</span><span class="o">...</span>
 <span class="n">Bootstrap</span> <span class="n">complete</span><span class="p">,</span> <span class="s2">&quot;maas-controller&quot;</span> <span class="n">controller</span> <span class="n">now</span> <span class="n">available</span><span class="o">.</span>
 <span class="n">Controller</span> <span class="n">machines</span> <span class="n">are</span> <span class="ow">in</span> <span class="n">the</span> <span class="s2">&quot;controller&quot;</span> <span class="n">model</span><span class="o">.</span>
 <span class="n">Initial</span> <span class="n">model</span> <span class="s2">&quot;default&quot;</span> <span class="n">added</span><span class="o">.</span>
 </pre></div>
 </div>
-<p>If you’re monitoring the nodes view of the MAAS web UI, you will notice that the node we tagged with <strong>juju</strong> starts deploying Ubuntu 16.04 LTS automatically, which will be used to host the Juju controller.</p>
+<p>If you’re monitoring the nodes view of the MAAS web UI, you will notice that the node we tagged with <strong>juju</strong> starts deploying Ubuntu 18.04 LTS automatically, which will be used to host the Juju controller.</p>
+<p>If you want to use the Juju web UI type the following command:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">juju</span> <span class="n">gui</span>
+</pre></div>
+</div>
+<p>The <strong>username</strong> and <strong>password</strong> will be displayed for log in Juju which will be something like this:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GUI</span> <span class="mf">2.14</span><span class="o">.</span><span class="mi">0</span> <span class="k">for</span> <span class="n">model</span> <span class="s2">&quot;admin/default&quot;</span> <span class="ow">is</span> <span class="n">enabled</span> <span class="n">at</span><span class="p">:</span>
+<span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">40.52</span><span class="p">:</span><span class="mi">17070</span><span class="o">/</span><span class="n">gui</span><span class="o">/</span><span class="n">u</span><span class="o">/</span><span class="n">admin</span><span class="o">/</span><span class="n">default</span>
+<span class="n">Your</span> <span class="n">login</span> <span class="n">credential</span> <span class="ow">is</span><span class="p">:</span>
+<span class="n">username</span><span class="p">:</span> <span class="n">admin</span>
+<span class="n">password</span><span class="p">:</span> <span class="mf">1e4</span><span class="n">e614eee21b2e1355671300927ca52</span>
+
+
+
+    <span class="n">You</span> <span class="n">have</span> <span class="n">to</span> <span class="n">copy</span> <span class="n">the</span> <span class="o">**</span><span class="n">username</span><span class="o">**</span> <span class="ow">and</span> <span class="o">**</span><span class="n">password</span><span class="o">**</span> <span class="ow">and</span> <span class="n">enter</span> <span class="n">them</span> <span class="n">into</span> <span class="n">the</span> <span class="n">web</span> <span class="n">UI</span><span class="p">:</span>
+</pre></div>
+</div>
+<div class="figure">
+<img alt="Juju web UI login page" src="_images/2-install-juju_gui.png" />
+</div>
 </div>
 <div class="section" id="next-steps">
 <h2>2.4. Next steps<a class="headerlink" href="#next-steps" title="Permalink to this headline">¶</a></h2>
