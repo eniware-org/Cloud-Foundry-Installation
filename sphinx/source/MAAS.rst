@@ -290,7 +290,14 @@ A **Machine summary** field opens where in the upper left corner we have to clic
 
    
    
-.. warning:: If you have problems    
+.. warning:: If you add machine (mode) and then delete it without erase the disks, you will be not able to add it again. To add it manual See the documentation <https://docs.maas.io/2.4/en/nodes-add> To add it you have to restart the proces MAAS controler and Region controler with the foloing commands:
+
+.. code::
+  
+   sudo service maas-rackd restart
+   
+   sudo service maas-regiond restart
+ 
    
 .. _install-maas-commission-nodes:
 
