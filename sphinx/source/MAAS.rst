@@ -290,7 +290,7 @@ A **Machine summary** field opens where in the upper left corner we have to clic
 
    
    
-.. warning:: If you add machine (node) and then delete it without erase the disks, you will be not able to add it again. To add it manual See the documentation <https://docs.maas.io/2.4/en/nodes-add> To add  you need information about your machine about MAC address of your IPMI interface and your MAC addres of PXE interface.Than you have to restart the proces MAAS controler and Region controler with the following commands:
+.. warning:: If you add machine (node) and then delete it without erase the disks, you will not be able to add it again. To add it manual See the documentation <https://docs.maas.io/2.4/en/nodes-add> To add  you need information about your machine about MAC address of your IPMI interface and your MAC addres of PXE interface.Than you have to restart the proces MAAS controler and Region controler with the following commands:
 
 .. code::
   
