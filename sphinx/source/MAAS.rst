@@ -289,6 +289,17 @@ A **Machine summary** field opens where in the upper left corner we have to clic
    :alt: Rename machine 
 
    
+
+.. warning:: **If you add a node (machine) and then remove it without deleting the disks, you will not be able to add this node again**! To enter the node manually, please see the `official documentation <https://docs.maas.io/2.4/en/nodes-add>`_ or follow the steps outlined above in :ref:`this section<install-maas-nodes>`. 
+
+ To add the node, you need the following information about your machine: the MAC address of your IPMI interface and the MAC addres of your PXE interface. After entering the information, you have to restart the processes *MAAS controler* and *Region controler*  using the following commands:
+  
+    .. code::
+      
+       sudo service maas-rackd restart
+       sudo service maas-regiond restart
+
+
    
    
    

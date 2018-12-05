@@ -329,6 +329,17 @@ A <strong>Machine summary</strong> field opens where in the upper left corner we
 <div class="figure" id="install-maas-rename">
 <img alt="Rename machine" src="_images/1-install-maas_rename.png" />
 </div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p><strong>If you add a node (machine) and then remove it without deleting the disks, you will not be able to add this node again</strong>! To enter the node manually, please see the <a class="reference external" href="https://docs.maas.io/2.4/en/nodes-add">official documentation</a> or follow the steps outlined above in <a class="reference internal" href="#install-maas-nodes"><span class="std std-ref">this section</span></a>.</p>
+<p>To add the node, you need the following information about your machine: the MAC address of your IPMI interface and the MAC addres of your PXE interface. After entering the information, you have to restart the processes <em>MAAS controler</em> and <em>Region controler</em>  using the following commands:</p>
+<blockquote class="last">
+<div><div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">service</span> <span class="n">maas</span><span class="o">-</span><span class="n">rackd</span> <span class="n">restart</span>
+<span class="n">sudo</span> <span class="n">service</span> <span class="n">maas</span><span class="o">-</span><span class="n">regiond</span> <span class="n">restart</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
 </div>
 <div class="section" id="commission-nodes">
 <span id="install-maas-commission-nodes"></span><h2>1.10. Commission nodes<a class="headerlink" href="#commission-nodes" title="Permalink to this headline">¶</a></h2>
