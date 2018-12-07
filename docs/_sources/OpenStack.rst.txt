@@ -22,65 +22,75 @@ In general, there are two options for installing OpenStack:
 
 .. _openstack-juju-controller:
 
-3.1. Deploy the Juju controller
+3.1. Juju controller deployment
 -------------------------------
 
-:ref:`Previously <install-juju>`, we tested our MAAS and Juju configuration by deploying a new Juju controller called **maas-controller**. You can check this controller is still operational by typing ``juju status``. With the Juju controller running, the output will look similar to the following:
+In :ref:`section 2.3. Testing the environment <juju-testing-environment>`, we've demonstrated how you can deploy a new JuJu controller called **maas-controller** in order to test the environment (MAAS and Juju configuration). 
 
-.. code::
+* **JuJu controller operation status:**
+
+  To **check the operating state of the created JuJu controller**, use the command ``juju status``. With the Juju controller running, the output will look similar to the following:
+
+  .. code::
     
-    Model    Controller       Cloud/Region  Version  SLA          Timestamp
-    default  maas-controller  mymaas        2.4.4    unsupported  15:04:54+03:00
+      Model    Controller       Cloud/Region  Version  SLA          Timestamp
+      default  maas-controller  mymaas        2.4.4    unsupported  15:04:54+03:00
 
-
-
-If you need to remove and redeploy the controller, use the following two commands:
-
-.. code::
 	
-	juju kill-controller maas-controller
-	juju bootstrap --constraints tags=juju mymaas maas-controller
+  In case you need to remove the controller (called **maas-controler** in this case), use the following command:
 
-
-During the bootstrap process, Juju will create a model called **default**, as shown in the output from ``juju status`` above. `Models <https://docs.jujucharms.com/2.4/en/models>`_ act as containers for applications, and Juju’s default model is great for experimentation.
-
-
-
-We are going to create a new model called **test** to hold our **OpenStack deployment** exclusively, making the entire deployment easier to manage and maintain.
-
-To create a model called **test** (and switch to it), simply type the following:
-
-.. code::
+  .. code::
 	
-	juju add-model test
+  	juju kill-controller maas-controller
 
-After you add these model you can :ref:`log in to the Juju GUI <juju-opening-gui>`. To view the URL and login credentials for Juju GUI, use the following command:
 
-.. code::
+  You can redeploy this JuJu controller with the following command:
+  
+  .. code::
+	
+  	juju bootstrap --constraints tags=juju mymaas maas-controller
+	
 
-	juju gui
+  During the bootstrap process, Juju will create a **model** called **default**, as shown in the output from ``juju status`` command above. `Models <https://docs.jujucharms.com/2.4/en/models>`_ act as containers for applications.
+
+
+* **Create a new model:**
+
+  The next step is to **create a new model** called **test** that will be used for the purposes of **OpenStack deployment** exclusively, making the entire deployment easier to manage and maintain. To create a model called **test** (and switch to it), type the following command:
+
+  .. code::
+	
+    juju add-model test
+
+  After you add these model you can :ref:`log in to the Juju GUI <juju-opening-gui>`. To view the URL and login credentials for Juju GUI, use the following command:
+
+  .. code::
+
+  	juju gui
    
-This will produce output similar to the following:
- 
-.. code::
+  This will produce output similar to the following:
    
-    GUI 2.14.0 for model "admin/test" is enabled at:
-      https://192.168.40.53:17070/gui/u/admin/test
-    Your login credential is:
-      username: admin
-      password: 67d4c5dbbb2c56990c3fdaab1d5a355c
+  .. code::
+   
+      GUI 2.14.0 for model "admin/test" is enabled at:
+        https://192.168.40.53:17070/gui/u/admin/test
+      Your login credential is:
+        username: admin
+        password: 67d4c5dbbb2c56990c3fdaab1d5a355c
   
  
-Open your browser at the specified IP address and enter the given login credentials: 
+  Open your browser at the specified IP address and enter the given login credentials: 
   
   
-.. figure:: /images/3-install-openstack_jujugui.png
-    :alt: Juju GUI Login
+  .. figure:: /images/3-install-openstack_jujugui.png
+      :alt: Juju GUI Login
+      :scale: 75 %
+      :align: center
   
    
 .. _openstack-deploy:
 	
-3.2. Deploy OpenStack
+3.2. OpenStack deployment
 ---------------------
 
 We are now going to step through adding the OpenStack components to the new model. The applications will be installed from the `eniware-org/openstack-bundles repository <https://github.com/eniware-org/openstack-bundles>`_. We’ll be providing the configuration for the charms as a **yaml** file which we include as we deploy it.
@@ -204,7 +214,7 @@ The deployed **bundle.yaml** file includes the following applications:
 
 .. _openstack-test:
 	
-3.3. Test OpenStack
+3.3. OpenStack testing
 -----------------------
 
 After everything has deployed and the output of **juju status** settles, you can check to make sure OpenStack is working by logging into the Horizon dashboard.
@@ -223,9 +233,6 @@ If everything works, you will see something similar to the following:
 
 .. figure:: /images/3-install-openstack_horizon.png
    :alt: Horizon dashboard
-   
+   :align: center
 	
-3.4. Next steps
-----------------
-
-Congratulations, you’ve successfully deployed a working OpenStack environment using both Juju and MAAS. The next step is to configure OpenStack for use within a production environment.
+With this final step you’ve successfully deployed a working OpenStack environment using both Juju and MAAS. The next step is to configure OpenStack for use within a production environment.
