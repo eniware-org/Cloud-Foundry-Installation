@@ -156,14 +156,24 @@
             
   <div class="section" id="install-openstack">
 <span id="id1"></span><h1>3. Install OpenStack<a class="headerlink" href="#install-openstack" title="Permalink to this headline">¶</a></h1>
-<p>Now that we’ve installed and configured MAAS and successfully deployed a Juju controller, it’s time to do some real work; use Juju to deploy <a class="reference external" href="https://www.openstack.org">OpenStack</a>, the leading open cloud platform.</p>
-<p>We have two options when installing OpenStack:</p>
+<p>Prerequisites of an <a class="reference external" href="https://www.openstack.org">OpenStack</a>  open cloud platform deployment are as follows:</p>
 <ol class="arabic simple">
-<li>Install and configure each OpenStack component separately. Adding Ceph, Compute, Swift, RabbitMQ, Keystone and Neutron in this way allows you to see exactly what Juju and MAAS are doing, and consequently, gives you a better understanding of the underlying OpenStack deployment.</li>
-<li>Use a <a class="reference external" href="https://docs.jujucharms.com/2.4/en/charms-bundles">bundle</a> to deploy OpenStack with a single command. A bundle is an encapsulation of a working deployment, including all configuration, resources and references. It allows you to effortlessly recreate a deployment with a single command or share that deployment with other Juju users.</li>
+<li><a class="reference internal" href="MAAS.html#install-maas"><span class="std std-ref">Installed and configured MAAS</span></a>.</li>
+<li><a class="reference internal" href="Juju.html#install-juju"><span class="std std-ref">Successfully deployed Juju controller</span></a>.</li>
 </ol>
-<p>If this is your first foray into MAAS, Juju and OpenStack territory, we’d recommend starting with the first option. This will give you a stronger foundation for maintaining and expanding the default deployment. Our instructions for this option continue below.
-Alternatively, jump to <a class="reference external" href="https://docs.openstack.org/project-deploy-guide/charm-deployment-guide/rocky/install-openstack-bundle.html">Deploying OpenStack as a bundle</a> to learn about deploying as a bundle.</p>
+<p>In general, there are two options for installing OpenStack:</p>
+<ol class="arabic simple">
+<li>Separate installation and configuration of individual OpenStack components and applications. This allows you control capabilities and a better understanding of the OpenStack deployment processes - you can keep track of exactly what MAAS and JuJu are doing.</li>
+<li>The second option is to use ready-made <a class="reference external" href="https://docs.jujucharms.com/2.4/en/charms-bundles">bundle</a>. A bundle is an encapsulation of a working deployment, including all configuration, resources and references. That allows you to deploy OpenStack with a single command or share that deployment.</li>
+</ol>
+<div class="admonition important">
+<p class="first admonition-title">Important</p>
+<p class="last">The installation of the OpenScan applications on the <strong>EniWARE platform</strong> is based on the second option - using а bundle (see section <a class="reference internal" href="#openstack-deploy"><span class="std std-ref">3.2. Deploy OpenStack</span></a>).</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">You can find more information at <a class="reference external" href="https://docs.openstack.org/project-deploy-guide/charm-deployment-guide/rocky/install-openstack-bundle.html">Deploying OpenStack as a bundle</a> to learn about deploying as a bundle.</p>
+</div>
 <div class="section" id="deploy-the-juju-controller">
 <span id="openstack-juju-controller"></span><h2>3.1. Deploy the Juju controller<a class="headerlink" href="#deploy-the-juju-controller" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference internal" href="Juju.html#install-juju"><span class="std std-ref">Previously</span></a>, we tested our MAAS and Juju configuration by deploying a new Juju controller called <strong>maas-controller</strong>. You can check this controller is still operational by typing <code class="docutils literal notranslate"><span class="pre">juju</span> <span class="pre">status</span></code>. With the Juju controller running, the output will look similar to the following:</p>
@@ -177,10 +187,6 @@ Alternatively, jump to <a class="reference external" href="https://docs.openstac
 </pre></div>
 </div>
 <p>During the bootstrap process, Juju will create a model called <strong>default</strong>, as shown in the output from <code class="docutils literal notranslate"><span class="pre">juju</span> <span class="pre">status</span></code> above. <a class="reference external" href="https://docs.jujucharms.com/2.4/en/models">Models</a> act as containers for applications, and Juju’s default model is great for experimentation.</p>
-<div class="admonition error">
-<p class="first admonition-title">Error</p>
-<p class="last"><strong>uos</strong> model or <strong>test</strong> model name??? recheck!!!</p>
-</div>
 <p>We are going to create a new model called <strong>test</strong> to hold our <strong>OpenStack deployment</strong> exclusively, making the entire deployment easier to manage and maintain.</p>
 <p>To create a model called <strong>test</strong> (and switch to it), simply type the following:</p>
 <div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">juju</span> <span class="n">add</span><span class="o">-</span><span class="n">model</span> <span class="n">test</span>

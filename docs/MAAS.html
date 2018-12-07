@@ -340,6 +340,15 @@ A <strong>Machine summary</strong> field opens where in the upper left corner we
 </div>
 </div></blockquote>
 </div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">If you add machine (node) and then delete it without erase the disks, you will not be able to add it again. To add it manual See the documentation &lt;<a class="reference external" href="https://docs.maas.io/2.4/en/nodes-add">https://docs.maas.io/2.4/en/nodes-add</a>&gt; To add  you need information about your machine about MAC address of your IPMI interface and your MAC addres of PXE interface.Than you have to restart the proces MAAS controler and Region controler with the following commands:</p>
+</div>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">service</span> <span class="n">maas</span><span class="o">-</span><span class="n">rackd</span> <span class="n">restart</span>
+
+<span class="n">sudo</span> <span class="n">service</span> <span class="n">maas</span><span class="o">-</span><span class="n">regiond</span> <span class="n">restart</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="commission-nodes">
 <span id="install-maas-commission-nodes"></span><h2>1.10. Commission nodes<a class="headerlink" href="#commission-nodes" title="Permalink to this headline">¶</a></h2>
@@ -389,12 +398,12 @@ While a node is commissioning its status will change to <em>Commissioning</em>. 
 <p>A common picture of the state of the nodes that have already been added to the MAAS. You can see the names, tags, and hardware information on each node:</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="29%" />
-<col width="18%" />
-<col width="12%" />
-<col width="11%" />
+<col width="33%" />
+<col width="16%" />
 <col width="14%" />
-<col width="17%" />
+<col width="9%" />
+<col width="14%" />
+<col width="16%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Node name</th>

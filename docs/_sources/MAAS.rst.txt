@@ -2,7 +2,7 @@
 .. _install-maas:
 
 1. Install MAAS
-================
+===============
 
 `MAAS <https://maas.io>`_ (Metal As A Service) - provides the management of physical servers like virtual machines in the cloud.
 MAAS can work at any scale, from a test deployment using a handful of machines to thousands of machines deployed across multiple regions.
@@ -23,7 +23,7 @@ The typical MAAS environment includes as a framework for deployment the followin
 .. _maas-requirements:
 
 1.1. Requirements
-------------------
+-----------------
 
 The minimum requirements for the machines that run MAAS vary widely depending on local implementation and usage. The minimum requirements for the machines that run MAAS are considered in the `MAAS documentation <https://docs.maas.io/2.4/en/intro-requirements>`_.
 
@@ -41,7 +41,7 @@ Your hardware could differ considerably from the above and both MAAS and Juju wi
 .. _maas-installation:
 
 1.2. Installation
-------------------
+-----------------
 
 First, you need to have fresh install of `Ubuntu Server 18.04 LTS <http://releases.ubuntu.com/18.04/>`_ on the machine that will be hosting both the MAAS Rack and Region Controllers.
 
@@ -72,7 +72,7 @@ After that you need to specify if you want to import an SSH key. MAAS uses the p
 .. _maas-onboarding:
 
 1.3. On-boarding
------------------
+----------------
 
 MAAS is now running without being configured. You can check this by pointing your browser to **http://<your.maas.ip>:5240/MAAS/**.
 Now you sign in with the login credentials, and the web interface will launch the ‘Welcome to MAAS’ on-boarding page:
@@ -90,7 +90,7 @@ Now you sign in with the login credentials, and the web interface will launch th
 .. _maas-connectivity:   
    
 1.4. Connectivity and images
------------------------------
+----------------------------
 There are two steps left necessary for MAAS to get up and running. Unless you have specific requirements, most of these options can be left at their default values:
 
 * Connectivity: important services that default to being outside of your network. These include package archives and the DNS forwarder.
@@ -137,7 +137,7 @@ This completes the initial setup of MAAS. Press **Go** button to the dashboard t
 .. _install-maas-networking:
 
 1.6. Networking
------------------
+---------------
    
 By default, MAAS will monitor local network traffic and report any devices it discovers on the **Network discovery** page of the web UI. This page is basic and is the first one to load after finishing installation.   
 
@@ -153,7 +153,7 @@ Before taking the configuration further, you need to tell MAAS about your networ
 .. _install-maas-dhcp1:
 
 Extending a reserved dynamic IP range
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. note:: If you do not have DHCP reserved ranges in your network, you can skip to the step :ref:`Enabling DHCP <install-maas-dhcp2>`.
 
@@ -176,7 +176,7 @@ Furthermore, since DHCP is enabled on a VLAN basis and a VLAN can contain multip
 .. _install-maas-dhcp2:
 
 Enabling DHCP
-^^^^^^^^^^^^^^
+^^^^^^^^^^^^^
 
 You can add DHCP by selecting **untagged** VLAN the subnet to the right of **fabric-0**.
 
@@ -198,7 +198,7 @@ If you have reserved ranges of IP addresses, a new pane will appear that shows u
 .. _install-maas-Ubuntu-images:   
    
 1.7. Images
--------------
+-----------
 
 You have already downloaded the images you need as part of the on-boarding process, but it’s worth checking that both the images you requested are available. To do this, select the **Images** page from the top menu of the web UI.
 
@@ -216,7 +216,7 @@ The **Images** page allows you to download new images, use a custom source for i
 .. _install-maas-services:
    
 1.8. Network services
-----------------------
+---------------------
 
 Before :ref:`adding new nodes <install-maas-nodes>`, it is necessary to configure the network services.
 From the **Settings** menu select **Network services**.
@@ -247,7 +247,7 @@ In our case, we assign DNS address ``8.8.8.8`` (which is `Google Public DNS IP a
 .. _install-maas-nodes:
    
 1.9. Adding nodes
--------------------
+-----------------
 
 MAAS is now ready to accept new nodes. To do this, first ensure your four cloud nodes and single Juju node are set to boot from a PXE image. Now simply power them on. MAAS will add these new nodes automatically by taking the following steps:
 
@@ -301,12 +301,20 @@ A **Machine summary** field opens where in the upper left corner we have to clic
 
 
    
+.. warning:: If you add machine (node) and then delete it without erase the disks, you will not be able to add it again. To add it manual See the documentation <https://docs.maas.io/2.4/en/nodes-add> To add  you need information about your machine about MAC address of your IPMI interface and your MAC addres of PXE interface.Than you have to restart the proces MAAS controler and Region controler with the following commands:
+
+.. code::
+  
+   sudo service maas-rackd restart
    
+   sudo service maas-regiond restart
+ 
    
 .. _install-maas-commission-nodes:
 
+
 1.10. Commission nodes
------------------------
+----------------------
 
 Once a node is added to MAAS (see :ref:`Adding nodes <install-maas-nodes>`) the next logical step is to *commission* it.
 
@@ -382,19 +390,19 @@ Tags are added from the **Machine summary** section of the same individual node 
    
 A common picture of the state of the nodes that have already been added to the MAAS. You can see the names, tags, and hardware information on each node:   
 
-+-------------------+------------+--------+-------+---------+-----------+
-| Node name         | Tag(s)     | CPU(s) | RAM	  | Drives  |  Storage  |
-+===================+============+========+=======+=========+===========+
-| os-compute01.maas | compute    | 2      |  6.0  |   3     |    85.9   |
-+-------------------+------------+--------+-------+---------+-----------+
-| os-compute02.maas | compute    | 2      |  6.0  |   3     |    85.9   |
-+-------------------+------------+--------+-------+---------+-----------+
-| os-compute03.maas | compute    | 2      |  6.0  |   3     |    85.9   |
-+-------------------+------------+--------+-------+---------+-----------+   
-| os-compute04.maas | compute    | 2      |  6.0  |   3     |    85.9   |
-+-------------------+------------+--------+-------+---------+-----------+   
-| os-juju01.maas    | juju       | 2      |  4.0  |   1     |    42.9   |
-+-------------------+------------+--------+-------+---------+-----------+   
++-------------------+---------+--------+-----+--------+---------+
+| Node name         | Tag(s)  | CPU(s) | RAM | Drives | Storage |
++===================+=========+========+=====+========+=========+
+| os-compute01.maas | compute | 2      | 6.0 | 3      | 85.9    |
++-------------------+---------+--------+-----+--------+---------+
+| os-compute02.maas | compute | 2      | 6.0 | 3      | 85.9    |
++-------------------+---------+--------+-----+--------+---------+
+| os-compute03.maas | compute | 2      | 6.0 | 3      | 85.9    |
++-------------------+---------+--------+-----+--------+---------+
+| os-compute04.maas | compute | 2      | 6.0 | 3      | 85.9    |
++-------------------+---------+--------+-----+--------+---------+
+| os-juju01.maas    | juju    | 2      | 4.0 | 1      | 42.9    |
++-------------------+---------+--------+-----+--------+---------+
 
 
 
@@ -402,7 +410,7 @@ A common picture of the state of the nodes that have already been added to the M
 .. _install-maas-next:
    
 1.11. Next steps
------------------
+----------------
 
 Everything is now configured and ready for our next step. This will involve deploying the Juju controller onto its own node. From there, you will be using Juju and MAAS together to deploy OpenStack into the four remaining cloud nodes.   
    

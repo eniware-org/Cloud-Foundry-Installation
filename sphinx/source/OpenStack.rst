@@ -3,16 +3,21 @@
 3. Install OpenStack
 ======================
 
-Now that we’ve installed and configured MAAS and successfully deployed a Juju controller, it’s time to do some real work; use Juju to deploy `OpenStack <https://www.openstack.org>`_, the leading open cloud platform.
+Prerequisites of an `OpenStack <https://www.openstack.org>`_  open cloud platform deployment are as follows:
 
-We have two options when installing OpenStack:
+1. :ref:`Installed and configured MAAS <install-maas>`.
+2. :ref:`Successfully deployed Juju controller <install-juju>`.
 
-1. Install and configure each OpenStack component separately. Adding Ceph, Compute, Swift, RabbitMQ, Keystone and Neutron in this way allows you to see exactly what Juju and MAAS are doing, and consequently, gives you a better understanding of the underlying OpenStack deployment.
-2. Use a `bundle <https://docs.jujucharms.com/2.4/en/charms-bundles>`_ to deploy OpenStack with a single command. A bundle is an encapsulation of a working deployment, including all configuration, resources and references. It allows you to effortlessly recreate a deployment with a single command or share that deployment with other Juju users.
+In general, there are two options for installing OpenStack:
 
-If this is your first foray into MAAS, Juju and OpenStack territory, we’d recommend starting with the first option. This will give you a stronger foundation for maintaining and expanding the default deployment. Our instructions for this option continue below.
-Alternatively, jump to `Deploying OpenStack as a bundle <https://docs.openstack.org/project-deploy-guide/charm-deployment-guide/rocky/install-openstack-bundle.html>`_ to learn about deploying as a bundle.
+1. Separate installation and configuration of individual OpenStack components and applications. This allows you control capabilities and a better understanding of the OpenStack deployment processes - you can keep track of exactly what MAAS and JuJu are doing.
+2. The second option is to use ready-made `bundle <https://docs.jujucharms.com/2.4/en/charms-bundles>`_. A bundle is an encapsulation of a working deployment, including all configuration, resources and references. That allows you to deploy OpenStack with a single command or share that deployment.
 
+
+.. Important:: The installation of the OpenScan applications on the **EniWARE platform** is based on the second option - using а bundle (see section :ref:`3.2. Deploy OpenStack <openstack-deploy>`).
+
+
+.. note:: You can find more information at `Deploying OpenStack as a bundle <https://docs.openstack.org/project-deploy-guide/charm-deployment-guide/rocky/install-openstack-bundle.html>`_ to learn about deploying as a bundle.
 
 
 .. _openstack-juju-controller:
@@ -40,8 +45,6 @@ If you need to remove and redeploy the controller, use the following two command
 During the bootstrap process, Juju will create a model called **default**, as shown in the output from ``juju status`` above. `Models <https://docs.jujucharms.com/2.4/en/models>`_ act as containers for applications, and Juju’s default model is great for experimentation.
 
 
-
-.. error:: **uos** model or **test** model name??? recheck!!!
 
 We are going to create a new model called **test** to hold our **OpenStack deployment** exclusively, making the entire deployment easier to manage and maintain.
 
