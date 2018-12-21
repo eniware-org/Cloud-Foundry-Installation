@@ -1,0 +1,387 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>5. Deploying CloudFoundry with BOSH Director on OpenStack &mdash; Deploying Cloud Foundry on Private Cloud 1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="6. Install BOSH" href="BOSH.html" />
+    <link rel="prev" title="4. Configure OpenStack" href="CFconfig.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Deploying Cloud Foundry on Private Cloud
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="MAAS.html">1. Install MAAS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Juju.html">2. Install Juju</a></li>
+<li class="toctree-l1"><a class="reference internal" href="OpenStack.html">3. Install OpenStack</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CFconfig.html">4. Configure OpenStack</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">5. Deploying CloudFoundry with BOSH Director on OpenStack</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#prerequisites">5.1. Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#validate-the-openstack-configuration">5.2. Validate the OpenStack configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#prepare-openstack-resources-for-bosh-and-cloud-foundry-via-terraform">5.3. Prepare OpenStack resources for BOSH and Cloud Foundry via Terraform</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#bosh">5.3.1. BOSH</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cloud-foundry">4.3.2. Cloud Foundry</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#install-bosh">5.4. Install BOSH</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#cloud-config">5.5. Cloud Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#deploy-cloud-foundry">5.6. Deploy Cloud Foundry</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="BOSH.html">6. Install BOSH</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Deploying Cloud Foundry on Private Cloud</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>5. Deploying CloudFoundry with BOSH Director on OpenStack</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/CFdeployment.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="deploying-cloudfoundry-with-bosh-director-on-openstack">
+<span id="cf-deply"></span><h1>5. Deploying CloudFoundry with BOSH Director on OpenStack<a class="headerlink" href="#deploying-cloudfoundry-with-bosh-director-on-openstack" title="Permalink to this headline">¶</a></h1>
+<div class="admonition-todo admonition" id="index-0">
+<p class="first admonition-title">Todo</p>
+<p>Draft: to be deleted after the documentation is ready:</p>
+<p>Deployment of CloudFoundry using the folllowing guide:</p>
+<p><a class="reference external" href="https://github.com/eniware-org/cf-deployment/tree/master/iaas-support/openstack">https://github.com/eniware-org/cf-deployment/tree/master/iaas-support/openstack</a></p>
+<p>General steps:</p>
+<p>1.Configure OpenStack Domain,Project, User, Network for the deployment</p>
+<p>2.Validate the OpenStack configuration using:</p>
+<p><a class="reference external" href="https://github.com/eniware-org/cf-openstack-validator">https://github.com/eniware-org/cf-openstack-validator</a></p>
+<p>3.Setup the OpenStack projects for the BOSH and CloudFoundry installation using TerraForm modules from here:</p>
+<p><a class="reference external" href="https://github.com/eniware-org/bosh-openstack-environment-templates">https://github.com/eniware-org/bosh-openstack-environment-templates</a></p>
+<ol class="arabic simple" start="4">
+<li>Install BOSH</li>
+</ol>
+<p><a class="reference external" href="https://bosh.io/docs/init-openstack/#deploy">https://bosh.io/docs/init-openstack/#deploy</a></p>
+<ol class="last arabic simple" start="5">
+<li>Prepare and upload cloud-config.yml to BOSH to finilize the cloud configuration</li>
+<li>Deploy CloudFoundry</li>
+</ol>
+</div>
+<div class="section" id="prerequisites">
+<h2>5.1. Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<p>To be able to proceed, you need to the following:</p>
+<ul class="simple">
+<li><a class="reference internal" href="OpenStack.html#install-openstack"><span class="std std-ref">Working OpenStack environment</span></a> using both Juju and MAAS.</li>
+<li>A user able to create/delete resource in this environment</li>
+<li><a class="reference external" href="https://docs.openstack.org/nova/rocky/user/flavors.html">Flavors</a> (an available hardware configuration for a server) with the following names and configuration:</li>
+</ul>
+<table border="1" class="colwidths-given docutils">
+<colgroup>
+<col width="43%" />
+<col width="11%" />
+<col width="15%" />
+<col width="15%" />
+<col width="15%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>Name</strong></td>
+<td><strong>CPUs</strong></td>
+<td><strong>RAM (MiB)</strong></td>
+<td><strong>Root Disk (GiB)</strong></td>
+<td><strong>Ephemeral Disk (GiB)</strong></td>
+</tr>
+<tr class="row-even"><td>ml.xlarge</td>
+<td>8</td>
+<td>16384</td>
+<td>160</td>
+<td>0</td>
+</tr>
+<tr class="row-odd"><td>minimal</td>
+<td>1</td>
+<td>3840</td>
+<td>3</td>
+<td>10</td>
+</tr>
+<tr class="row-even"><td>small</td>
+<td>2</td>
+<td>7680</td>
+<td>3</td>
+<td>14</td>
+</tr>
+<tr class="row-odd"><td>small-50GB-ephemeral-disk</td>
+<td>2</td>
+<td>7680</td>
+<td>3</td>
+<td>50</td>
+</tr>
+<tr class="row-even"><td>small-highmem</td>
+<td>4</td>
+<td>31232</td>
+<td>3</td>
+<td>10</td>
+</tr>
+<tr class="row-odd"><td>small-highmem-100GB-ephemeral-disk</td>
+<td>4</td>
+<td>31232</td>
+<td>3</td>
+<td>100</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="validate-the-openstack-configuration">
+<h2>5.2. Validate the OpenStack configuration<a class="headerlink" href="#validate-the-openstack-configuration" title="Permalink to this headline">¶</a></h2>
+<p>Before deploying Cloud Foundry, make sure to successfully run the <a class="reference external" href="https://github.com/cloudfoundry-incubator/cf-openstack-validator">CF-OpenStack-Validator</a> against your project:</p>
+<ul class="simple">
+<li>Make sure you have the required flavors on OpenStack by enabling the <a class="reference external" href="https://github.com/cloudfoundry-incubator/cf-openstack-validator/tree/master/extensions/flavors">flavors extension</a> with the <a class="reference external" href="https://github.com/eniware-org/cf-deployment/blob/master/iaas-support/openstack/flavors.yml">flavors.yml</a> file in this directory. Flavor names need to match those specified in the cloud config.</li>
+<li>If you plan using the <a class="reference external" href="https://github.com/eniware-org/cf-deployment/blob/master/operations/use-swift-blobstore.yml">Swift ops file</a> to enable Swift as blobstore for the Cloud Controller, you should also run the <a class="reference external" href="https://github.com/cloudfoundry-incubator/cf-openstack-validator/tree/master/extensions/object_storage">Swift extension</a>.</li>
+</ul>
+</div>
+<div class="section" id="prepare-openstack-resources-for-bosh-and-cloud-foundry-via-terraform">
+<h2>5.3. Prepare OpenStack resources for BOSH and Cloud Foundry via Terraform<a class="headerlink" href="#prepare-openstack-resources-for-bosh-and-cloud-foundry-via-terraform" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="bosh">
+<h3>5.3.1. BOSH<a class="headerlink" href="#bosh" title="Permalink to this headline">¶</a></h3>
+<p>To setup an OpenStack project to install BOSH please use the following <a class="reference external" href="https://github.com/cloudfoundry-incubator/bosh-openstack-environment-templates/tree/master/bosh-init-tf">Terraform module</a>. Adapt <code class="docutils literal notranslate"><span class="pre">terraform.tfvars.template</span></code> to your needs.</p>
+</div>
+<div class="section" id="cloud-foundry">
+<h3>4.3.2. Cloud Foundry<a class="headerlink" href="#cloud-foundry" title="Permalink to this headline">¶</a></h3>
+<p>To setup the project to install Cloud Foundry please use the following <a class="reference external" href="https://github.com/cloudfoundry-incubator/bosh-openstack-environment-templates/tree/master/cf-deployment-tf">Terraform module</a>. Adapt <code class="docutils literal notranslate"><span class="pre">terraform.tfvars.template</span></code> to your needs. Variable <code class="docutils literal notranslate"><span class="pre">bosh_router_id</span></code> is output of the previous BOSH terraform module.</p>
+</div>
+</div>
+<div class="section" id="install-bosh">
+<h2>5.4. Install BOSH<a class="headerlink" href="#install-bosh" title="Permalink to this headline">¶</a></h2>
+<p>To install the BOSH director please follow the instructions on section <a class="reference internal" href="BOSH.html#install-bosh"><span class="std std-ref">6. Isntall BOSH</span></a> of this documentation.</p>
+<p>For additional information you can visit <a class="reference external" href="https://bosh.io/docs/init-openstack/#deploy">bosh.io</a>.</p>
+<p>Make sure the BOSH director is accessible through the BOSH cli, by following the instructions on <a class="reference external" href="https://bosh.io/docs/cli-envs.html">bosh.io</a>. Use this mechanism in all BOSH cli examples in this documentation.</p>
+</div>
+<div class="section" id="cloud-config">
+<h2>5.5. Cloud Config<a class="headerlink" href="#cloud-config" title="Permalink to this headline">¶</a></h2>
+<p>After the BOSH director has been installed, you can prepare and upload a cloud config based on the <a class="reference external" href="https://github.com/eniware-org/cf-deployment/blob/master/iaas-support/openstack/cloud-config.yml">cloud-config.yml</a> file.</p>
+<p>Take the variables and outputs from the Terraform run of <code class="docutils literal notranslate"><span class="pre">cf-deployment-tf</span></code> to finalize the cloud config.</p>
+<p>Use the following command to upload the cloud config.</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bosh</span> <span class="n">update</span><span class="o">-</span><span class="n">cloud</span><span class="o">-</span><span class="n">config</span> \
+     <span class="o">-</span><span class="n">v</span> <span class="n">availability_zone1</span><span class="o">=</span><span class="s2">&quot;&lt;az-1&gt;&quot;</span> \
+     <span class="o">-</span><span class="n">v</span> <span class="n">availability_zone2</span><span class="o">=</span><span class="s2">&quot;&lt;az-2&gt;&quot;</span> \
+     <span class="o">-</span><span class="n">v</span> <span class="n">availability_zone3</span><span class="o">=</span><span class="s2">&quot;&lt;az-3&gt;&quot;</span> \
+     <span class="o">-</span><span class="n">v</span> <span class="n">network_id1</span><span class="o">=</span><span class="s2">&quot;&lt;cf-network-id-1&gt;&quot;</span> \
+     <span class="o">-</span><span class="n">v</span> <span class="n">network_id2</span><span class="o">=</span><span class="s2">&quot;&lt;cf-network-id-2&gt;&quot;</span> \
+     <span class="o">-</span><span class="n">v</span> <span class="n">network_id3</span><span class="o">=</span><span class="s2">&quot;&lt;cf-network-id-3&gt;&quot;</span> \
+     <span class="n">cf</span><span class="o">-</span><span class="n">deployment</span><span class="o">/</span><span class="n">iaas</span><span class="o">-</span><span class="n">support</span><span class="o">/</span><span class="n">openstack</span><span class="o">/</span><span class="n">cloud</span><span class="o">-</span><span class="n">config</span><span class="o">.</span><span class="n">yml</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="deploy-cloud-foundry">
+<h2>5.6. Deploy Cloud Foundry<a class="headerlink" href="#deploy-cloud-foundry" title="Permalink to this headline">¶</a></h2>
+<p>To deploy Cloud Foundry run the following command filling in the necessary variables. system_domain is the user facing domain name of your Cloud Foundry installation.</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bosh</span> <span class="o">-</span><span class="n">d</span> <span class="n">cf</span> <span class="n">deploy</span> <span class="n">cf</span><span class="o">-</span><span class="n">deployment</span><span class="o">/</span><span class="n">cf</span><span class="o">-</span><span class="n">deployment</span><span class="o">.</span><span class="n">yml</span> \
+     <span class="o">-</span><span class="n">o</span> <span class="n">cf</span><span class="o">-</span><span class="n">deployment</span><span class="o">/</span><span class="n">operations</span><span class="o">/</span><span class="n">use</span><span class="o">-</span><span class="n">compiled</span><span class="o">-</span><span class="n">releases</span><span class="o">.</span><span class="n">yml</span> \
+     <span class="o">-</span><span class="n">o</span> <span class="n">cf</span><span class="o">-</span><span class="n">deployment</span><span class="o">/</span><span class="n">operations</span><span class="o">/</span><span class="n">openstack</span><span class="o">.</span><span class="n">yml</span> \
+     <span class="o">-</span><span class="n">v</span> <span class="n">system_domain</span><span class="o">=</span><span class="s2">&quot;&lt;system-domain&gt;&quot;</span>
+</pre></div>
+</div>
+<p><strong>With Swift as Blobstore</strong></p>
+<ul class="simple">
+<li>Create four containers in Swift, which are used to store the artifacts for buildpacks, app-packages, droplets, and additional resources, respectively. The container names need to be passed in as variables in the below command snippet</li>
+<li>Set a <a class="reference external" href="https://docs.openstack.org/swift/latest/api/temporary_url_middleware.html#secret-keys">Temporary URL Key</a> for your Swift account</li>
+</ul>
+<p>Add the following lines to the deploy cmd:</p>
+<p>..code:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="n">o</span> <span class="n">cf</span><span class="o">-</span><span class="n">deployment</span><span class="o">/</span><span class="n">operations</span><span class="o">/</span><span class="n">use</span><span class="o">-</span><span class="n">swift</span><span class="o">-</span><span class="n">blobstore</span><span class="o">.</span><span class="n">yml</span> \
+<span class="o">-</span><span class="n">v</span> <span class="n">auth_url</span><span class="o">=</span><span class="s2">&quot;&lt;auth-url&gt;&quot;</span> \
+<span class="o">-</span><span class="n">v</span> <span class="n">openstack_project</span><span class="o">=</span><span class="s2">&quot;&lt;project-name&gt;&quot;</span> \
+<span class="o">-</span><span class="n">v</span> <span class="n">openstack_domain</span><span class="o">=</span><span class="s2">&quot;&lt;domain&gt;&quot;</span> \
+<span class="o">-</span><span class="n">v</span> <span class="n">openstack_username</span><span class="o">=</span><span class="s2">&quot;&lt;user&gt;&quot;</span> \
+<span class="o">-</span><span class="n">v</span> <span class="n">openstack_password</span><span class="o">=</span><span class="s2">&quot;&lt;password&gt;&quot;</span> \
+<span class="o">-</span><span class="n">v</span> <span class="n">openstack_temp_url_key</span><span class="o">=</span><span class="s2">&quot;&lt;temp-url-key&gt;&quot;</span> \
+<span class="o">-</span><span class="n">v</span> <span class="n">app_package_directory_key</span><span class="o">=</span><span class="s2">&quot;&lt;app-package-directory-key&gt;&quot;</span> \
+<span class="o">-</span><span class="n">v</span> <span class="n">buildpack_directory_key</span><span class="o">=</span><span class="s2">&quot;&lt;buildpack-directory-key&gt;&quot;</span> \
+<span class="o">-</span><span class="n">v</span> <span class="n">droplet_directory_key</span><span class="o">=</span><span class="s2">&quot;&lt;droplet-directory-key&gt;&quot;</span> \
+<span class="o">-</span><span class="n">v</span> <span class="n">resource_directory_key</span><span class="o">=</span><span class="s2">&quot;&lt;resource-directory-key&gt;&quot;</span> \
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="BOSH.html" class="btn btn-neutral float-right" title="6. Install BOSH" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="CFconfig.html" class="btn btn-neutral" title="4. Configure OpenStack" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, EniWARE.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

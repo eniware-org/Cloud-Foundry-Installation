@@ -91,7 +91,7 @@ In :ref:`section 2.3. Testing the environment <juju-testing-environment>`, we've
 .. _openstack-deploy:
 	
 3.2. OpenStack deployment
----------------------
+--------------------------
 
 We are now going to step through adding the OpenStack components to the new model. The applications will be installed from the `eniware-org/openstack-bundles repository <https://github.com/eniware-org/openstack-bundles>`_. We’ll be providing the configuration for the charms as a **yaml** file which we include as we deploy it.
 
@@ -225,7 +225,7 @@ The quickest way to get the IP address for the dashboard is with the following c
 	
 	juju status --format=yaml openstack-dashboard | grep public-address | awk '{print $2}'
 
-The URL will be **http://<IP ADDRESS>/horizon**. When you enter this into your browser you can login with ``admin`` and ``openstack``, unless you changed the password in the configuration file.
+The URL will be **http://<IP ADDRESS>/horizon**. The **admin** login domain is **admin_domain**. When you enter this into your browser you can login with user ``admin`` and password ``openstack``, unless you changed the password in the configuration file.
 
 If everything works, you will see something similar to the following:
 
@@ -234,5 +234,7 @@ If everything works, you will see something similar to the following:
 .. figure:: /images/3-install-openstack_horizon.png
    :alt: Horizon dashboard
    :align: center
-	
+
+
+   
 With this final step you’ve successfully deployed a working OpenStack environment using both Juju and MAAS. The next step is to configure OpenStack for use within a production environment.

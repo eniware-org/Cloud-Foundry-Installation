@@ -1,9 +1,9 @@
 .. _install-bosh:
 
-4. Install BOSH
+6. Install BOSH
 ================
 
-.. figure:: /images/4-bosh-logo-full.png
+.. figure:: /images/6-bosh-logo-full.png
    :alt: BOSH logo
 
 `BOSH <https://bosh.io>`_ is a project that unifies release engineering, deployment, and lifecycle management of small and large-scale cloud software. BOSH can provision and deploy software over hundreds of VMs. It also performs monitoring, failure recovery, and software updates with zero-to-minimal downtime.
@@ -13,7 +13,7 @@ While BOSH was developed to deploy Cloud Foundry PaaS, it can also be used to de
 
 .. _install-bosh-get-started:
 
-4.1. Getting Started
+6.1. Getting Started
 ----------------------
 The bosh `CLI <https://bosh.io/docs/cli-v2/>`_ is the command line tool used for interacting with all things BOSH. Release binaries are available on `GitHub <https://github.com/cloudfoundry/bosh-cli/releases>`_. See `Installation <https://bosh.io/docs/cli-v2-install/>`_ for more details on how to download and install.
 
@@ -21,7 +21,7 @@ The bosh `CLI <https://bosh.io/docs/cli-v2/>`_ is the command line tool used for
 
 .. _install-bosh-cli:
 
-4.2. Installing the BOSH CLI
+6.2. Installing the BOSH CLI
 ------------------------------
 
 Choose your preferred installation method below to get the latest version of bosh.
@@ -74,7 +74,7 @@ If you are on macOS with `Homebrew <https://brew.sh>`_, you can install using th
    
 .. _install-bosh-add-dependences:
 
-4.3. Additional Dependencies
+6.3. Additional Dependencies
 ------------------------------   
 
 When you are using bosh to bootstrap BOSH or other standalone VMs, you will need a few extra dependencies installed on your local system.
@@ -135,7 +135,7 @@ You should be able to use bosh on other systems... we just don't know the exact 
 
 .. _install-bosh-quick-start:
 
-4.4. Quick Start
+6.4. Quick Start
 ----------------
 
 The easiest ways to get started with BOSH is by running on your local workstation with `VirtualBox <https://www.virtualbox.org>`_. If you are interested in bringing up a director in another environment, like `Google Cloud Platform <https://cloud.google.com/>`_, choose your IaaS from the navigation for more detailed instructions.
@@ -245,7 +245,7 @@ The test director can be deleted using the ``virtualbox/delete-env.sh`` script.
    
 .. _install-bosh-init-openstack:  
    
-4.5. Initialize New Environment on OpenStack
+6.5. Initialize New Environment on OpenStack
 ------------------------------------------------
 
 `TODO <https://bosh.io/docs/init-openstack/>`_

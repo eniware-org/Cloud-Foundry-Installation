@@ -1,0 +1,609 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>4. Configure OpenStack &mdash; Deploying Cloud Foundry on Private Cloud 1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="5. Deploying CloudFoundry with BOSH Director on OpenStack" href="CFdeployment.html" />
+    <link rel="prev" title="3. Install OpenStack" href="OpenStack.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Deploying Cloud Foundry on Private Cloud
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="MAAS.html">1. Install MAAS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Juju.html">2. Install Juju</a></li>
+<li class="toctree-l1"><a class="reference internal" href="OpenStack.html">3. Install OpenStack</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">4. Configure OpenStack</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#environment-variables">4.1. Environment variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#define-an-external-network">4.2. Define an external network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#cloud-images">4.3. Cloud images</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#working-with-domains-and-projects">4.4. Working with domains and projects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#create-a-virtual-network">4.5. Create a virtual network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ssh-access">4.6. SSH access</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#create-a-cloud-instance">4.7. Create a cloud instance</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="CFdeployment.html">5. Deploying CloudFoundry with BOSH Director on OpenStack</a></li>
+<li class="toctree-l1"><a class="reference internal" href="BOSH.html">6. Install BOSH</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Deploying Cloud Foundry on Private Cloud</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>4. Configure OpenStack</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/CFconfig.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="configure-openstack">
+<span id="cf-config"></span><h1>4. Configure OpenStack<a class="headerlink" href="#configure-openstack" title="Permalink to this headline">¶</a></h1>
+<p>In previous sections we’ve deployed OpenStack using both Juju and MAAS. The next step is to configure OpenStack for use within a production environment.</p>
+<p>The steps te be followed are:</p>
+<ul class="simple">
+<li>Setting up the environment variables</li>
+<li>Adding a project</li>
+<li>Virtual network access and Ubuntu cloud image deployment</li>
+</ul>
+<div class="section" id="environment-variables">
+<span id="cf-env-conf"></span><h2>4.1. Environment variables<a class="headerlink" href="#environment-variables" title="Permalink to this headline">¶</a></h2>
+<p>When accessing OpenStack from the command line, specific environment variables need to be set:</p>
+<ul class="simple">
+<li>S_AUTH_URL</li>
+<li>OS_USER_DOMAIN_NAME</li>
+<li>OS_USERNAME</li>
+<li>OS_PROJECT_DOMAIN_NAME</li>
+<li>OS_PROJECT_NAME</li>
+<li>OS_PROJECT_NAME</li>
+<li>OS_REGION_NAME</li>
+<li>OS_IDENTITY_API_VERSION</li>
+<li>OS_AUTH_VERSION</li>
+</ul>
+<p>The OS_AUTH_URL is the address of the OpenStack Keystone node for authentication. To retrieve this IP addres by Juju use the following command:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">juju</span> <span class="n">status</span> <span class="o">--</span><span class="nb">format</span><span class="o">=</span><span class="n">yaml</span> <span class="n">keystone</span><span class="o">/</span><span class="mi">0</span> <span class="o">|</span> <span class="n">grep</span> <span class="n">public</span><span class="o">-</span><span class="n">address</span> <span class="o">|</span> <span class="n">awk</span> <span class="s1">&#39;{print $2}&#39;</span>
+</pre></div>
+</div>
+<p>The specific environment variables are included in a file called <strong>openrc</strong>. It is located in <code class="docutils literal notranslate"><span class="pre">openstack_bundles/stable/openstack-base</span></code> or you can <a class="reference external" href="https://github.com/eniware-org/openstack-bundles/blob/master/stable/shared/openrcv3_project">download</a> it. It can easily be sourced (made active).</p>
+<p>The <strong>openrc</strong> file contains the following:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span>_OS_PARAMS=$(env | awk &#39;BEGIN {FS=&quot;=&quot;} /^OS_/ {print $1;}&#39; | paste -sd &#39; &#39;)
+for param in $_OS_PARAMS; do
+    if [ &quot;$param&quot; = &quot;OS_AUTH_PROTOCOL&quot; ]; then continue; fi
+    if [ &quot;$param&quot; = &quot;OS_CACERT&quot; ]; then continue; fi
+    unset $param
+done
+unset _OS_PARAMS
+
+_keystone_unit=$(juju status keystone --format yaml | \
+    awk &#39;/units:$/ {getline; gsub(/:$/, &quot;&quot;); print $1}&#39;)
+_keystone_ip=$(juju run --unit ${_keystone_unit} &#39;unit-get private-address&#39;)
+_password=$(juju run --unit ${_keystone_unit} &#39;leader-get admin_passwd&#39;)
+
+export OS_AUTH_URL=${OS_AUTH_PROTOCOL:-http}://${_keystone_ip}:5000/v3
+export OS_USERNAME=admin
+export OS_PASSWORD=${_password}
+export OS_USER_DOMAIN_NAME=admin_domain
+export OS_PROJECT_DOMAIN_NAME=admin_domain
+export OS_PROJECT_NAME=admin
+export OS_REGION_NAME=RegionOne
+export OS_IDENTITY_API_VERSION=3
+# Swift needs this:
+export OS_AUTH_VERSION=3
+# Gnocchi needs this
+export OS_AUTH_TYPE=password
+</pre></div>
+</div>
+<p>The environment variables can be enabled/sourced with the following command:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">source</span> <span class="n">openrc</span>
+</pre></div>
+</div>
+<p>After the <strong>openrc</strong> is created, you can use OpenStack’s Horizon web UI todownload the file, which automatically adjusts the environment variables. You should be loged with the given username. Right click on the user name in the the upper right corner and select from the dropdown list <strong>openrc -v3</strong></p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If the <strong>openrc</strong> file is manually edited, it is important that all variables are correctly entered</p>
+</div>
+<p>You can check the variables have been set correctly by seeing if your OpenStack endpoints are visible with the <code class="docutils literal notranslate"><span class="pre">openstack</span> <span class="pre">endpoint</span> <span class="pre">list</span></code> command. The output will look something like this:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">+----------------------------------+-----------+--------------+--------------+</span>
+<span class="o">|</span> <span class="n">ID</span>                               <span class="o">|</span> <span class="n">Region</span>    <span class="o">|</span> <span class="n">Service</span> <span class="n">Name</span> <span class="o">|</span> <span class="n">Service</span> <span class="n">Type</span> <span class="o">|</span>
+<span class="o">+----------------------------------+-----------+--------------+--------------+</span>
+<span class="o">|</span> <span class="mi">060</span><span class="n">d704e582b4f9cb432e9ecbf3f679e</span> <span class="o">|</span> <span class="n">RegionOne</span> <span class="o">|</span> <span class="n">cinderv2</span>     <span class="o">|</span> <span class="n">volumev2</span>     <span class="o">|</span>
+<span class="o">|</span> <span class="mi">269</span><span class="n">fe0ad800741c8b229a0b305d3ee23</span> <span class="o">|</span> <span class="n">RegionOne</span> <span class="o">|</span> <span class="n">neutron</span>      <span class="o">|</span> <span class="n">network</span>      <span class="o">|</span>
+<span class="o">|</span> <span class="mi">3</span><span class="n">ee5114e04bb45d99f512216f15f9454</span> <span class="o">|</span> <span class="n">RegionOne</span> <span class="o">|</span> <span class="n">swift</span>        <span class="o">|</span> <span class="nb">object</span><span class="o">-</span><span class="n">store</span> <span class="o">|</span>
+<span class="o">|</span> <span class="mi">68</span><span class="n">bc78eb83a94ac48e5b79893d0d8870</span> <span class="o">|</span> <span class="n">RegionOne</span> <span class="o">|</span> <span class="n">nova</span>         <span class="o">|</span> <span class="n">compute</span>      <span class="o">|</span>
+<span class="o">|</span> <span class="mi">59</span><span class="n">c83d8484d54b358f3e4f75a21dda01</span> <span class="o">|</span> <span class="n">RegionOne</span> <span class="o">|</span> <span class="n">s3</span>           <span class="o">|</span> <span class="n">s3</span>           <span class="o">|</span>
+<span class="o">|</span> <span class="n">bebd70c3f4e84d439aa05600b539095e</span> <span class="o">|</span> <span class="n">RegionOne</span> <span class="o">|</span> <span class="n">keystone</span>     <span class="o">|</span> <span class="n">identity</span>     <span class="o">|</span>
+<span class="o">|</span> <span class="mi">1</span><span class="n">eb95d4141c6416c8e0d9d7a2eed534f</span> <span class="o">|</span> <span class="n">RegionOne</span> <span class="o">|</span> <span class="n">glance</span>       <span class="o">|</span> <span class="n">image</span>        <span class="o">|</span>
+<span class="o">|</span> <span class="mi">8</span><span class="n">bd7f4472ced40b39a5b0ecce29df3a0</span> <span class="o">|</span> <span class="n">RegionOne</span> <span class="o">|</span> <span class="n">cinder</span>       <span class="o">|</span> <span class="n">volume</span>       <span class="o">|</span>
+<span class="o">+----------------------------------+-----------+--------------+--------------+</span>
+</pre></div>
+</div>
+<p>If the endpoints aren’t visible, it’s likely your environment variables aren’t configured correctly.</p>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">As with both MAAS and Juju, most OpenStack operations can be accomplished using either the command line or a web UI.</p>
+</div>
+</div>
+<div class="section" id="define-an-external-network">
+<span id="cf-net-conf"></span><h2>4.2. Define an external network<a class="headerlink" href="#define-an-external-network" title="Permalink to this headline">¶</a></h2>
+<p>First step is to define a network called <strong>Pub_Net</strong>. It will use a subnet within the <a class="reference internal" href="MAAS.html#install-maas-dhcp1"><span class="std std-ref">range of addresses</span></a> reserved in MAAS:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openstack</span> <span class="n">network</span> <span class="n">create</span> <span class="n">Pub_Net</span> <span class="o">--</span><span class="n">share</span> <span class="o">--</span><span class="n">external</span>
+</pre></div>
+</div>
+<p>The output from this command will show the various fields and values for the chosen configuration option. To show the new network ID alongside its name type the command <code class="docutils literal notranslate"><span class="pre">openstack</span> <span class="pre">network</span> <span class="pre">list</span></code>:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">+--------------------------------------+---------+---------+</span>
+<span class="o">|</span> <span class="n">ID</span>                                   <span class="o">|</span> <span class="n">Name</span>    <span class="o">|</span> <span class="n">Subnets</span> <span class="o">|</span>
+<span class="o">+--------------------------------------+---------+---------+</span>
+<span class="o">|</span> <span class="n">fc171d22</span><span class="o">-</span><span class="n">d1b0</span><span class="o">-</span><span class="mi">467</span><span class="n">d</span><span class="o">-</span><span class="n">b6fa</span><span class="o">-</span><span class="mi">109</span><span class="n">dfb77787b</span> <span class="o">|</span> <span class="n">Pub_Net</span> <span class="o">|</span>         <span class="o">|</span>
+<span class="o">+--------------------------------------+---------+---------+</span>
+</pre></div>
+</div>
+<p>The second step is to create a subnet for the network using the various addresses from our MAAS and Juju configuration (192.168.100.3 is the IP address of the MAAS server):</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openstack</span> <span class="n">subnet</span> <span class="n">create</span> <span class="n">Pub_Subnet</span> <span class="o">--</span><span class="n">allocation</span><span class="o">-</span><span class="n">pool</span> \
+<span class="n">start</span><span class="o">=</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">100.150</span><span class="p">,</span><span class="n">end</span><span class="o">=</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">100.199</span> <span class="o">--</span><span class="n">subnet</span><span class="o">-</span><span class="nb">range</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">100.0</span><span class="o">/</span><span class="mi">24</span> \
+<span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">dhcp</span> <span class="o">--</span><span class="n">gateway</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">100.1</span> <span class="o">--</span><span class="n">dns</span><span class="o">-</span><span class="n">nameserver</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">100.3</span> \
+<span class="o">--</span><span class="n">dns</span><span class="o">-</span><span class="n">nameserver</span> <span class="mf">8.8</span><span class="o">.</span><span class="mf">8.8</span> <span class="o">--</span><span class="n">network</span> <span class="n">Pub_Net</span>
+</pre></div>
+</div>
+<p>The output from the previous command provides a comprehensive overview of the new subnet’s configuration:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">+-------------------------+--------------------------------------+</span>
+<span class="o">|</span> <span class="n">Field</span>                   <span class="o">|</span> <span class="n">Value</span>                                <span class="o">|</span>
+<span class="o">+-------------------------+--------------------------------------+</span>
+<span class="o">|</span> <span class="n">allocation_pools</span>        <span class="o">|</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">100.150</span><span class="o">-</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">100.199</span>      <span class="o">|</span>
+<span class="o">|</span> <span class="n">cidr</span>                    <span class="o">|</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">100.0</span><span class="o">/</span><span class="mi">24</span>                     <span class="o">|</span>
+<span class="o">|</span> <span class="n">created_at</span>              <span class="o">|</span> <span class="mi">2017</span><span class="o">-</span><span class="mi">04</span><span class="o">-</span><span class="mi">21</span><span class="n">T13</span><span class="p">:</span><span class="mi">43</span><span class="p">:</span><span class="mi">48</span>                  <span class="o">|</span>
+<span class="o">|</span> <span class="n">description</span>             <span class="o">|</span>                                      <span class="o">|</span>
+<span class="o">|</span> <span class="n">dns_nameservers</span>         <span class="o">|</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">100.3</span><span class="p">,</span> <span class="mf">8.8</span><span class="o">.</span><span class="mf">8.8</span>               <span class="o">|</span>
+<span class="o">|</span> <span class="n">enable_dhcp</span>             <span class="o">|</span> <span class="kc">False</span>                                <span class="o">|</span>
+<span class="o">|</span> <span class="n">gateway_ip</span>              <span class="o">|</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">100.1</span>                        <span class="o">|</span>
+<span class="o">|</span> <span class="n">host_routes</span>             <span class="o">|</span>                                      <span class="o">|</span>
+<span class="o">|</span> <span class="nb">id</span>                      <span class="o">|</span> <span class="mi">563</span><span class="n">ecd06</span><span class="o">-</span><span class="n">bbc3</span><span class="o">-</span><span class="mi">4</span><span class="n">c98</span><span class="o">-</span><span class="n">b93e</span>              <span class="o">|</span>
+<span class="o">|</span> <span class="n">ip_version</span>              <span class="o">|</span> <span class="mi">4</span>                                    <span class="o">|</span>
+<span class="o">|</span> <span class="n">ipv6_address_mode</span>       <span class="o">|</span> <span class="kc">None</span>                                 <span class="o">|</span>
+<span class="o">|</span> <span class="n">ipv6_ra_mode</span>            <span class="o">|</span> <span class="kc">None</span>                                 <span class="o">|</span>
+<span class="o">|</span> <span class="n">name</span>                    <span class="o">|</span> <span class="n">Pub_Subnet</span>                           <span class="o">|</span>
+<span class="o">|</span> <span class="n">network_id</span>              <span class="o">|</span> <span class="n">fc171d22</span><span class="o">-</span><span class="n">d1b0</span><span class="o">-</span><span class="mi">467</span><span class="n">d</span><span class="o">-</span><span class="n">b6fa</span><span class="o">-</span><span class="mi">109</span><span class="n">dfb77787b</span> <span class="o">|</span>
+<span class="o">|</span> <span class="n">project_id</span>              <span class="o">|</span> <span class="mi">4068710688184</span><span class="n">af997c1907137d67c76</span>     <span class="o">|</span>
+<span class="o">|</span> <span class="n">revision_number</span>         <span class="o">|</span> <span class="kc">None</span>                                 <span class="o">|</span>
+<span class="o">|</span> <span class="n">segment_id</span>              <span class="o">|</span> <span class="kc">None</span>                                 <span class="o">|</span>
+<span class="o">|</span> <span class="n">service_types</span>           <span class="o">|</span> <span class="kc">None</span>                                 <span class="o">|</span>
+<span class="o">|</span> <span class="n">subnetpool_id</span>           <span class="o">|</span> <span class="kc">None</span>                                 <span class="o">|</span>
+<span class="o">|</span> <span class="n">updated_at</span>              <span class="o">|</span> <span class="mi">2017</span><span class="o">-</span><span class="mi">04</span><span class="o">-</span><span class="mi">21</span><span class="n">T13</span><span class="p">:</span><span class="mi">43</span><span class="p">:</span><span class="mi">48</span>                  <span class="o">|</span>
+<span class="o">|</span> <span class="n">use_default_subnet_pool</span> <span class="o">|</span> <span class="kc">None</span>                                 <span class="o">|</span>
+<span class="o">+-------------------------+--------------------------------------+</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">OpenStack has <a class="reference external" href="https://docs.openstack.org/python-neutronclient/latest/">deprecated</a> the use of the <strong>neutron</strong> command for network configuration, migrating most of its functionality into the Python OpenStack client. Version 2.4.0 or later of this client is needed for the <code class="docutils literal notranslate"><span class="pre">subnet</span> <span class="pre">create</span></code> command.</p>
+</div>
+</div>
+<div class="section" id="cloud-images">
+<span id="cf-cloud-conf"></span><h2>4.3. Cloud images<a class="headerlink" href="#cloud-images" title="Permalink to this headline">¶</a></h2>
+<p>You need to download an <strong>Ubuntu image</strong> locally in order to be able to аdd it to a <strong>Glance</strong>. Canonical’s Ubuntu cloud images can be found here:</p>
+<p><a class="reference external" href="https://cloud-images.ubuntu.com">https://cloud-images.ubuntu.com</a></p>
+<p>You could use <code class="docutils literal notranslate"><span class="pre">wget</span></code> to download the image of <strong>Ubuntu 18.04 LTS (Bionic)</strong>:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wget</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">cloud</span><span class="o">-</span><span class="n">images</span><span class="o">.</span><span class="n">ubuntu</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">bionic</span><span class="o">/</span><span class="n">current</span><span class="o">/</span><span class="n">bionic</span><span class="o">-</span><span class="n">server</span><span class="o">-</span><span class="n">cloudimg</span><span class="o">-</span><span class="n">amd64</span><span class="o">.</span><span class="n">img</span>
+</pre></div>
+</div>
+<p>To add this image to Glance use the following command:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openstack</span> <span class="n">image</span> <span class="n">create</span> <span class="o">--</span><span class="n">public</span> <span class="o">--</span><span class="nb">min</span><span class="o">-</span><span class="n">disk</span> <span class="mi">3</span> <span class="o">--</span><span class="n">container</span><span class="o">-</span><span class="nb">format</span> <span class="n">bare</span> \
+<span class="o">--</span><span class="n">disk</span><span class="o">-</span><span class="nb">format</span> <span class="n">qcow2</span> <span class="o">--</span><span class="nb">property</span> <span class="n">architecture</span><span class="o">=</span><span class="n">x86_64</span> \
+<span class="o">--</span><span class="nb">property</span> <span class="n">hw_disk_bus</span><span class="o">=</span><span class="n">virtio</span> <span class="o">--</span><span class="nb">property</span> <span class="n">hw_vif_model</span><span class="o">=</span><span class="n">virtio</span> \
+<span class="o">--</span><span class="n">file</span> <span class="n">bionic</span><span class="o">-</span><span class="n">server</span><span class="o">-</span><span class="n">cloudimg</span><span class="o">-</span><span class="n">amd64</span><span class="o">.</span><span class="n">img</span> \
+<span class="s2">&quot;bionic x86_64&quot;</span>
+</pre></div>
+</div>
+<p>Typing <code class="docutils literal notranslate"><span class="pre">openstack</span> <span class="pre">image</span> <span class="pre">list</span></code> you can make sure the image was successfully imported:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">+--------------------------------------+---------------+--------+</span>
+<span class="o">|</span> <span class="n">ID</span>                                   <span class="o">|</span> <span class="n">Name</span>          <span class="o">|</span> <span class="n">Status</span> <span class="o">|</span>
+<span class="o">+--------------------------------------+---------------+--------+</span>
+<span class="o">|</span> <span class="n">d4244007</span><span class="o">-</span><span class="mi">5864</span><span class="o">-</span><span class="mi">4</span><span class="n">a2d</span><span class="o">-</span><span class="mi">9</span><span class="n">cfd</span><span class="o">-</span><span class="n">f008ade72df4</span> <span class="o">|</span> <span class="n">bionic</span> <span class="n">x86_64</span> <span class="o">|</span> <span class="n">active</span> <span class="o">|</span>
+<span class="o">+--------------------------------------+---------------+--------+</span>
+</pre></div>
+</div>
+<p>The <strong>Compute &gt; Images</strong> page of <strong>OpenStack’s Horizon web UI</strong> lists many more details about imported images. In particular, note their size as this will limit the minimum root storage size of any OpenStack flavours used to deploy them.</p>
+<div class="figure align-center">
+<img alt="Horizon image details" src="_images/4-horizon_image.png" />
+</div>
+</div>
+<div class="section" id="working-with-domains-and-projects">
+<span id="cf-domain-conf"></span><h2>4.4. Working with domains and projects<a class="headerlink" href="#working-with-domains-and-projects" title="Permalink to this headline">¶</a></h2>
+<p>The following is vital part of OpenStack operations:</p>
+<ul class="simple">
+<li><strong>Domains</strong> - abstract resources; a domain is a collection of users and projects that exist within the OpenStack environment.</li>
+<li><strong>Projects</strong> - organizational units in the cloud to which you can assign users (a project is a group of zero or more users).</li>
+<li><strong>users</strong> - members of one or more projects.</li>
+<li><strong>roles</strong> - define which actions users can perform. You assign roles to user-project pairs.</li>
+</ul>
+<p>To create a single domain with a single project and single user for a new deployment, start with the <strong>domain</strong>:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openstack</span> <span class="n">domain</span> <span class="n">create</span> <span class="n">MyDomain</span>
+</pre></div>
+</div>
+<p>To add a <strong>project</strong> to the <strong>domain</strong>:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openstack</span> <span class="n">project</span> <span class="n">create</span> <span class="o">--</span><span class="n">domain</span> <span class="n">MyDomain</span> \
+    <span class="o">--</span><span class="n">description</span> <span class="s1">&#39;First Project&#39;</span> <span class="n">MyProject</span>
+</pre></div>
+</div>
+<p>To add a <strong>user</strong> and assign that user to the <strong>project</strong>:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openstack</span> <span class="n">user</span> <span class="n">create</span> <span class="o">--</span><span class="n">domain</span> <span class="n">MyDomain</span> \
+    <span class="o">--</span><span class="n">project</span><span class="o">-</span><span class="n">domain</span> <span class="n">MyDomain</span> <span class="o">--</span><span class="n">project</span> <span class="n">MyProject</span> \
+    <span class="o">--</span><span class="n">password</span><span class="o">-</span><span class="n">prompt</span> <span class="n">MyUser</span>
+</pre></div>
+</div>
+<p>The output to the previous command will be similar to the following:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">+---------------------+----------------------------------+</span>
+<span class="o">|</span> <span class="n">Field</span>               <span class="o">|</span> <span class="n">Value</span>                            <span class="o">|</span>
+<span class="o">+---------------------+----------------------------------+</span>
+<span class="o">|</span> <span class="n">default_project_id</span>  <span class="o">|</span> <span class="mf">914e59223944433</span><span class="n">dbf12417ac4cd4031</span> <span class="o">|</span>
+<span class="o">|</span> <span class="n">domain_id</span>           <span class="o">|</span> <span class="mf">7993528e51344814</span><span class="n">be2fd53f1f8f82f9</span> <span class="o">|</span>
+<span class="o">|</span> <span class="n">enabled</span>             <span class="o">|</span> <span class="kc">True</span>                             <span class="o">|</span>
+<span class="o">|</span> <span class="nb">id</span>                  <span class="o">|</span> <span class="n">e980be28b20b4a2190c41ae478942ab1</span> <span class="o">|</span>
+<span class="o">|</span> <span class="n">name</span>                <span class="o">|</span> <span class="n">MyUser</span>                           <span class="o">|</span>
+<span class="o">|</span> <span class="n">options</span>             <span class="o">|</span> <span class="p">{}</span>                               <span class="o">|</span>
+<span class="o">|</span> <span class="n">password_expires_at</span> <span class="o">|</span> <span class="kc">None</span>                             <span class="o">|</span>
+<span class="o">+---------------------+----------------------------------+</span>
+</pre></div>
+</div>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p>You can create a file to hold the details on the new project and user:</p>
+<p>Create the following <strong>myprojectrc</strong> file:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="n">OS_AUTH_URL</span><span class="o">=</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">100.95</span><span class="p">:</span><span class="mi">5000</span><span class="o">/</span><span class="n">v3</span>
+<span class="n">export</span> <span class="n">OS_USER_DOMAIN_NAME</span><span class="o">=</span><span class="n">MyDomain</span>
+<span class="n">export</span> <span class="n">OS_USERNAME</span><span class="o">=</span><span class="n">MyUser</span>
+<span class="n">export</span> <span class="n">OS_PROJECT_DOMAIN_NAME</span><span class="o">=</span><span class="n">MyDomain</span>
+<span class="n">export</span> <span class="n">OS_PROJECT_NAME</span><span class="o">=</span><span class="n">MyProject</span>
+</pre></div>
+</div>
+<p>Source this file’s contents to effectively switch users:</p>
+<div class="code last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">source</span> <span class="n">myprojectrc</span>
+</pre></div>
+</div>
+</div>
+<p>Every subsequent action will now be performed by <strong>MyUser</strong> user within the new <strong>MyProject</strong> project.</p>
+</div>
+<div class="section" id="create-a-virtual-network">
+<h2>4.5. Create a virtual network<a class="headerlink" href="#create-a-virtual-network" title="Permalink to this headline">¶</a></h2>
+<p>You need a fixed IP address to access any instances you deploy from OpenStack. In order to assign a fixed IP, you need a project-specific network with a private subnet, and a router to link this network to the <strong>Pub_Net</strong> you created earlier.</p>
+<p>To create the new network, enter the following:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openstack</span> <span class="n">network</span> <span class="n">create</span> <span class="n">MyNetwork</span>
+</pre></div>
+</div>
+<p>Create a private subnet with the following parameters:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openstack</span> <span class="n">subnet</span> <span class="n">create</span> <span class="n">MySubnet</span> <span class="o">--</span><span class="n">allocation</span><span class="o">-</span><span class="n">pool</span> \
+<span class="n">start</span><span class="o">=</span><span class="mf">10.0</span><span class="o">.</span><span class="mf">0.10</span><span class="p">,</span><span class="n">end</span><span class="o">=</span><span class="mf">10.0</span><span class="o">.</span><span class="mf">0.99</span> <span class="o">--</span><span class="n">subnet</span><span class="o">-</span><span class="nb">range</span> <span class="mf">10.0</span><span class="o">.</span><span class="mf">0.0</span><span class="o">/</span><span class="mi">24</span> \
+<span class="o">--</span><span class="n">gateway</span> <span class="mf">10.0</span><span class="o">.</span><span class="mf">0.1</span> <span class="o">--</span><span class="n">dns</span><span class="o">-</span><span class="n">nameserver</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">100.3</span> \
+<span class="o">--</span><span class="n">dns</span><span class="o">-</span><span class="n">nameserver</span> <span class="mf">8.8</span><span class="o">.</span><span class="mf">8.8</span> <span class="o">--</span><span class="n">network</span> <span class="n">MyNetwork</span>
+</pre></div>
+</div>
+<p>You’ll see verbose output similar to the following:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">+-------------------------+--------------------------------------+</span>
+<span class="o">|</span> <span class="n">Field</span>                   <span class="o">|</span> <span class="n">Value</span>                                <span class="o">|</span>
+<span class="o">+-------------------------+--------------------------------------+</span>
+<span class="o">|</span> <span class="n">allocation_pools</span>        <span class="o">|</span> <span class="mf">10.0</span><span class="o">.</span><span class="mf">0.10</span><span class="o">-</span><span class="mf">10.0</span><span class="o">.</span><span class="mf">0.99</span>                  <span class="o">|</span>
+<span class="o">|</span> <span class="n">cidr</span>                    <span class="o">|</span> <span class="mf">10.0</span><span class="o">.</span><span class="mf">0.0</span><span class="o">/</span><span class="mi">24</span>                          <span class="o">|</span>
+<span class="o">|</span> <span class="n">created_at</span>              <span class="o">|</span> <span class="mi">2017</span><span class="o">-</span><span class="mi">04</span><span class="o">-</span><span class="mi">21</span><span class="n">T16</span><span class="p">:</span><span class="mi">46</span><span class="p">:</span><span class="mi">35</span>                  <span class="o">|</span>
+<span class="o">|</span> <span class="n">description</span>             <span class="o">|</span>                                      <span class="o">|</span>
+<span class="o">|</span> <span class="n">dns_nameservers</span>         <span class="o">|</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">100.3</span><span class="p">,</span> <span class="mf">8.8</span><span class="o">.</span><span class="mf">8.8</span>               <span class="o">|</span>
+<span class="o">|</span> <span class="n">enable_dhcp</span>             <span class="o">|</span> <span class="kc">True</span>                                 <span class="o">|</span>
+<span class="o">|</span> <span class="n">gateway_ip</span>              <span class="o">|</span> <span class="mf">10.0</span><span class="o">.</span><span class="mf">0.1</span>                             <span class="o">|</span>
+<span class="o">|</span> <span class="n">host_routes</span>             <span class="o">|</span>                                      <span class="o">|</span>
+<span class="o">|</span> <span class="nb">id</span>                      <span class="o">|</span> <span class="n">a91a604a</span><span class="o">-</span><span class="mi">70</span><span class="n">d6</span><span class="o">-</span><span class="mi">4688</span><span class="o">-</span><span class="mi">915</span><span class="n">e</span><span class="o">-</span><span class="n">ed14c7db7ebd</span> <span class="o">|</span>
+<span class="o">|</span> <span class="n">ip_version</span>              <span class="o">|</span> <span class="mi">4</span>                                    <span class="o">|</span>
+<span class="o">|</span> <span class="n">ipv6_address_mode</span>       <span class="o">|</span> <span class="kc">None</span>                                 <span class="o">|</span>
+<span class="o">|</span> <span class="n">ipv6_ra_mode</span>            <span class="o">|</span> <span class="kc">None</span>                                 <span class="o">|</span>
+<span class="o">|</span> <span class="n">name</span>                    <span class="o">|</span> <span class="n">MySubnet</span>                             <span class="o">|</span>
+<span class="o">|</span> <span class="n">network_id</span>              <span class="o">|</span> <span class="mi">8</span><span class="n">b0baa43</span><span class="o">-</span><span class="n">cb25</span><span class="o">-</span><span class="mi">4</span><span class="n">a70</span><span class="o">-</span><span class="n">bf41</span><span class="o">-</span><span class="n">d4136cbfe16e</span> <span class="o">|</span>
+<span class="o">|</span> <span class="n">project_id</span>              <span class="o">|</span> <span class="mf">1992e606</span><span class="n">b51b404c9151f8cb464aa420</span>     <span class="o">|</span>
+<span class="o">|</span> <span class="n">revision_number</span>         <span class="o">|</span> <span class="kc">None</span>                                 <span class="o">|</span>
+<span class="o">|</span> <span class="n">segment_id</span>              <span class="o">|</span> <span class="kc">None</span>                                 <span class="o">|</span>
+<span class="o">|</span> <span class="n">service_types</span>           <span class="o">|</span> <span class="kc">None</span>                                 <span class="o">|</span>
+<span class="o">|</span> <span class="n">subnetpool_id</span>           <span class="o">|</span> <span class="kc">None</span>                                 <span class="o">|</span>
+<span class="o">|</span> <span class="n">updated_at</span>              <span class="o">|</span> <span class="mi">2017</span><span class="o">-</span><span class="mi">04</span><span class="o">-</span><span class="mi">21</span><span class="n">T16</span><span class="p">:</span><span class="mi">46</span><span class="p">:</span><span class="mi">35</span>                  <span class="o">|</span>
+<span class="o">|</span> <span class="n">use_default_subnet_pool</span> <span class="o">|</span> <span class="kc">None</span>                                 <span class="o">|</span>
+<span class="o">+-------------------------+--------------------------------------+</span>
+</pre></div>
+</div>
+<p>The following commands will add the router, connecting this new network to the <strong>Pub_Net</strong>:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openstack</span> <span class="n">router</span> <span class="n">create</span> <span class="n">MyRouter</span>
+<span class="n">openstack</span> <span class="n">router</span> <span class="nb">set</span> <span class="n">MyRouter</span> <span class="o">--</span><span class="n">external</span><span class="o">-</span><span class="n">gateway</span> <span class="n">Pub_Net</span>
+<span class="n">openstack</span> <span class="n">router</span> <span class="n">add</span> <span class="n">subnet</span> <span class="n">MyRouter</span> <span class="n">MySubnet</span>
+</pre></div>
+</div>
+<p>Use <code class="docutils literal notranslate"><span class="pre">openstack</span> <span class="pre">router</span> <span class="pre">show</span> <span class="pre">MyRouter</span></code> to verify all parameters have been set correctly.</p>
+<p>Finally, you can add a floating IP address to your project’s new network:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openstack</span> <span class="n">floating</span> <span class="n">ip</span> <span class="n">create</span> <span class="n">Pub_Net</span>
+</pre></div>
+</div>
+<p>Details on the address will be shown in the output:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">+---------------------+--------------------------------------+</span>
+<span class="o">|</span> <span class="n">Field</span>               <span class="o">|</span> <span class="n">Value</span>                                <span class="o">|</span>
+<span class="o">+---------------------+--------------------------------------+</span>
+<span class="o">|</span> <span class="n">created_at</span>          <span class="o">|</span> <span class="kc">None</span>                                 <span class="o">|</span>
+<span class="o">|</span> <span class="n">description</span>         <span class="o">|</span>                                      <span class="o">|</span>
+<span class="o">|</span> <span class="n">fixed_ip_address</span>    <span class="o">|</span> <span class="kc">None</span>                                 <span class="o">|</span>
+<span class="o">|</span> <span class="n">floating_ip_address</span> <span class="o">|</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">100.152</span>                      <span class="o">|</span>
+<span class="o">|</span> <span class="n">floating_network_id</span> <span class="o">|</span> <span class="n">fc171d22</span><span class="o">-</span><span class="n">d1b0</span><span class="o">-</span><span class="mi">467</span><span class="n">d</span><span class="o">-</span><span class="n">b6fa</span><span class="o">-</span><span class="mi">109</span><span class="n">dfb77787b</span> <span class="o">|</span>
+<span class="o">|</span> <span class="nb">id</span>                  <span class="o">|</span> <span class="n">f9b4193d</span><span class="o">-</span><span class="mi">4385</span><span class="o">-</span><span class="mi">4</span><span class="n">b25</span><span class="o">-</span><span class="mi">83</span><span class="n">ed</span><span class="o">-</span><span class="mi">89</span><span class="n">ed3358668e</span> <span class="o">|</span>
+<span class="o">|</span> <span class="n">name</span>                <span class="o">|</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">100.152</span>                      <span class="o">|</span>
+<span class="o">|</span> <span class="n">port_id</span>             <span class="o">|</span> <span class="kc">None</span>                                 <span class="o">|</span>
+<span class="o">|</span> <span class="n">project_id</span>          <span class="o">|</span> <span class="mf">1992e606</span><span class="n">b51b404c9151f8cb464aa420</span>     <span class="o">|</span>
+<span class="o">|</span> <span class="n">revision_number</span>     <span class="o">|</span> <span class="kc">None</span>                                 <span class="o">|</span>
+<span class="o">|</span> <span class="n">router_id</span>           <span class="o">|</span> <span class="kc">None</span>                                 <span class="o">|</span>
+<span class="o">|</span> <span class="n">status</span>              <span class="o">|</span> <span class="n">DOWN</span>                                 <span class="o">|</span>
+<span class="o">|</span> <span class="n">updated_at</span>          <span class="o">|</span> <span class="kc">None</span>                                 <span class="o">|</span>
+<span class="o">+---------------------+--------------------------------------+</span>
+</pre></div>
+</div>
+<p>This address will be added to the pool of available floating IP addresses that can be assigned to any new instances you deploy.</p>
+</div>
+<div class="section" id="ssh-access">
+<h2>4.6. SSH access<a class="headerlink" href="#ssh-access" title="Permalink to this headline">¶</a></h2>
+<p>To create an OpenStack SSH keypair for accessing deployments with SSH, use the following command:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openstack</span> <span class="n">keypair</span> <span class="n">create</span> <span class="n">NewKeypair</span> <span class="o">&gt;</span> <span class="o">~/.</span><span class="n">ssh</span><span class="o">/</span><span class="n">newkeypair</span><span class="o">.</span><span class="n">pem</span>
+</pre></div>
+</div>
+<p>With SSH, it’s imperative that the file has the correct permissions:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">chmod</span> <span class="mi">600</span> <span class="o">~/.</span><span class="n">ssh</span><span class="o">/</span><span class="n">newkeypair</span><span class="o">.</span><span class="n">pem</span>
+</pre></div>
+</div>
+<p>Alternatively, you can import your pre-existing keypair with the following command:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openstack</span> <span class="n">keypair</span> <span class="n">create</span> <span class="o">--</span><span class="n">public</span><span class="o">-</span><span class="n">key</span> <span class="o">~/.</span><span class="n">ssh</span><span class="o">/</span><span class="n">id_rsa</span><span class="o">.</span><span class="n">pub</span> <span class="n">MyKeypair</span>
+</pre></div>
+</div>
+<p>You can view which keypairs have been added to OpenStack using the <code class="docutils literal notranslate"><span class="pre">openstack</span> <span class="pre">keypair</span> <span class="pre">list</span></code> command, which generates output similar to the following:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">+-------------------+-------------------------------------------------+</span>
+<span class="o">|</span> <span class="n">Name</span>              <span class="o">|</span> <span class="n">Fingerprint</span>                                     <span class="o">|</span>
+<span class="o">+-------------------+-------------------------------------------------+</span>
+<span class="o">|</span> <span class="n">MyKeypair</span>         <span class="o">|</span> <span class="mi">1</span><span class="n">d</span><span class="p">:</span><span class="mi">35</span><span class="p">:</span><span class="mi">52</span><span class="p">:</span><span class="mi">08</span><span class="p">:</span><span class="mi">55</span><span class="p">:</span><span class="n">d5</span><span class="p">:</span><span class="mi">54</span><span class="p">:</span><span class="mi">04</span><span class="p">:</span><span class="n">a3</span><span class="p">:</span><span class="n">e0</span><span class="p">:</span><span class="mi">23</span><span class="p">:</span><span class="n">f0</span><span class="p">:</span><span class="mi">20</span><span class="p">:</span><span class="n">c4</span><span class="p">:</span><span class="n">b0</span><span class="p">:</span><span class="n">eb</span> <span class="o">|</span>
+<span class="o">|</span> <span class="n">NewKeypair</span>        <span class="o">|</span> <span class="mi">1</span><span class="n">f</span><span class="p">:</span><span class="mi">1</span><span class="n">a</span><span class="p">:</span><span class="mi">74</span><span class="p">:</span><span class="n">a5</span><span class="p">:</span><span class="n">cb</span><span class="p">:</span><span class="mi">87</span><span class="p">:</span><span class="n">e1</span><span class="p">:</span><span class="n">f3</span><span class="p">:</span><span class="mi">2</span><span class="n">e</span><span class="p">:</span><span class="mi">08</span><span class="p">:</span><span class="mi">9</span><span class="n">e</span><span class="p">:</span><span class="mi">40</span><span class="p">:</span><span class="n">dd</span><span class="p">:</span><span class="n">dd</span><span class="p">:</span><span class="mi">7</span><span class="n">c</span><span class="p">:</span><span class="n">c4</span> <span class="o">|</span>
+<span class="o">+-------------------+-------------------------------------------------+</span>
+</pre></div>
+</div>
+<p>To permit SSH traffic access to our deployments, we need to define a security group and a corresponding network rule:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openstack</span> <span class="n">security</span> <span class="n">group</span> <span class="n">create</span> <span class="o">--</span><span class="n">description</span> <span class="s1">&#39;Allow SSH&#39;</span> <span class="n">Allow_SSH</span>
+</pre></div>
+</div>
+<p>The following rule will open TCP port 22 and apply it to the above security group:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openstack</span> <span class="n">security</span> <span class="n">group</span> <span class="n">rule</span> <span class="n">create</span> <span class="o">--</span><span class="n">proto</span> <span class="n">tcp</span> <span class="o">--</span><span class="n">dst</span><span class="o">-</span><span class="n">port</span> <span class="mi">22</span> <span class="n">Allow_SSH</span>
+
+
+<span class="o">..</span> <span class="n">cf</span><span class="o">-</span><span class="n">cloudinst</span><span class="o">-</span><span class="n">conf</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-a-cloud-instance">
+<h2>4.7. Create a cloud instance<a class="headerlink" href="#create-a-cloud-instance" title="Permalink to this headline">¶</a></h2>
+<p>Before launching our first cloud instance, you’ll need the network ID for the <strong>MyNetwork</strong>. This can be retrieved from the first column of output from the <code class="docutils literal notranslate"><span class="pre">openstack</span> <span class="pre">network</span> <span class="pre">list</span></code> command:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">+--------------------------------------+-------------+------------------------+</span>
+<span class="o">|</span> <span class="n">ID</span>                                   <span class="o">|</span> <span class="n">Name</span>        <span class="o">|</span> <span class="n">Subnets</span>                <span class="o">|</span>
+<span class="o">+--------------------------------------+-------------+------------------------+</span>
+<span class="o">|</span> <span class="n">fc171d22</span><span class="o">-</span><span class="n">d1b0</span><span class="o">-</span><span class="mi">467</span><span class="n">d</span><span class="o">-</span><span class="n">b6fa</span><span class="o">-</span><span class="mi">109</span><span class="n">dfb77787b</span> <span class="o">|</span> <span class="n">Pub_Net</span>     <span class="o">|</span><span class="mi">563</span><span class="n">ecd06</span><span class="o">-</span><span class="n">bbc3</span><span class="o">-</span><span class="mi">4</span><span class="n">c98</span><span class="o">-</span><span class="n">b93e</span> <span class="o">|</span>
+<span class="o">|</span> <span class="mi">8</span><span class="n">b0baa43</span><span class="o">-</span><span class="n">cb25</span><span class="o">-</span><span class="mi">4</span><span class="n">a70</span><span class="o">-</span><span class="n">bf41</span><span class="o">-</span><span class="n">d4136cbfe16e</span> <span class="o">|</span> <span class="n">MyNetwork</span>   <span class="o">|</span><span class="n">a91a604a</span><span class="o">-</span><span class="mi">70</span><span class="n">d6</span><span class="o">-</span><span class="mi">4688</span><span class="o">-</span><span class="mi">915</span><span class="n">e</span> <span class="o">|</span>
+<span class="o">+--------------------------------------+-------------+------------------------+</span>
+</pre></div>
+</div>
+<p>Use the <strong>network ID</strong> to replace the example in the following <code class="docutils literal notranslate"><span class="pre">server</span> <span class="pre">create</span></code> command to deploy a new instance:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openstack</span> <span class="n">server</span> <span class="n">create</span> <span class="n">Ubuntu</span> <span class="o">--</span><span class="n">availability</span><span class="o">-</span><span class="n">zone</span> <span class="n">nova</span> \
+<span class="o">--</span><span class="n">image</span> <span class="s1">&#39;bionic x86_64&#39;</span> <span class="o">--</span><span class="n">flavor</span> <span class="n">m1</span><span class="o">.</span><span class="n">small</span> \
+<span class="o">--</span><span class="n">key</span><span class="o">-</span><span class="n">name</span> <span class="n">NewKeypair</span> <span class="o">--</span><span class="n">security</span><span class="o">-</span><span class="n">group</span> \
+<span class="n">Allow_SSH</span> <span class="o">--</span><span class="n">nic</span> <span class="n">net</span><span class="o">-</span><span class="nb">id</span><span class="o">=</span><span class="mi">8</span><span class="n">b0baa43</span><span class="o">-</span><span class="n">cb25</span><span class="o">-</span><span class="mi">4</span><span class="n">a70</span><span class="o">-</span><span class="n">bf41</span><span class="o">-</span><span class="n">d4136cbfe16e</span>
+</pre></div>
+</div>
+<p>You can monitor progress with the <code class="docutils literal notranslate"><span class="pre">openstack</span> <span class="pre">server</span> <span class="pre">list</span></code> command by waiting for the server to show a status of <strong>ACTIVE</strong>:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">+--------------------+-----------+--------+---------</span> <span class="o">------------+---------------+</span>
+<span class="o">|</span> <span class="n">ID</span>                 <span class="o">|</span> <span class="n">Name</span>      <span class="o">|</span> <span class="n">Status</span> <span class="o">|</span> <span class="n">Networks</span>             <span class="o">|</span> <span class="n">Image</span> <span class="n">Name</span>    <span class="o">|</span>
+<span class="o">+--------------------+-----------+--------+----------------------+---------------+</span>
+<span class="o">|</span> <span class="mi">4</span><span class="n">a61f2ad</span><span class="o">-</span><span class="mi">5</span><span class="n">d89</span><span class="o">-</span><span class="mi">43</span><span class="n">a6</span> <span class="o">|</span> <span class="n">Ubuntu</span>    <span class="o">|</span> <span class="n">ACTIVE</span> <span class="o">|</span> <span class="n">MyNetwork</span><span class="o">=</span><span class="mf">10.0</span><span class="o">.</span><span class="mf">0.11</span>  <span class="o">|</span> <span class="n">bionic</span> <span class="n">x86_64</span> <span class="o">|</span>
+<span class="o">+--------------------+-----------+--------+----------------------+---------------+</span>
+</pre></div>
+</div>
+<p>All that’s left to do is assign a floating IP to the new server and connect with SSH.</p>
+<p>Typing <code class="docutils literal notranslate"><span class="pre">openstack</span> <span class="pre">floating</span> <span class="pre">ip</span> <span class="pre">list</span></code> will show the floating IP address you liberated from <strong>Pub_Net</strong> earlier.</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">+----------+---------------------+------------------+------+--------------------+---------+</span>
+<span class="o">|</span> <span class="n">ID</span>       <span class="o">|</span> <span class="n">Floating</span> <span class="n">IP</span> <span class="n">Address</span> <span class="o">|</span> <span class="n">Fixed</span> <span class="n">IP</span> <span class="n">Address</span> <span class="o">|</span> <span class="n">Port</span> <span class="o">|</span> <span class="n">Floating</span> <span class="n">Network</span>   <span class="o">|</span> <span class="n">Project</span> <span class="o">|</span>
+<span class="o">+----------+---------------------+------------------+------+--------------------+---------+</span>
+<span class="o">|</span> <span class="n">f9b4193d</span> <span class="o">|</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">100.152</span>     <span class="o">|</span> <span class="kc">None</span>             <span class="o">|</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">fc171d22</span><span class="o">-</span><span class="n">d1b0</span><span class="o">-</span><span class="mi">467</span><span class="n">d</span> <span class="o">|</span> <span class="mf">1992e65</span> <span class="o">|</span>
+<span class="o">+----------+---------------------+------------------+------+--------------------+---------+</span>
+</pre></div>
+</div>
+<p>The above output shows that the floating IP address is yet to be assigned. Use the following command to assign the IP address to your new instance:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openstack</span> <span class="n">server</span> <span class="n">add</span> <span class="n">floating</span> <span class="n">ip</span> <span class="n">Ubuntu</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">100.152</span>
+</pre></div>
+</div>
+<p>You will now be able to connect to your new cloud server using SSH:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ssh</span> <span class="o">-</span><span class="n">i</span> <span class="o">~/.</span><span class="n">ssh</span><span class="o">/</span><span class="n">newkeypair</span><span class="o">.</span><span class="n">pem</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">100.152</span>
+</pre></div>
+</div>
+<p>You have now built and successfully deployed a new cloud instance running on OpenStack, taking full advantage of both Juju and MAAS.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="CFdeployment.html" class="btn btn-neutral float-right" title="5. Deploying CloudFoundry with BOSH Director on OpenStack" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="OpenStack.html" class="btn btn-neutral" title="3. Install OpenStack" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, EniWARE.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

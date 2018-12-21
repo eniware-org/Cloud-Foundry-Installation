@@ -38,6 +38,8 @@ Welcome to Deploying Cloud Foundry on Private Cloud's documentation!
    MAAS
    Juju
    OpenStack
+   CFconfig
+   CFdeployment
    BOSH
    
 

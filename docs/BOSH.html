@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>4. Install BOSH &mdash; Deploying Cloud Foundry on Private Cloud 1 documentation</title>
+  <title>6. Install BOSH &mdash; Deploying Cloud Foundry on Private Cloud 1 documentation</title>
   
 
   
@@ -29,7 +29,7 @@
   <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="3. Install OpenStack" href="OpenStack.html" /> 
+    <link rel="prev" title="5. Deploying CloudFoundry with BOSH Director on OpenStack" href="CFdeployment.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -82,14 +82,16 @@
 <li class="toctree-l1"><a class="reference internal" href="MAAS.html">1. Install MAAS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Juju.html">2. Install Juju</a></li>
 <li class="toctree-l1"><a class="reference internal" href="OpenStack.html">3. Install OpenStack</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">4. Install BOSH</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#getting-started">4.1. Getting Started</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#installing-the-bosh-cli">4.2. Installing the BOSH CLI</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="CFconfig.html">4. Configure OpenStack</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CFdeployment.html">5. Deploying CloudFoundry with BOSH Director on OpenStack</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">6. Install BOSH</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#getting-started">6.1. Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installing-the-bosh-cli">6.2. Installing the BOSH CLI</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#using-the-binary-directly">Using the binary directly</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#using-homebrew-on-macos">Using Homebrew on macOS</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#additional-dependencies">4.3. Additional Dependencies</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#additional-dependencies">6.3. Additional Dependencies</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#ubuntu-trusty">Ubuntu Trusty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#macos">macOS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#centos">CentOS</a></li>
@@ -97,14 +99,14 @@
 <li class="toctree-l3"><a class="reference internal" href="#other">Other</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#quick-start">4.4. Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#quick-start">6.4. Quick Start</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#install">Install</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#deploy">Deploy</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#clean-up">Clean up</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#initialize-new-environment-on-openstack">4.5. Initialize New Environment on OpenStack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#initialize-new-environment-on-openstack">6.5. Initialize New Environment on OpenStack</a></li>
 </ul>
 </li>
 </ul>
@@ -152,7 +154,7 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>4. Install BOSH</li>
+      <li>6. Install BOSH</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -172,18 +174,18 @@
            <div itemprop="articleBody">
             
   <div class="section" id="install-bosh">
-<span id="id1"></span><h1>4. Install BOSH<a class="headerlink" href="#install-bosh" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1>6. Install BOSH<a class="headerlink" href="#install-bosh" title="Permalink to this headline">¶</a></h1>
 <div class="figure">
-<img alt="BOSH logo" src="_images/4-bosh-logo-full.png" />
+<img alt="BOSH logo" src="_images/6-bosh-logo-full.png" />
 </div>
 <p><a class="reference external" href="https://bosh.io">BOSH</a> is a project that unifies release engineering, deployment, and lifecycle management of small and large-scale cloud software. BOSH can provision and deploy software over hundreds of VMs. It also performs monitoring, failure recovery, and software updates with zero-to-minimal downtime.</p>
 <p>While BOSH was developed to deploy Cloud Foundry PaaS, it can also be used to deploy almost any other software (Hadoop, for instance). BOSH is particularly well-suited for large distributed systems. In addition, BOSH supports multiple Infrastructure as a Service (IaaS) providers like VMware vSphere, Google Cloud Platform, Amazon Web Services EC2, Microsoft Azure, and OpenStack. There is a Cloud Provider Interface (CPI) that enables users to extend BOSH to support additional IaaS providers such as Apache CloudStack and VirtualBox.</p>
 <div class="section" id="getting-started">
-<span id="install-bosh-get-started"></span><h2>4.1. Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
+<span id="install-bosh-get-started"></span><h2>6.1. Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
 <p>The bosh <a class="reference external" href="https://bosh.io/docs/cli-v2/">CLI</a> is the command line tool used for interacting with all things BOSH. Release binaries are available on <a class="reference external" href="https://github.com/cloudfoundry/bosh-cli/releases">GitHub</a>. See <a class="reference external" href="https://bosh.io/docs/cli-v2-install/">Installation</a> for more details on how to download and install.</p>
 </div>
 <div class="section" id="installing-the-bosh-cli">
-<span id="install-bosh-cli"></span><h2>4.2. Installing the BOSH CLI<a class="headerlink" href="#installing-the-bosh-cli" title="Permalink to this headline">¶</a></h2>
+<span id="install-bosh-cli"></span><h2>6.2. Installing the BOSH CLI<a class="headerlink" href="#installing-the-bosh-cli" title="Permalink to this headline">¶</a></h2>
 <p>Choose your preferred installation method below to get the latest version of bosh.</p>
 <div class="section" id="using-the-binary-directly">
 <h3>Using the binary directly<a class="headerlink" href="#using-the-binary-directly" title="Permalink to this headline">¶</a></h3>
@@ -232,7 +234,7 @@ Succeeded
 </div>
 </div>
 <div class="section" id="additional-dependencies">
-<span id="install-bosh-add-dependences"></span><h2>4.3. Additional Dependencies<a class="headerlink" href="#additional-dependencies" title="Permalink to this headline">¶</a></h2>
+<span id="install-bosh-add-dependences"></span><h2>6.3. Additional Dependencies<a class="headerlink" href="#additional-dependencies" title="Permalink to this headline">¶</a></h2>
 <p>When you are using bosh to bootstrap BOSH or other standalone VMs, you will need a few extra dependencies installed on your local system.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -286,7 +288,7 @@ $ gem install yajl-ruby
 </div>
 </div>
 <div class="section" id="quick-start">
-<span id="install-bosh-quick-start"></span><h2>4.4. Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h2>
+<span id="install-bosh-quick-start"></span><h2>6.4. Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h2>
 <p>The easiest ways to get started with BOSH is by running on your local workstation with <a class="reference external" href="https://www.virtualbox.org">VirtualBox</a>. If you are interested in bringing up a director in another environment, like <a class="reference external" href="https://cloud.google.com/">Google Cloud Platform</a>, choose your IaaS from the navigation for more detailed instructions.</p>
 <div class="section" id="prerequisites">
 <h3>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h3>
@@ -384,7 +386,7 @@ If you run into any trouble, please continue to the VirtualBox Troubleshooting s
 </div>
 </div>
 <div class="section" id="initialize-new-environment-on-openstack">
-<span id="install-bosh-init-openstack"></span><h2>4.5. Initialize New Environment on OpenStack<a class="headerlink" href="#initialize-new-environment-on-openstack" title="Permalink to this headline">¶</a></h2>
+<span id="install-bosh-init-openstack"></span><h2>6.5. Initialize New Environment on OpenStack<a class="headerlink" href="#initialize-new-environment-on-openstack" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="https://bosh.io/docs/init-openstack/">TODO</a></p>
 </div>
 </div>
@@ -398,7 +400,7 @@ If you run into any trouble, please continue to the VirtualBox Troubleshooting s
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="OpenStack.html" class="btn btn-neutral" title="3. Install OpenStack" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="CFdeployment.html" class="btn btn-neutral" title="5. Deploying CloudFoundry with BOSH Director on OpenStack" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

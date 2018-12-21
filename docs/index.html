@@ -82,7 +82,9 @@
 <li class="toctree-l1"><a class="reference internal" href="MAAS.html">1. Install MAAS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Juju.html">2. Install Juju</a></li>
 <li class="toctree-l1"><a class="reference internal" href="OpenStack.html">3. Install OpenStack</a></li>
-<li class="toctree-l1"><a class="reference internal" href="BOSH.html">4. Install BOSH</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CFconfig.html">4. Configure OpenStack</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CFdeployment.html">5. Deploying CloudFoundry with BOSH Director on OpenStack</a></li>
+<li class="toctree-l1"><a class="reference internal" href="BOSH.html">6. Install BOSH</a></li>
 </ul>
 
             
@@ -170,7 +172,7 @@
 <tr class="field-even field"><th class="field-name">Author:</th><td class="field-body"><p class="first">EniWARE</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Rendered:</th><td class="field-body"><p class="first last">Dec 07, 2018</p>
+<tr class="field-odd field"><th class="field-name">Rendered:</th><td class="field-body"><p class="first last">Dec 21, 2018</p>
 </td>
 </tr>
 </tbody>
@@ -210,14 +212,37 @@
 <li class="toctree-l2"><a class="reference internal" href="OpenStack.html#openstack-testing">3.3. OpenStack testing</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="BOSH.html">4. Install BOSH</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="BOSH.html#getting-started">4.1. Getting Started</a></li>
-<li class="toctree-l2"><a class="reference internal" href="BOSH.html#installing-the-bosh-cli">4.2. Installing the BOSH CLI</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="CFconfig.html">4. Configure OpenStack</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="CFconfig.html#environment-variables">4.1. Environment variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CFconfig.html#define-an-external-network">4.2. Define an external network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CFconfig.html#cloud-images">4.3. Cloud images</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CFconfig.html#working-with-domains-and-projects">4.4. Working with domains and projects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CFconfig.html#create-a-virtual-network">4.5. Create a virtual network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CFconfig.html#ssh-access">4.6. SSH access</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CFconfig.html#create-a-cloud-instance">4.7. Create a cloud instance</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="CFdeployment.html">5. Deploying CloudFoundry with BOSH Director on OpenStack</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="CFdeployment.html#prerequisites">5.1. Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CFdeployment.html#validate-the-openstack-configuration">5.2. Validate the OpenStack configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CFdeployment.html#prepare-openstack-resources-for-bosh-and-cloud-foundry-via-terraform">5.3. Prepare OpenStack resources for BOSH and Cloud Foundry via Terraform</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="CFdeployment.html#bosh">5.3.1. BOSH</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CFdeployment.html#cloud-foundry">4.3.2. Cloud Foundry</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="CFdeployment.html#install-bosh">5.4. Install BOSH</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CFdeployment.html#cloud-config">5.5. Cloud Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CFdeployment.html#deploy-cloud-foundry">5.6. Deploy Cloud Foundry</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="BOSH.html">6. Install BOSH</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="BOSH.html#getting-started">6.1. Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="BOSH.html#installing-the-bosh-cli">6.2. Installing the BOSH CLI</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="BOSH.html#using-the-binary-directly">Using the binary directly</a></li>
 <li class="toctree-l3"><a class="reference internal" href="BOSH.html#using-homebrew-on-macos">Using Homebrew on macOS</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="BOSH.html#additional-dependencies">4.3. Additional Dependencies</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="BOSH.html#additional-dependencies">6.3. Additional Dependencies</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="BOSH.html#ubuntu-trusty">Ubuntu Trusty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="BOSH.html#macos">macOS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="BOSH.html#centos">CentOS</a></li>
@@ -225,14 +250,14 @@
 <li class="toctree-l3"><a class="reference internal" href="BOSH.html#other">Other</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="BOSH.html#quick-start">4.4. Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="BOSH.html#quick-start">6.4. Quick Start</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="BOSH.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="BOSH.html#install">Install</a></li>
 <li class="toctree-l3"><a class="reference internal" href="BOSH.html#deploy">Deploy</a></li>
 <li class="toctree-l3"><a class="reference internal" href="BOSH.html#clean-up">Clean up</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="BOSH.html#initialize-new-environment-on-openstack">4.5. Initialize New Environment on OpenStack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="BOSH.html#initialize-new-environment-on-openstack">6.5. Initialize New Environment on OpenStack</a></li>
 </ul>
 </li>
 </ul>

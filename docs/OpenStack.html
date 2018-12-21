@@ -29,7 +29,7 @@
   <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="4. Install BOSH" href="BOSH.html" />
+    <link rel="next" title="4. Configure OpenStack" href="CFconfig.html" />
     <link rel="prev" title="2. Install Juju" href="Juju.html" /> 
 
   
@@ -88,7 +88,9 @@
 <li class="toctree-l2"><a class="reference internal" href="#openstack-testing">3.3. OpenStack testing</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="BOSH.html">4. Install BOSH</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CFconfig.html">4. Configure OpenStack</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CFdeployment.html">5. Deploying CloudFoundry with BOSH Director on OpenStack</a></li>
+<li class="toctree-l1"><a class="reference internal" href="BOSH.html">6. Install BOSH</a></li>
 </ul>
 
             
@@ -399,7 +401,7 @@ combine it with the <code class="docutils literal notranslate"><span class="pre"
 <div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">juju</span> <span class="n">status</span> <span class="o">--</span><span class="nb">format</span><span class="o">=</span><span class="n">yaml</span> <span class="n">openstack</span><span class="o">-</span><span class="n">dashboard</span> <span class="o">|</span> <span class="n">grep</span> <span class="n">public</span><span class="o">-</span><span class="n">address</span> <span class="o">|</span> <span class="n">awk</span> <span class="s1">&#39;{print $2}&#39;</span>
 </pre></div>
 </div>
-<p>The URL will be <strong>http://&lt;IP ADDRESS&gt;/horizon</strong>. When you enter this into your browser you can login with <code class="docutils literal notranslate"><span class="pre">admin</span></code> and <code class="docutils literal notranslate"><span class="pre">openstack</span></code>, unless you changed the password in the configuration file.</p>
+<p>The URL will be <strong>http://&lt;IP ADDRESS&gt;/horizon</strong>. The <strong>admin</strong> login domain is <strong>admin_domain</strong>. When you enter this into your browser you can login with user <code class="docutils literal notranslate"><span class="pre">admin</span></code> and password <code class="docutils literal notranslate"><span class="pre">openstack</span></code>, unless you changed the password in the configuration file.</p>
 <p>If everything works, you will see something similar to the following:</p>
 <div class="figure align-center" id="install-openstack-horizon">
 <img alt="Horizon dashboard" src="_images/3-install-openstack_horizon.png" />
@@ -416,7 +418,7 @@ combine it with the <code class="docutils literal notranslate"><span class="pre"
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="BOSH.html" class="btn btn-neutral float-right" title="4. Install BOSH" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="CFconfig.html" class="btn btn-neutral float-right" title="4. Configure OpenStack" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="Juju.html" class="btn btn-neutral" title="2. Install Juju" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
