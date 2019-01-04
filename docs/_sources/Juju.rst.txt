@@ -43,8 +43,7 @@ To install Juju, enter the following in the terminal:
    
    sudo apt install software-properties-common
    
-   
-After the instalation is complete you can change the IP addres (if it necesary).
+For the purposes of this documentation, the IP address configured for the Juju client hosted on Ubuntu is set to be ``192.168.40.17``. After the instalation is complete you can change the IP addres (if it necesary).
 
 Go to ``/etc/netplan/`` directory and edit the file ``01-netcfg.yaml``  using the following command:
 

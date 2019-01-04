@@ -87,8 +87,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#connectivity-and-images">1.4. Connectivity and images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#ssh-key">1.5. SSH key</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#networking">1.6. Networking</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#extending-a-reserved-dynamic-ip-range">Extending a reserved dynamic IP range</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#enabling-dhcp">Enabling DHCP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#extending-a-reserved-dynamic-ip-range">Extending a reserved dynamic IP range:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#enabling-dhcp">Enabling DHCP:</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#images">1.7. Images</a></li>
@@ -253,7 +253,7 @@ Now you sign in with the login credentials, and the web interface will launch th
 </div>
 <p>Before taking the configuration further, you need to tell MAAS about your network and how y’d like connections to be configured.</p>
 <div class="section" id="extending-a-reserved-dynamic-ip-range">
-<span id="install-maas-dhcp1"></span><h3>Extending a reserved dynamic IP range<a class="headerlink" href="#extending-a-reserved-dynamic-ip-range" title="Permalink to this headline">¶</a></h3>
+<span id="install-maas-dhcp1"></span><h3>Extending a reserved dynamic IP range:<a class="headerlink" href="#extending-a-reserved-dynamic-ip-range" title="Permalink to this headline">¶</a></h3>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">If you do not have DHCP reserved ranges in your network, you can skip to the step <a class="reference internal" href="#install-maas-dhcp2"><span class="std std-ref">Enabling DHCP</span></a>.</p>
@@ -267,7 +267,7 @@ Now you sign in with the login credentials, and the web interface will launch th
 <p>Furthermore, since DHCP is enabled on a VLAN basis and a VLAN can contain multiple subnets, it is possible to add a portion from those subnets as well. Just select the subnet under the ‘Subnets’ page and reserve a dynamic range.</p>
 </div>
 <div class="section" id="enabling-dhcp">
-<span id="install-maas-dhcp2"></span><h3>Enabling DHCP<a class="headerlink" href="#enabling-dhcp" title="Permalink to this headline">¶</a></h3>
+<span id="install-maas-dhcp2"></span><h3>Enabling DHCP:<a class="headerlink" href="#enabling-dhcp" title="Permalink to this headline">¶</a></h3>
 <p>You can add DHCP by selecting <strong>untagged</strong> VLAN the subnet to the right of <strong>fabric-0</strong>.</p>
 <p>The page that appears will be labelled something similar to <strong>Default VLAN in fabric-0</strong>. From here, click the <strong>Take action</strong> button at the top right and select <strong>Provide DHCP</strong>.</p>
 <p>If you do not have reserved ranges of IP addresses, a new pane will appear that allows you to specify the start and end IP addresses for the DHCP range. Select <strong>Provide DHCP</strong> to accept the default values. The VLAN summary should now show DHCP as <strong>Enabled</strong>.</p>
@@ -333,7 +333,7 @@ A <strong>Machine summary</strong> field opens where in the upper left corner we
 </div>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p><strong>If you add a node (machine) and then remove it without deleting the disks, you will not be able to add this node again</strong>! To enter the node manually, please see the <a class="reference external" href="https://docs.maas.io/2.4/en/nodes-add">official documentation</a> or follow the steps outlined above in <a class="reference internal" href="#install-maas-nodes"><span class="std std-ref">this section</span></a>.</p>
+<p><strong>If you add a node (machine) and then remove it without deleting the disks, you will not be able to add this node again</strong>! To add the node manually, please see the <a class="reference external" href="https://docs.maas.io/2.4/en/nodes-add">official documentation</a> or follow the steps outlined above in <a class="reference internal" href="#install-maas-nodes"><span class="std std-ref">this section</span></a>.</p>
 <p>To add the node, you need the following information about your machine: the MAC address of your IPMI interface and the MAC addres of your PXE interface. After entering the information, you have to restart the processes <em>MAAS controler</em> and <em>Region controler</em>  using the following commands:</p>
 <blockquote class="last">
 <div><div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">service</span> <span class="n">maas</span><span class="o">-</span><span class="n">rackd</span> <span class="n">restart</span>
@@ -341,15 +341,6 @@ A <strong>Machine summary</strong> field opens where in the upper left corner we
 </pre></div>
 </div>
 </div></blockquote>
-</div>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">If you add machine (node) and then delete it without erase the disks, you will not be able to add it again. To add it manual See the documentation &lt;<a class="reference external" href="https://docs.maas.io/2.4/en/nodes-add">https://docs.maas.io/2.4/en/nodes-add</a>&gt; To add  you need information about your machine about MAC address of your IPMI interface and your MAC addres of PXE interface.Than you have to restart the proces MAAS controler and Region controler with the following commands:</p>
-</div>
-<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">service</span> <span class="n">maas</span><span class="o">-</span><span class="n">rackd</span> <span class="n">restart</span>
-
-<span class="n">sudo</span> <span class="n">service</span> <span class="n">maas</span><span class="o">-</span><span class="n">regiond</span> <span class="n">restart</span>
-</pre></div>
 </div>
 </div>
 <div class="section" id="commission-nodes">

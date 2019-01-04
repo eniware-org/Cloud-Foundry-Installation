@@ -207,41 +207,41 @@
 <td><strong>Root Disk (GiB)</strong></td>
 <td><strong>Ephemeral Disk (GiB)</strong></td>
 </tr>
-<tr class="row-even"><td>ml.xlarge</td>
-<td>8</td>
-<td>16384</td>
-<td>160</td>
-<td>0</td>
-</tr>
-<tr class="row-odd"><td>minimal</td>
+<tr class="row-even"><td>minimal</td>
 <td>1</td>
 <td>3840</td>
 <td>3</td>
 <td>10</td>
 </tr>
-<tr class="row-even"><td>small</td>
+<tr class="row-odd"><td>small</td>
 <td>2</td>
 <td>7680</td>
 <td>3</td>
 <td>14</td>
 </tr>
-<tr class="row-odd"><td>small-50GB-ephemeral-disk</td>
+<tr class="row-even"><td>small-50GB-ephemeral-disk</td>
 <td>2</td>
 <td>7680</td>
 <td>3</td>
 <td>50</td>
 </tr>
-<tr class="row-even"><td>small-highmem</td>
+<tr class="row-odd"><td>small-highmem</td>
 <td>4</td>
 <td>31232</td>
 <td>3</td>
 <td>10</td>
 </tr>
-<tr class="row-odd"><td>small-highmem-100GB-ephemeral-disk</td>
+<tr class="row-even"><td>small-highmem-100GB-ephemeral-disk</td>
 <td>4</td>
 <td>31232</td>
 <td>3</td>
 <td>100</td>
+</tr>
+<tr class="row-odd"><td>m1.xlarge</td>
+<td>8</td>
+<td>16384</td>
+<td>160</td>
+<td>0</td>
 </tr>
 </tbody>
 </table>
@@ -302,8 +302,7 @@
 <li>Set a <a class="reference external" href="https://docs.openstack.org/swift/latest/api/temporary_url_middleware.html#secret-keys">Temporary URL Key</a> for your Swift account</li>
 </ul>
 <p>Add the following lines to the deploy cmd:</p>
-<p>..code:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="n">o</span> <span class="n">cf</span><span class="o">-</span><span class="n">deployment</span><span class="o">/</span><span class="n">operations</span><span class="o">/</span><span class="n">use</span><span class="o">-</span><span class="n">swift</span><span class="o">-</span><span class="n">blobstore</span><span class="o">.</span><span class="n">yml</span> \
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="n">o</span> <span class="n">cf</span><span class="o">-</span><span class="n">deployment</span><span class="o">/</span><span class="n">operations</span><span class="o">/</span><span class="n">use</span><span class="o">-</span><span class="n">swift</span><span class="o">-</span><span class="n">blobstore</span><span class="o">.</span><span class="n">yml</span> \
 <span class="o">-</span><span class="n">v</span> <span class="n">auth_url</span><span class="o">=</span><span class="s2">&quot;&lt;auth-url&gt;&quot;</span> \
 <span class="o">-</span><span class="n">v</span> <span class="n">openstack_project</span><span class="o">=</span><span class="s2">&quot;&lt;project-name&gt;&quot;</span> \
 <span class="o">-</span><span class="n">v</span> <span class="n">openstack_domain</span><span class="o">=</span><span class="s2">&quot;&lt;domain&gt;&quot;</span> \

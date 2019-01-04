@@ -51,11 +51,6 @@ To be able to proceed, you need to the following:
       - **RAM (MiB)** 
       - **Root Disk (GiB)**
       - **Ephemeral Disk (GiB)**
-    * - ml.xlarge
-      - 8
-      - 16384
-      - 160
-      - 0
     * - minimal
       - 1
       - 3840
@@ -81,6 +76,11 @@ To be able to proceed, you need to the following:
       - 31232 
       - 3 
       - 100
+    * - m1.xlarge
+      - 8
+      - 16384
+      - 160
+      - 0
 
 
 
@@ -162,7 +162,7 @@ To deploy Cloud Foundry run the following command filling in the necessary varia
 
 Add the following lines to the deploy cmd:
 
-..code:: 
+.. code:: 
 
   -o cf-deployment/operations/use-swift-blobstore.yml \
   -v auth_url="<auth-url>" \

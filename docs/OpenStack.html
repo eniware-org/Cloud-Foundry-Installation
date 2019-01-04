@@ -189,6 +189,7 @@
 <div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">juju</span> <span class="n">kill</span><span class="o">-</span><span class="n">controller</span> <span class="n">maas</span><span class="o">-</span><span class="n">controller</span>
 </pre></div>
 </div>
+<p>ОСвен горната команда, машината върху която е деплойнат juju контролера трябва да бъде изтрита  от MAAS, да се добави наново т.1.9 и да й се даде commision т.1.10.</p>
 <p>You can redeploy this JuJu controller with the following command:</p>
 <div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">juju</span> <span class="n">bootstrap</span> <span class="o">--</span><span class="n">constraints</span> <span class="n">tags</span><span class="o">=</span><span class="n">juju</span> <span class="n">mymaas</span> <span class="n">maas</span><span class="o">-</span><span class="n">controller</span>
 </pre></div>
@@ -305,7 +306,7 @@ combine it with the <code class="docutils literal notranslate"><span class="pre"
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><ul class="first last simple">
-<li><a class="reference external" href="https://jujucharms.com/openstack-dashboard/">Openstack dashboard</a> - it provides a Django based web interface for use by both administrators and users of an OpenStack Cloud. It allows you to manage Nova, Glance, Cinder and Neutron resources within the cloud.</li>
+<li><a class="reference external" href="https://jujucharms.com/openstack-dashboard/">Openstack Dashboard</a> - it provides a Django based web interface for use by both administrators and users of an OpenStack Cloud. It allows you to manage Nova, Glance, Cinder and Neutron resources within the cloud.</li>
 </ul>
 </td>
 </tr>
@@ -396,17 +397,35 @@ combine it with the <code class="docutils literal notranslate"><span class="pre"
 </div>
 <div class="section" id="openstack-testing">
 <span id="openstack-test"></span><h2>3.3. OpenStack testing<a class="headerlink" href="#openstack-testing" title="Permalink to this headline">¶</a></h2>
-<p>After everything has deployed and the output of <strong>juju status</strong> settles, you can check to make sure OpenStack is working by logging into the Horizon dashboard.</p>
-<p>The quickest way to get the IP address for the dashboard is with the following command:</p>
+<p>After everything has deployed and the output of <code class="docutils literal notranslate"><span class="pre">juju</span> <span class="pre">status</span></code> settles, you can check to make sure OpenStack is working by logging into the Horizon Dashboard.</p>
+<p>The quickest way to get the IP address for the Dashboard is with the following command:</p>
 <div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">juju</span> <span class="n">status</span> <span class="o">--</span><span class="nb">format</span><span class="o">=</span><span class="n">yaml</span> <span class="n">openstack</span><span class="o">-</span><span class="n">dashboard</span> <span class="o">|</span> <span class="n">grep</span> <span class="n">public</span><span class="o">-</span><span class="n">address</span> <span class="o">|</span> <span class="n">awk</span> <span class="s1">&#39;{print $2}&#39;</span>
 </pre></div>
 </div>
-<p>The URL will be <strong>http://&lt;IP ADDRESS&gt;/horizon</strong>. The <strong>admin</strong> login domain is <strong>admin_domain</strong>. When you enter this into your browser you can login with user <code class="docutils literal notranslate"><span class="pre">admin</span></code> and password <code class="docutils literal notranslate"><span class="pre">openstack</span></code>, unless you changed the password in the configuration file.</p>
+<p>Тhe following commands may alternatively be used:</p>
+<blockquote>
+<div><ul class="simple">
+<li>to get the IP address for the OpenStack Dashboard:</li>
+</ul>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">juju</span> <span class="n">status</span> <span class="o">|</span> <span class="n">grep</span> <span class="n">dashboard</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>to get the IP address for the OpenStack Keystone node for authentication.:</li>
+</ul>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">juju</span> <span class="n">status</span> <span class="o">|</span> <span class="n">grep</span> <span class="n">keystone</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>The OpenStack Dashboard URL will be <strong>http://&lt;IP ADDRESS&gt;/horizon</strong>. When you enter this into your browser you will need a login domain, username and a password. The <strong>admin</strong> <em>login domain</em> is <strong>admin_domain</strong>. To login with <em>user</em> <strong>admin</strong> you will need a <em>password</em> that can be called with the following command:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">juju</span> <span class="n">run</span> <span class="o">--</span><span class="n">unit</span> <span class="n">keystone</span><span class="o">/</span><span class="mi">0</span> <span class="n">leader</span><span class="o">-</span><span class="n">get</span> <span class="n">admin_passwd</span>
+</pre></div>
+</div>
 <p>If everything works, you will see something similar to the following:</p>
 <div class="figure align-center" id="install-openstack-horizon">
 <img alt="Horizon dashboard" src="_images/3-install-openstack_horizon.png" />
 </div>
-<p>With this final step you’ve successfully deployed a working OpenStack environment using both Juju and MAAS. The next step is to configure OpenStack for use within a production environment.</p>
+<p>With this final step you’ve successfully deployed a working OpenStack environment using both Juju and MAAS. The next step is to <a class="reference internal" href="CFconfig.html#cf-config"><span class="std std-ref">configure OpenStack</span></a> for use within a production environment.</p>
 </div>
 </div>
 

@@ -43,7 +43,8 @@ In :ref:`section 2.3. Testing the environment <juju-testing-environment>`, we've
 	
   	juju kill-controller maas-controller
 
-
+  ОСвен горната команда, машината върху която е деплойнат juju контролера трябва да бъде изтрита  от MAAS, да се добави наново т.1.9 и да й се даде commision т.1.10.
+	
   You can redeploy this JuJu controller with the following command:
   
   .. code::
@@ -185,7 +186,7 @@ The deployed **bundle.yaml** file includes the following applications:
     :header-rows: 0
     :stub-columns: 0
 
-    * - * `Openstack dashboard <https://jujucharms.com/openstack-dashboard/>`_ - it provides a Django based web interface for use by both administrators and users of an OpenStack Cloud. It allows you to manage Nova, Glance, Cinder and Neutron resources within the cloud.
+    * - * `Openstack Dashboard <https://jujucharms.com/openstack-dashboard/>`_ - it provides a Django based web interface for use by both administrators and users of an OpenStack Cloud. It allows you to manage Nova, Glance, Cinder and Neutron resources within the cloud.
     * - * `Keystone <https://jujucharms.com/keystone/>`_ - this charm provides Keystone, the OpenStack identity service. Its target platform is (ideally) Ubuntu LTS + OpenStack.
     * - * `Glance <https://jujucharms.com/glance/>`_ - The Glance project provides an image registration and discovery service and an image delivery service. These services are used in conjunction by **Nova** to deliver images from object stores, such as OpenStack's Swift service, to Nova's compute nodes.
     * - * `MySQL <https://jujucharms.com/percona-cluster/>`_ - Percona XtraDB Cluster is a high availability and high scalability solution for MySQL clustering. Percona XtraDB Cluster integrates Percona Server with the Galera library of MySQL high availability solutions in a single product package which enables you to create a cost-effective MySQL cluster. This charm deploys Percona XtraDB Cluster onto Ubuntu.
@@ -217,15 +218,35 @@ The deployed **bundle.yaml** file includes the following applications:
 3.3. OpenStack testing
 -----------------------
 
-After everything has deployed and the output of **juju status** settles, you can check to make sure OpenStack is working by logging into the Horizon dashboard.
+After everything has deployed and the output of ``juju status`` settles, you can check to make sure OpenStack is working by logging into the Horizon Dashboard.
 
-The quickest way to get the IP address for the dashboard is with the following command:
+The quickest way to get the IP address for the Dashboard is with the following command:
 
 .. code::
 	
 	juju status --format=yaml openstack-dashboard | grep public-address | awk '{print $2}'
 
-The URL will be **http://<IP ADDRESS>/horizon**. The **admin** login domain is **admin_domain**. When you enter this into your browser you can login with user ``admin`` and password ``openstack``, unless you changed the password in the configuration file.
+Тhe following commands may alternatively be used:
+
+ * to get the IP address for the OpenStack Dashboard:
+
+ .. code:: 
+
+   juju status | grep dashboard
+
+ * to get the IP address for the OpenStack Keystone node for authentication.:
+
+ .. code:: 
+
+   juju status | grep keystone
+ 
+
+The OpenStack Dashboard URL will be **http://<IP ADDRESS>/horizon**. When you enter this into your browser you will need a login domain, username and a password. The **admin** *login domain* is **admin_domain**. To login with *user* **admin** you will need a *password* that can be called with the following command:
+
+.. code::
+
+ juju run --unit keystone/0 leader-get admin_passwd
+
 
 If everything works, you will see something similar to the following:
 
@@ -237,4 +258,4 @@ If everything works, you will see something similar to the following:
 
 
    
-With this final step you’ve successfully deployed a working OpenStack environment using both Juju and MAAS. The next step is to configure OpenStack for use within a production environment.
+With this final step you’ve successfully deployed a working OpenStack environment using both Juju and MAAS. The next step is to :ref:`configure OpenStack<cf-config>` for use within a production environment.

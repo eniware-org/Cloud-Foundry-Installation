@@ -152,8 +152,8 @@ Before taking the configuration further, you need to tell MAAS about your networ
 
 .. _install-maas-dhcp1:
 
-Extending a reserved dynamic IP range
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Extending a reserved dynamic IP range:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. note:: If you do not have DHCP reserved ranges in your network, you can skip to the step :ref:`Enabling DHCP <install-maas-dhcp2>`.
 
@@ -175,8 +175,8 @@ Furthermore, since DHCP is enabled on a VLAN basis and a VLAN can contain multip
 
 .. _install-maas-dhcp2:
 
-Enabling DHCP
-^^^^^^^^^^^^^
+Enabling DHCP:
+^^^^^^^^^^^^^^^
 
 You can add DHCP by selecting **untagged** VLAN the subnet to the right of **fabric-0**.
 
@@ -290,7 +290,7 @@ A **Machine summary** field opens where in the upper left corner we have to clic
 
    
 
-.. warning:: **If you add a node (machine) and then remove it without deleting the disks, you will not be able to add this node again**! To enter the node manually, please see the `official documentation <https://docs.maas.io/2.4/en/nodes-add>`_ or follow the steps outlined above in :ref:`this section<install-maas-nodes>`. 
+.. warning:: **If you add a node (machine) and then remove it without deleting the disks, you will not be able to add this node again**! To add the node manually, please see the `official documentation <https://docs.maas.io/2.4/en/nodes-add>`_ or follow the steps outlined above in :ref:`this section<install-maas-nodes>`. 
 
  To add the node, you need the following information about your machine: the MAC address of your IPMI interface and the MAC addres of your PXE interface. After entering the information, you have to restart the processes *MAAS controler* and *Region controler*  using the following commands:
   
@@ -300,15 +300,7 @@ A **Machine summary** field opens where in the upper left corner we have to clic
        sudo service maas-regiond restart
 
 
-   
-.. warning:: If you add machine (node) and then delete it without erase the disks, you will not be able to add it again. To add it manual See the documentation <https://docs.maas.io/2.4/en/nodes-add> To add  you need information about your machine about MAC address of your IPMI interface and your MAC addres of PXE interface.Than you have to restart the proces MAAS controler and Region controler with the following commands:
 
-.. code::
-  
-   sudo service maas-rackd restart
-   
-   sudo service maas-regiond restart
- 
    
 .. _install-maas-commission-nodes:
 

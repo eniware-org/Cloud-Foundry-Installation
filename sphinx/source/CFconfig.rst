@@ -8,8 +8,8 @@ In previous sections we've deployed OpenStack using both Juju and MAAS. The next
 The steps te be followed are:
 
 * Setting up the environment variables
-* Adding a project
-* Virtual network access and Ubuntu cloud image deployment 
+* Adding a domain, project and user
+* External network access and Ubuntu cloud image deployment 
 
 
 .. _cf-env-conf:
@@ -19,7 +19,7 @@ The steps te be followed are:
 
 When accessing OpenStack from the command line, specific environment variables need to be set:
 
-* S_AUTH_URL
+* OS_AUTH_URL
 * OS_USER_DOMAIN_NAME
 * OS_USERNAME
 * OS_PROJECT_DOMAIN_NAME
@@ -29,7 +29,7 @@ When accessing OpenStack from the command line, specific environment variables n
 * OS_IDENTITY_API_VERSION
 * OS_AUTH_VERSION
 
-The OS_AUTH_URL is the address of the OpenStack Keystone node for authentication. To retrieve this IP addres by Juju use the following command:
+The OS_AUTH_URL is the address of the OpenStack Keystone node for authentication. To retrieve this IP address by Juju use the following command (or as shown :ref:`here<openstack-test>`):
 
 .. code:: 
 
@@ -75,9 +75,9 @@ The environment variables can be enabled/sourced with the following command:
 
   source openrc
 
-After the **openrc** is created, you can use OpenStack’s Horizon web UI todownload the file, which automatically adjusts the environment variables. You should be loged with the given username. Right click on the user name in the the upper right corner and select from the dropdown list **openrc -v3**
+After the **openrc** is created, you can use OpenStack’s Horizon web UI to download the file, which automatically adjusts the environment variables. You should be loged with the given *username*. Right click on the *user* dropdown menu in the the upper right corner and select **openrc -v3** from the list. 
 
-.. note:: If the **openrc** file is manually edited, it is important that all variables are correctly entered
+.. note:: If the **openrc** file is manually edited, it is important that all variables are correctly entered.
 
 You can check the variables have been set correctly by seeing if your OpenStack endpoints are visible with the ``openstack endpoint list`` command. The output will look something like this:
 
@@ -97,6 +97,7 @@ You can check the variables have been set correctly by seeing if your OpenStack 
 	| 8bd7f4472ced40b39a5b0ecce29df3a0 | RegionOne | cinder       | volume       |
 	+----------------------------------+-----------+--------------+--------------+
 
+	
 If the endpoints aren’t visible, it’s likely your environment variables aren’t configured correctly.
 
 .. hint:: As with both MAAS and Juju, most OpenStack operations can be accomplished using either the command line or a web UI.
@@ -107,11 +108,94 @@ If the endpoints aren’t visible, it’s likely your environment variables aren
 4.2. Define an external network
 ---------------------------------
 
-First step is to define a network called **Pub_Net**. It will use a subnet within the :ref:`range of addresses<install-maas-dhcp1>` reserved in MAAS:
+To allow OpenStack network access, it is necessary to enter external network settings.
+
+You should be logged as an *user* **admin** in the OpenStack Dashboard Horizon.
+To do this, you need to know the following:
+
+* the IP address for OpenStack Dashboard
+* the user credential (*domain*, *user name* and *password*)
+
+
+.. _cf-net-conf-GIU:
+
+Define an external network using web UI:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Using the commands shown in section :ref:`"3.3. OpenStack testing"<openstack-test>` log in to the Dashboard with the following:
+
+* Dashboard IP address: **192.168.40.145**
+* Domain: **admin_domain**
+* User Name: **admin**
+* Password: **your_password**
+
+
+.. _cfconfig-horizon:
+
+.. figure:: /images/4.1-cfconfig_horizon.png
+   :alt: Log in to Horizon dashboard
+   :align: center
+
+
+First step is to define a network called **ext_net**. It will use a subnet within the :ref:`range of addresses<install-maas-dhcp1>` reserved in MAAS.
+
+From the panel on the left, click on **Admin** and choose section **Network**, subsection **Networks**. Then press the button **+ Create Network**:
+
+
+.. _cfconfig-net-create:
+
+.. figure:: /images/4.2-cfconfig_net_create.png
+   :alt: Create network
+   :align: center
+
+After opening the **Create network** window, you should enter the following settings:
+   
+* Name: **ext_net**
+* Project: **admin**
+* Network type: **flat**
+* Phusical network: **physnet1**
+* Marked checkboxes **Enable Admin State**, **Shared**, **External Network** and **Create Subnet** 
+
+
+.. _cfconfig-net-settings:
+
+.. figure:: /images/4.3-cfconfig_net_settings.png
+   :alt: External network settings
+   :align: center
+
+
+The second step is to create a subnet for the network using the various addresses from our MAAS and Juju configuration:
+
+* Subnet Name: **ext_net_subnet**
+* Network address (the network address where OpenStack is deployed): **192.168.40.0/24**
+* IP Version: **IPv4**
+* Gateway IP: **192.168.40.1**
+
+.. _cfconfig-net-subnet:
+
+.. figure:: /images/4.4-cfconfig_net_subnet.png
+   :alt: Subnet settings
+   :align: center
+
+In the **Subnet details** tab it is important do unmark the **Enable DHCP** checkbox. An **Allocation Pools** should be defined (in format: *start_IP_address, end_IP_address*) as well as **DNS Name Servers** (on the first line: *the IP address of the MAAS server*, which in this case is **192.168.40.16** - see section :ref:`"1.2. Installation"<maas-installation>`), on the second line: **the DNS uset to resolve domains not managed by MAAS** which in this case is **8.8.8.8** - see section :ref:`"1.8. Network services"<install-maas-services>`):   
+
+.. _cfconfig-net-subdetails:
+
+.. figure:: /images/4.5-cfconfig_net_subdetails.png
+   :alt: Subnet settings
+   :align: center
+
+
+.. _cf-net-conf-CLI:
+
+Define an external network using CLI:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To define a network called **ext_net** type the following command:
 
 .. code::
 
- openstack network create Pub_Net --share --external
+ openstack network create ext_net --share --external
 
 The output from this command will show the various fields and values for the chosen configuration option. To show the new network ID alongside its name type the command ``openstack network list``:
 
@@ -121,17 +205,17 @@ The output from this command will show the various fields and values for the cho
 	+--------------------------------------+---------+---------+
 	| ID                                   | Name    | Subnets |
 	+--------------------------------------+---------+---------+
-	| fc171d22-d1b0-467d-b6fa-109dfb77787b | Pub_Net |         |
+	| fc171d22-d1b0-467d-b6fa-109dfb77787b | ext_net |         |
 	+--------------------------------------+---------+---------+
 
-The second step is to create a subnet for the network using the various addresses from our MAAS and Juju configuration (192.168.100.3 is the IP address of the MAAS server):
+To create a subnet for the network using the various addresses from our MAAS and Juju configuration type the following command:
 
 .. code::
   
-	openstack subnet create Pub_Subnet --allocation-pool \
-	start=192.168.100.150,end=192.168.100.199 --subnet-range 192.168.100.0/24 \
-	--no-dhcp --gateway 192.168.100.1 --dns-nameserver 192.168.100.3 \
-	--dns-nameserver 8.8.8.8 --network Pub_Net
+	openstack subnet create ext_net_subnet --allocation-pool \
+	start=192.168.40.191,end=192.168.40.254 --subnet-range 192.168.40.0/24 \
+	--no-dhcp --gateway 192.168.40.1 --dns-nameserver 192.168.40.16 \
+	--dns-nameserver 8.8.8.8 --network ext_net
 
 The output from the previous command provides a comprehensive overview of the new subnet’s configuration:
 
@@ -140,73 +224,113 @@ The output from the previous command provides a comprehensive overview of the ne
 	+-------------------------+--------------------------------------+
 	| Field                   | Value                                |
 	+-------------------------+--------------------------------------+
-	| allocation_pools        | 192.168.100.150-192.168.100.199      |
-	| cidr                    | 192.168.100.0/24                     |
-	| created_at              | 2017-04-21T13:43:48                  |
+	| allocation_pools        | 192.168.40.191-192.168.40.254        |
+	| cidr                    | 192.168.40.0/24                      |
+	| created_at              | 2019-01-04T13:43:48                  |
 	| description             |                                      |
-	| dns_nameservers         | 192.168.100.3, 8.8.8.8               |
+	| dns_nameservers         | 192.168.40.16, 8.8.8.8               |
 	| enable_dhcp             | False                                |
-	| gateway_ip              | 192.168.100.1                        |
+	| gateway_ip              | 192.168.40.1                         |
 	| host_routes             |                                      |
 	| id                      | 563ecd06-bbc3-4c98-b93e              |
 	| ip_version              | 4                                    |
 	| ipv6_address_mode       | None                                 |
 	| ipv6_ra_mode            | None                                 |
-	| name                    | Pub_Subnet                           |
+	| name                    | ext_net_subnet                       |
 	| network_id              | fc171d22-d1b0-467d-b6fa-109dfb77787b |
 	| project_id              | 4068710688184af997c1907137d67c76     |
 	| revision_number         | None                                 |
 	| segment_id              | None                                 |
 	| service_types           | None                                 |
 	| subnetpool_id           | None                                 |
-	| updated_at              | 2017-04-21T13:43:48                  |
+	| updated_at              | 2019-01-04T13:43:48                  |
 	| use_default_subnet_pool | None                                 |
 	+-------------------------+--------------------------------------+
 
- 
+
 .. note:: OpenStack has `deprecated <https://docs.openstack.org/python-neutronclient/latest/>`_ the use of the **neutron** command for network configuration, migrating most of its functionality into the Python OpenStack client. Version 2.4.0 or later of this client is needed for the ``subnet create`` command.
 
 
-.. _cf-cloud-conf:
+.. _cf-domain-flavors:
 
-4.3. Cloud images
---------------------
+4.3. Working with flavors
+-------------------------------------------
 
-You need to download an **Ubuntu image** locally in order to be able to аdd it to a **Glance**. Canonical’s Ubuntu cloud images can be found here:
+The **flavors** define the compute, memory, and storage capacity of nova computing instances. A **flavor** is an available hardware configuration for a server. It defines the size of a virtual server that can be launched.
+Admin users can use the ``openstack flavor`` command to `create, customize and manage flavor <https://docs.openstack.org/nova/rocky/admin/flavors.html>`_.
 
-https://cloud-images.ubuntu.com
+.. hint:: For information on the flavors and flavor extra specs, refer to `Flavors <https://docs.openstack.org/nova/rocky/user/flavors.html>`_.
 
-You could use ``wget`` to download the image of **Ubuntu 18.04 LTS (Bionic)**:
+To create a flavor using an ``openstack flavor create`` command, you should specify the following parameters:
 
-.. code:: 
+* flavour name
+* ID
+* RAM size
+* disk size
+* the number of vCPUs for the flavor
 
-  wget https://cloud-images.ubuntu.com/bionic/current/bionic-server-cloudimg-amd64.img
-
-To add this image to Glance use the following command:
-
-.. code:: 
- 
-	openstack image create --public --min-disk 3 --container-format bare \
-	--disk-format qcow2 --property architecture=x86_64 \
-	--property hw_disk_bus=virtio --property hw_vif_model=virtio \
-	--file bionic-server-cloudimg-amd64.img \
-	"bionic x86_64"
-
-Typing ``openstack image list`` you can make sure the image was successfully imported:
+For the purpose of OpenStack configuration and CloudFoundry deployment, you need to create flavors with the following names and configuration:
 
 .. code::
- 
-	+--------------------------------------+---------------+--------+
-	| ID                                   | Name          | Status |
-	+--------------------------------------+---------------+--------+
-	| d4244007-5864-4a2d-9cfd-f008ade72df4 | bionic x86_64 | active |
-	+--------------------------------------+---------------+--------+
 
-The **Compute > Images** page of **OpenStack’s Horizon web UI** lists many more details about imported images. In particular, note their size as this will limit the minimum root storage size of any OpenStack flavours used to deploy them.
+	openstack flavor create --vcpus 1 --ram 3840 --disk 3 --ephemeral 10 minimal
+	openstack flavor create --vcpus 2 --ram 7680 --disk 3 --ephemeral 14 small
+	openstack flavor create --vcpus 2 --ram 7680 --disk 3 --ephemeral 50 small-50GB-ephemeral-disk
+	openstack flavor create --vcpus 4 --ram 31232 --disk 3 --ephemeral 10 small-highmem
+	openstack flavor create --vcpus 4 --ram 31232 --disk 3 --ephemeral 100 small-highmem-100GB-ephemeral-disk
+	openstack flavor create --vcpus 8 --ram 16384 --disk 160 --ephemeral 0 m1.xlarge
 
-.. figure:: /images/4-horizon_image.png
-   :alt: Horizon image details
-   :align: center
+
+To list the created flavors and show the ID and name, the amount of memory, the amount of disk space for the root partition and for the ephemeral partition, the swap, and the number of virtual CPUs for each flavor, type the command:
+
+
+.. code::
+
+ openstack flavor list
+
+The following table lists the created flavors:
+
+.. list-table::
+    :widths: 20 5 7 7 7
+    :header-rows: 0
+    :stub-columns: 0
+
+    * - **Name**
+      - **CPUs**
+      - **RAM (MiB)** 
+      - **Root Disk (GiB)**
+      - **Ephemeral Disk (GiB)**
+    * - minimal
+      - 1
+      - 3840
+      - 3
+      - 10
+    * - small
+      - 2
+      - 7680
+      - 3 
+      - 14
+    * - small-50GB-ephemeral-disk 
+      - 2 
+      - 7680 
+      - 3 
+      - 50
+    * - small-highmem 
+      - 4 
+      - 31232 
+      - 3 
+      - 10
+    * - small-highmem-100GB-ephemeral-disk 
+      - 4 
+      - 31232 
+      - 3 
+      - 100
+    * - m1.xlarge
+      - 8
+      - 16384
+      - 160
+      - 0
+
 
 
 
@@ -222,26 +346,110 @@ The following is vital part of OpenStack operations:
 * **users** - members of one or more projects. 
 * **roles** - define which actions users can perform. You assign roles to user-project pairs.
 
+
+
+.. _cf-domain-conf-GIU:
+
+Working with domains and projects using web UI:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To create a **domain** using Dashboard, click on **Identity** from the panel on the left and choose section **Domains**. Then press the button **+ Create Domain**:
+
+
+.. _cfconfig-domain-create:
+
+.. figure:: /images/4.6-cfconfig_domain_create.png
+   :alt: Create domain
+   :align: center
+
+You need to create domain with name **cf_domain** 
+
+After the **cf_domain** is created you need to locate it in the table with domains and press the corresponding bitton **Set Domain Context** from the **Actions** column. In this way, all subsequent operations will be executed in the context of this domain.
+
+.. _cfconfig-domain-context:
+
+.. figure:: /images/4.7-cfconfig_domain_context.png
+   :alt: Set domain context
+   :align: center
+
+
+To create a **Project** in the context of **cf_domain** domain click on **Identity** from the panel on the left and choose section **Projects**. Then press the button **+ Create Project** and enter the name **cludfoundry** for this new project:
+
+.. _cfconfig-project-create:
+
+.. figure:: /images/4.8-cfconfig_project_create.png
+   :alt: Create new project
+   :align: center
+
+
+To create a **User** with a *role* **member** of **cludfoundry** *project*, click on **Identity** from the panel on the left and choose section **Users**. Then press the button **+ Create User** and enter the name **eniware** for the **User Name**:
+
+.. _cfconfig-user-create:
+
+.. figure:: /images/4.9-cfconfig_user_create.png
+   :alt: Create new user
+   :align: center
+
+You should specify a **password** *your_password* for this user.   
+   
+
+
+After the **project** and **user** are created, you should go back into **Identity / Domains** section and press the button **Clear Domain Context** to complete the execution of procedures in the context of **cf_domain**:
+
+.. _cfconfig-domain-clctx:
+
+.. figure:: /images/4.10-cfconfig_domain_clctx.png
+   :alt: Clear domain context
+   :align: center
+
+
+The finall step is to log out user **admin_domain** from the Dashboard. 
+
+Now you can log in to Dashboard with the created domain **cf_domain**:
+
+* Domain: **cf_domain**
+* User: **eniware**
+* Password: *your_password*
+
+.. _cfconfig-domain-cflogin:
+
+.. figure:: /images/4.11-cfconfig_domain_cflogin.png
+   :alt: cf_domain log in
+   :align: center
+
+
+
+
+
+
+
+
+
+.. _cf-domain-conf-CLI:
+
+Working with domains and projects using CLI:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 To create a single domain with a single project and single user for a new deployment, start with the **domain**:
 
 .. code:: 
 
-  openstack domain create MyDomain
+  openstack domain create cf_domain
 
 To add a **project** to the **domain**:
 
 .. code::
  
-  openstack project create --domain MyDomain \
-      --description 'First Project' MyProject
+  openstack project create --domain cf_domain \
+      --description 'First Project' cf_domain
 
 To add a **user** and assign that user to the **project**:
 
 .. code::
 
-  openstack user create --domain MyDomain \
-      --project-domain MyDomain --project MyProject \
-      --password-prompt MyUser
+  openstack user create --domain cf_domain \
+      --project-domain cf_domain --project cloudfoundry \
+      --password-prompt cf_domain
 
 The output to the previous command will be similar to the following:
 
@@ -254,236 +462,13 @@ The output to the previous command will be similar to the following:
 	| domain_id           | 7993528e51344814be2fd53f1f8f82f9 |
 	| enabled             | True                             |
 	| id                  | e980be28b20b4a2190c41ae478942ab1 |
-	| name                | MyUser                           |
+	| name                | cf_domain                        |
 	| options             | {}                               |
 	| password_expires_at | None                             |
 	+---------------------+----------------------------------+
 
 
-.. hint:: You can create a file to hold the details on the new project and user:
-  
-  Create the following **myprojectrc** file:
-  
-  .. code:: 
-  
-     export OS_AUTH_URL=http://192.168.100.95:5000/v3
-     export OS_USER_DOMAIN_NAME=MyDomain
-     export OS_USERNAME=MyUser
-     export OS_PROJECT_DOMAIN_NAME=MyDomain
-     export OS_PROJECT_NAME=MyProject
-  
-  Source this file’s contents to effectively switch users:
-  
-  .. code:: 
+Every subsequent action will now be performed by **eniware** user within the new **cf_project** project.
 
-    source myprojectrc
 
-Every subsequent action will now be performed by **MyUser** user within the new **MyProject** project.
 
-
-.. cf-vnet-conf
-
-4.5. Create a virtual network
---------------------------------
-
-
-You need a fixed IP address to access any instances you deploy from OpenStack. In order to assign a fixed IP, you need a project-specific network with a private subnet, and a router to link this network to the **Pub_Net** you created earlier.
-
-To create the new network, enter the following:
-
-.. code:: 
- 
-  openstack network create MyNetwork
-
-Create a private subnet with the following parameters:
-
-.. code:: 
-
-	openstack subnet create MySubnet --allocation-pool \
-	start=10.0.0.10,end=10.0.0.99 --subnet-range 10.0.0.0/24 \
-	--gateway 10.0.0.1 --dns-nameserver 192.168.100.3 \
-	--dns-nameserver 8.8.8.8 --network MyNetwork
-
-You’ll see verbose output similar to the following:
-
-.. code::
-
-	+-------------------------+--------------------------------------+
-	| Field                   | Value                                |
-	+-------------------------+--------------------------------------+
-	| allocation_pools        | 10.0.0.10-10.0.0.99                  |
-	| cidr                    | 10.0.0.0/24                          |
-	| created_at              | 2017-04-21T16:46:35                  |
-	| description             |                                      |
-	| dns_nameservers         | 192.168.100.3, 8.8.8.8               |
-	| enable_dhcp             | True                                 |
-	| gateway_ip              | 10.0.0.1                             |
-	| host_routes             |                                      |
-	| id                      | a91a604a-70d6-4688-915e-ed14c7db7ebd |
-	| ip_version              | 4                                    |
-	| ipv6_address_mode       | None                                 |
-	| ipv6_ra_mode            | None                                 |
-	| name                    | MySubnet                             |
-	| network_id              | 8b0baa43-cb25-4a70-bf41-d4136cbfe16e |
-	| project_id              | 1992e606b51b404c9151f8cb464aa420     |
-	| revision_number         | None                                 |
-	| segment_id              | None                                 |
-	| service_types           | None                                 |
-	| subnetpool_id           | None                                 |
-	| updated_at              | 2017-04-21T16:46:35                  |
-	| use_default_subnet_pool | None                                 |
-	+-------------------------+--------------------------------------+
-
-The following commands will add the router, connecting this new network to the **Pub_Net**:
-
-.. code:: 
-
-	openstack router create MyRouter
-	openstack router set MyRouter --external-gateway Pub_Net
-	openstack router add subnet MyRouter MySubnet
-
-Use ``openstack router show MyRouter`` to verify all parameters have been set correctly.
-
-Finally, you can add a floating IP address to your project’s new network:
-
-.. code::
-
-  openstack floating ip create Pub_Net
-
-Details on the address will be shown in the output:
-
-.. code::
-  
-	+---------------------+--------------------------------------+
-	| Field               | Value                                |
-	+---------------------+--------------------------------------+
-	| created_at          | None                                 |
-	| description         |                                      |
-	| fixed_ip_address    | None                                 |
-	| floating_ip_address | 192.168.100.152                      |
-	| floating_network_id | fc171d22-d1b0-467d-b6fa-109dfb77787b |
-	| id                  | f9b4193d-4385-4b25-83ed-89ed3358668e |
-	| name                | 192.168.100.152                      |
-	| port_id             | None                                 |
-	| project_id          | 1992e606b51b404c9151f8cb464aa420     |
-	| revision_number     | None                                 |
-	| router_id           | None                                 |
-	| status              | DOWN                                 |
-	| updated_at          | None                                 |
-	+---------------------+--------------------------------------+
-
-This address will be added to the pool of available floating IP addresses that can be assigned to any new instances you deploy.
-
-
-
-
-.. cf-ssh-conf
-
-4.6. SSH access
---------------------
-
-To create an OpenStack SSH keypair for accessing deployments with SSH, use the following command:
-
-.. code::
-  
-  openstack keypair create NewKeypair > ~/.ssh/newkeypair.pem
-
-With SSH, it’s imperative that the file has the correct permissions:
-
-.. code:: 
-
-  chmod 600 ~/.ssh/newkeypair.pem
-
-Alternatively, you can import your pre-existing keypair with the following command:
-
-.. code::
-
-  openstack keypair create --public-key ~/.ssh/id_rsa.pub MyKeypair
-
-You can view which keypairs have been added to OpenStack using the ``openstack keypair list`` command, which generates output similar to the following:
-
-.. code::
-
-	+-------------------+-------------------------------------------------+
-	| Name              | Fingerprint                                     |
-	+-------------------+-------------------------------------------------+
-	| MyKeypair         | 1d:35:52:08:55:d5:54:04:a3:e0:23:f0:20:c4:b0:eb |
-	| NewKeypair        | 1f:1a:74:a5:cb:87:e1:f3:2e:08:9e:40:dd:dd:7c:c4 |
-	+-------------------+-------------------------------------------------+
-
-To permit SSH traffic access to our deployments, we need to define a security group and a corresponding network rule:
-
-
-.. code:: 
-
-  openstack security group create --description 'Allow SSH' Allow_SSH
-
-The following rule will open TCP port 22 and apply it to the above security group:
-
-.. code::
-
-  openstack security group rule create --proto tcp --dst-port 22 Allow_SSH
-
-
-  .. cf-cloudinst-conf
-
-4.7. Create a cloud instance
----------------------------------
-
-Before launching our first cloud instance, you’ll need the network ID for the **MyNetwork**. This can be retrieved from the first column of output from the ``openstack network list`` command:
-
-.. code::
-  
-	+--------------------------------------+-------------+------------------------+
-	| ID                                   | Name        | Subnets                |
-	+--------------------------------------+-------------+------------------------+
-	| fc171d22-d1b0-467d-b6fa-109dfb77787b | Pub_Net     |563ecd06-bbc3-4c98-b93e |
-	| 8b0baa43-cb25-4a70-bf41-d4136cbfe16e | MyNetwork   |a91a604a-70d6-4688-915e |
-	+--------------------------------------+-------------+------------------------+
-
-Use the **network ID** to replace the example in the following ``server create`` command to deploy a new instance:
-
-.. code::
-  
-	openstack server create Ubuntu --availability-zone nova \
-	--image 'bionic x86_64' --flavor m1.small \
-	--key-name NewKeypair --security-group \
-	Allow_SSH --nic net-id=8b0baa43-cb25-4a70-bf41-d4136cbfe16e
-
-You can monitor progress with the ``openstack server list`` command by waiting for the server to show a status of **ACTIVE**:
-
-.. code:: 
-  
-	+--------------------+-----------+--------+--------- ------------+---------------+
-	| ID                 | Name      | Status | Networks             | Image Name    |
-	+--------------------+-----------+--------+----------------------+---------------+
-	| 4a61f2ad-5d89-43a6 | Ubuntu    | ACTIVE | MyNetwork=10.0.0.11  | bionic x86_64 |
-	+--------------------+-----------+--------+----------------------+---------------+
-
-All that’s left to do is assign a floating IP to the new server and connect with SSH.
-
-Typing ``openstack floating ip list`` will show the floating IP address you liberated from **Pub_Net** earlier.
-
-.. code:: 
-
-	+----------+---------------------+------------------+------+--------------------+---------+
-	| ID       | Floating IP Address | Fixed IP Address | Port | Floating Network   | Project |
-	+----------+---------------------+------------------+------+--------------------+---------+
-	| f9b4193d | 192.168.100.152     | None             | None | fc171d22-d1b0-467d | 1992e65 |
-	+----------+---------------------+------------------+------+--------------------+---------+
-
-The above output shows that the floating IP address is yet to be assigned. Use the following command to assign the IP address to your new instance:
-
-
-.. code:: 
-
-  openstack server add floating ip Ubuntu 192.168.100.152
-
-You will now be able to connect to your new cloud server using SSH:
-
-.. code:: 
- 
-  ssh -i ~/.ssh/newkeypair.pem 192.168.100.152
-
-
-You have now built and successfully deployed a new cloud instance running on OpenStack, taking full advantage of both Juju and MAAS.
