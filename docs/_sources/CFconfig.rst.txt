@@ -1,6 +1,6 @@
 .. _cf-config:
 
-4. Configure OpenStack
+4. Configure OpenStack!
 ========================
 
 In previous sections we've deployed OpenStack using both Juju and MAAS. The next step is to configure OpenStack for use within a production environment.
