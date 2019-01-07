@@ -43,7 +43,7 @@ In :ref:`section 2.3. Testing the environment <juju-testing-environment>`, we've
 	
   	juju kill-controller maas-controller
 
-  ОСвен горната команда, машината върху която е деплойнат juju контролера трябва да бъде изтрита  от MAAS, да се добави наново т.1.9 и да й се даде commision т.1.10.
+  .. important:: In addition to the above command, the machine on which the **Juju controller** is located must be deleted from MAAS. To add the machine  again, you can follow the instructions in section :ref:`"1.9. Adding nodes"<install-maas-nodes>` and do not forget to commision it as described in section :ref:`"1.10. Commission nodes"<install-maas-commission-nodes>` (use *tag* :ref:`juju<install-maas-tags>`!).
 	
   You can redeploy this JuJu controller with the following command:
   
@@ -256,6 +256,10 @@ If everything works, you will see something similar to the following:
    :alt: Horizon dashboard
    :align: center
 
-
+   
+.. _install-openstack-next:
+   
+3.4. Next steps
+----------------
    
 With this final step you’ve successfully deployed a working OpenStack environment using both Juju and MAAS. The next step is to :ref:`configure OpenStack<cf-config>` for use within a production environment.

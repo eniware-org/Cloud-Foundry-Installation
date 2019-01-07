@@ -7,14 +7,36 @@ In previous sections we've deployed OpenStack using both Juju and MAAS. The next
 
 The steps te be followed are:
 
+* Installing a client for `OpenStack Nova API <https://docs.openstack.org/python-novaclient/latest/>`_ (the **novaclient** module)
+* Installing a client for `OpenStack Identity API <https://docs.openstack.org/python-keystoneclient/latest/>`_ (the **keystoneclient** modules) 
+* Installing a client for `OpenStack Images API <https://docs.openstack.org/python-glanceclient/latest/>`_ (the **glanceclient** module) 
+* Installing a client for `OpenStack Networking API <https://docs.openstack.org/python-neutronclient/latest/>`_ (the **neutronclient** module)
+* Installing a `command-line client for OpenStack <https://docs.openstack.org/python-openstackclient/pike/>`_ (the **OpenStackClient** - OSC)  
 * Setting up the environment variables
 * Adding a domain, project and user
 * External network access and Ubuntu cloud image deployment 
 
+Some of the procedures can be made either from the web UI (Horizon) or from the command line interface (CLI).
+
+
+.. _cf-clients-install:
+
+4.1. Installing clients for different OpenStack operations
+------------------------------------------------------------
+
+To install the clients for OpenStack Nova API, OpenStack Identity API, OpenStack Images API, OpenStack Networking API and OpenStackClient, execute the following commands:
+
+.. code:: 
+  
+  sudo add-apt-repository cloud-archive:rocky -y
+  sudo apt-get update
+  sudo apt-get install python-novaclient python-keystoneclient python-glanceclient python-neutronclient python-openstackclient -y
+
+
 
 .. _cf-env-conf:
 
-4.1. Environment variables
+4.2. Environment variables
 ------------------------------
 
 When accessing OpenStack from the command line, specific environment variables need to be set:
@@ -73,7 +95,7 @@ The environment variables can be enabled/sourced with the following command:
 
 .. code:: 
 
-  source openrc
+  source openstack-bundles/stable/openstack-base/openrc
 
 After the **openrc** is created, you can use OpenStack’s Horizon web UI to download the file, which automatically adjusts the environment variables. You should be loged with the given *username*. Right click on the *user* dropdown menu in the the upper right corner and select **openrc -v3** from the list. 
 
@@ -105,7 +127,7 @@ If the endpoints aren’t visible, it’s likely your environment variables aren
 
 .. _cf-net-conf: 
 
-4.2. Define an external network
+4.3. Define an external network
 ---------------------------------
 
 To allow OpenStack network access, it is necessary to enter external network settings.
@@ -251,9 +273,57 @@ The output from the previous command provides a comprehensive overview of the ne
 .. note:: OpenStack has `deprecated <https://docs.openstack.org/python-neutronclient/latest/>`_ the use of the **neutron** command for network configuration, migrating most of its functionality into the Python OpenStack client. Version 2.4.0 or later of this client is needed for the ``subnet create`` command.
 
 
+.. _cf-cloud-conf:
+
+4.4. Cloud images
+--------------------
+
+You need to download an **Ubuntu image** locally in order to be able to аdd it to a **Glance**. Canonical’s Ubuntu cloud images can be found here:
+
+https://cloud-images.ubuntu.com
+
+You could use ``wget`` to download the image of **Ubuntu 18.04 LTS (Bionic)**:
+
+.. code:: 
+
+  wget https://cloud-images.ubuntu.com/bionic/current/bionic-server-cloudimg-amd64.img
+
+To add this image to Glance use the following command:
+
+.. code:: 
+ 
+	openstack image create --public --min-disk 3 --container-format bare \
+	--disk-format qcow2 --property architecture=x86_64 \
+	--property hw_disk_bus=virtio --property hw_vif_model=virtio \
+	--file bionic-server-cloudimg-amd64.img \
+	"bionic x86_64"
+
+
+	
+Typing ``openstack image list`` you can make sure the image was successfully imported:
+
+.. code::
+ 
+	+--------------------------------------+---------------+--------+
+	| ID                                   | Name          | Status |
+	+--------------------------------------+---------------+--------+
+	| d4244007-5864-4a2d-9cfd-f008ade72df4 | bionic x86_64 | active |
+	+--------------------------------------+---------------+--------+
+
+The **Compute > Images** page of **OpenStack’s Horizon web UI** lists many more details about imported images. In particular, note their size as this will limit the minimum root storage size of any OpenStack flavours used to deploy them.
+
+.. figure:: /images/4-horizon_image.png
+   :alt: Horizon image details
+   :align: center
+
+
+
+
+
+
 .. _cf-domain-flavors:
 
-4.3. Working with flavors
+4.5. Working with flavors
 -------------------------------------------
 
 The **flavors** define the compute, memory, and storage capacity of nova computing instances. A **flavor** is an available hardware configuration for a server. It defines the size of a virtual server that can be launched.
@@ -336,7 +406,7 @@ The following table lists the created flavors:
 
 .. _cf-domain-conf:
 
-4.4. Working with domains and projects
+4.6. Working with domains and projects
 -------------------------------------------
 
 The following is vital part of OpenStack operations:
@@ -421,35 +491,31 @@ Now you can log in to Dashboard with the created domain **cf_domain**:
 
 
 
-
-
-
-
 .. _cf-domain-conf-CLI:
 
 Working with domains and projects using CLI:
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To create a single domain with a single project and single user for a new deployment, start with the **domain**:
+To create a single *domain* with a single *project* and single *user* for a new deployment, start with the *domain*:
 
 .. code:: 
 
   openstack domain create cf_domain
 
-To add a **project** to the **domain**:
+To add a *project* **cludfoundry** to the *domain* **cf_domain**:
 
 .. code::
  
-  openstack project create --domain cf_domain \
-      --description 'First Project' cf_domain
+  openstack project create cloudfoundry --domain cf_domain
 
-To add a **user** and assign that user to the **project**:
+
+To add a *user* **eniware** with a *role* **member** and assign that user to the *project* **cloudfoundry** within **cf_domain**:
 
 .. code::
 
-  openstack user create --domain cf_domain \
-      --project-domain cf_domain --project cloudfoundry \
-      --password-prompt cf_domain
+  openstack user create eniware --domain cf_domain --project cloudfoundry --password your_password
+  openstack role add --project cloudfoundry --project-domain cf_domain --user eniware --user-domain cf_domain Member
+
 
 The output to the previous command will be similar to the following:
 
@@ -472,3 +538,72 @@ Every subsequent action will now be performed by **eniware** user within the new
 
 
 
+.. _cf-quotas-conf:
+
+4.7. View and manage quotas
+-----------------------------
+
+To prevent system capacities from being exhausted without notification, you can set up **quotas**. Quotas are operational limits. The *Compute* and *Block Storage service* quotas are described `here <https://docs.openstack.org/horizon/rocky/admin/set-quotas.html>`_.
+
+
+.. _cf-quotas-confUI:
+
+View and manage quotas using web UI:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Log in to the Dashboard and select the **admin** *project* from the drop-down list. On the **Admin** tab, open the **System** tab and click the **Defaults** category. The default quota values are displayed.
+
+.. todo:: images froms web UI should be added - **View default project quotas**.
+
+To update project quotas click the **Update Defaults** button. In the **Update Default Quotas** window, you can edit the default quota values.
+
+.. todo:: images froms web UI should be added - **Update project quotas**.
+
+Click the **Update Defaults** button to save changes.
+
+
+
+.. _cf-quotas-confCLI:
+
+View and manage quotas using CLI:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The dashboard does not show all possible project quotas. To view and update the `quotas <https://docs.openstack.org/python-openstackclient/latest/cli/command-objects/quota.html>`_ for a service, you can use  OpenStackClient CLI.
+
+To list all default quotas for all projects use the following command:
+
+.. code::
+
+ openstack quota show --default
+
+To list the currently set quota values for a **cloudfondry** *project* use the following command:
+
+.. code::
+
+ openstack quota show cloudfoundry
+
+
+To update quota values for a given existing project:
+
+.. code::
+
+ openstack quota set --QUOTA_NAME QUOTA_VALUE PROJECT_OR_CLASS
+
+To update quotas for **cloudfoundry** *project* use the following commands:
+
+.. code::
+ 
+  openstack quota set --instances 100 --cores 96 --ram 153600 --key-pairs 100 cloudfoundry
+  openstack quota set --volumes 100 --per-volume-gigabytes 500 --gigabytes 4096 cloudfoundry
+  openstack quota set --secgroup-rules 100 --secgroups 100 --networks 500 --subnets 1000 --ports 2000 --routers 1000 --vips 100 --subnetpools 500 cloudfoundry
+
+* The first command will update the the OpenStack *Compute service* quota **instances** - number of instances or amount of CPU that a for **cloudfoundry** *project* can use. 
+* The second one wiil update the OpenStack *Block Storage service* quotas - **volumes** allowed for the project. 
+* The third command will update the the OpenStack *Compute service* quotas - **security group rules** allowed for the project.
+
+
+
+4.8. Next steps
+----------------
+   
+You have now successfully deployed and configured OpenStack, taking full advantage of both Juju and MAAS. The next step is to :ref:`deploy CloudFoundry with BOSH Director on OpenStack<cf-deply>`.
