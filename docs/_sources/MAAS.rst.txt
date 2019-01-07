@@ -404,7 +404,7 @@ A common picture of the state of the nodes that have already been added to the M
 1.11. Next steps
 ----------------
 
-Everything is now configured and ready for our next step. This will involve deploying the Juju controller onto its own node. From there, you will be using Juju and MAAS together to deploy OpenStack into the four remaining cloud nodes.   
+The next step is to :ref:`deploy the Juju controller<install-juju>` onto its own node. From there, you will be using Juju and MAAS together to deploy OpenStack into the four remaining cloud nodes.   
    
    
 

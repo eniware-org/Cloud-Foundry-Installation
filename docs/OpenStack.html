@@ -86,6 +86,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#juju-controller-deployment">3.1. Juju controller deployment</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#openstack-deployment">3.2. OpenStack deployment</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#openstack-testing">3.3. OpenStack testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#next-steps">3.4. Next steps</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="CFconfig.html">4. Configure OpenStack</a></li>
@@ -189,7 +190,10 @@
 <div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">juju</span> <span class="n">kill</span><span class="o">-</span><span class="n">controller</span> <span class="n">maas</span><span class="o">-</span><span class="n">controller</span>
 </pre></div>
 </div>
-<p>ОСвен горната команда, машината върху която е деплойнат juju контролера трябва да бъде изтрита  от MAAS, да се добави наново т.1.9 и да й се даде commision т.1.10.</p>
+<div class="admonition important">
+<p class="first admonition-title">Important</p>
+<p class="last">In addition to the above command, the machine on which the <strong>Juju controller</strong> is located must be deleted from MAAS. To add the machine  again, you can follow the instructions in section <a class="reference internal" href="MAAS.html#install-maas-nodes"><span class="std std-ref">“1.9. Adding nodes”</span></a> and do not forget to commision it as described in section <a class="reference internal" href="MAAS.html#install-maas-commission-nodes"><span class="std std-ref">“1.10. Commission nodes”</span></a> (use <em>tag</em> <a class="reference internal" href="MAAS.html#install-maas-tags"><span class="std std-ref">juju</span></a>!).</p>
+</div>
 <p>You can redeploy this JuJu controller with the following command:</p>
 <div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">juju</span> <span class="n">bootstrap</span> <span class="o">--</span><span class="n">constraints</span> <span class="n">tags</span><span class="o">=</span><span class="n">juju</span> <span class="n">mymaas</span> <span class="n">maas</span><span class="o">-</span><span class="n">controller</span>
 </pre></div>
@@ -425,6 +429,9 @@ combine it with the <code class="docutils literal notranslate"><span class="pre"
 <div class="figure align-center" id="install-openstack-horizon">
 <img alt="Horizon dashboard" src="_images/3-install-openstack_horizon.png" />
 </div>
+</div>
+<div class="section" id="next-steps">
+<span id="install-openstack-next"></span><h2>3.4. Next steps<a class="headerlink" href="#next-steps" title="Permalink to this headline">¶</a></h2>
 <p>With this final step you’ve successfully deployed a working OpenStack environment using both Juju and MAAS. The next step is to <a class="reference internal" href="CFconfig.html#cf-config"><span class="std std-ref">configure OpenStack</span></a> for use within a production environment.</p>
 </div>
 </div>

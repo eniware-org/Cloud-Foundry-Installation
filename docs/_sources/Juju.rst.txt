@@ -203,7 +203,7 @@ You have to open the GIU IP address in your braowser and to copy and enter the *
 2.5. Next steps
 ----------------
 
-We’ve now installed the Juju client and given it enough details to control our MAAS deployment, which we’ve tested by bootstrapping a new Juju controller. The next step will be to use Juju to deploy and link the various components required by OpenStack.
+The :ref:`next step<install-openstack>` will be to use Juju to deploy and link the various components required by OpenStack.
 
 
 

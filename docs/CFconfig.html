@@ -84,18 +84,26 @@
 <li class="toctree-l1"><a class="reference internal" href="Juju.html">2. Install Juju</a></li>
 <li class="toctree-l1"><a class="reference internal" href="OpenStack.html">3. Install OpenStack</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">4. Configure OpenStack</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#environment-variables">4.1. Environment variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#define-an-external-network">4.2. Define an external network</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installing-clients-for-different-openstack-operations">4.1. Installing clients for different OpenStack operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#environment-variables">4.2. Environment variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#define-an-external-network">4.3. Define an external network</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#define-an-external-network-using-web-ui">Define an external network using web UI:</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#define-an-external-network-using-cli">Define an external network using CLI:</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#working-with-flavors">4.3. Working with flavors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#working-with-domains-and-projects">4.4. Working with domains and projects</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#cloud-images">4.4. Cloud images</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#working-with-flavors">4.5. Working with flavors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#working-with-domains-and-projects">4.6. Working with domains and projects</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#working-with-domains-and-projects-using-web-ui">Working with domains and projects using web UI:</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#working-with-domains-and-projects-using-cli">Working with domains and projects using CLI:</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#view-and-manage-quotas">4.7. View and manage quotas</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#view-and-manage-quotas-using-web-ui">View and manage quotas using web UI:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#view-and-manage-quotas-using-cli">View and manage quotas using CLI:</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#next-steps">4.8. Next steps</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="CFdeployment.html">5. Deploying CloudFoundry with BOSH Director on OpenStack</a></li>
@@ -169,12 +177,27 @@
 <p>In previous sections we’ve deployed OpenStack using both Juju and MAAS. The next step is to configure OpenStack for use within a production environment.</p>
 <p>The steps te be followed are:</p>
 <ul class="simple">
+<li>Installing a client for <a class="reference external" href="https://docs.openstack.org/python-novaclient/latest/">OpenStack Nova API</a> (the <strong>novaclient</strong> module)</li>
+<li>Installing a client for <a class="reference external" href="https://docs.openstack.org/python-keystoneclient/latest/">OpenStack Identity API</a> (the <strong>keystoneclient</strong> modules)</li>
+<li>Installing a client for <a class="reference external" href="https://docs.openstack.org/python-glanceclient/latest/">OpenStack Images API</a> (the <strong>glanceclient</strong> module)</li>
+<li>Installing a client for <a class="reference external" href="https://docs.openstack.org/python-neutronclient/latest/">OpenStack Networking API</a> (the <strong>neutronclient</strong> module)</li>
+<li>Installing a <a class="reference external" href="https://docs.openstack.org/python-openstackclient/pike/">command-line client for OpenStack</a> (the <strong>OpenStackClient</strong> - OSC)</li>
 <li>Setting up the environment variables</li>
 <li>Adding a domain, project and user</li>
 <li>External network access and Ubuntu cloud image deployment</li>
 </ul>
+<p>Some of the procedures can be made either from the web UI (Horizon) or from the command line interface (CLI).</p>
+<div class="section" id="installing-clients-for-different-openstack-operations">
+<span id="cf-clients-install"></span><h2>4.1. Installing clients for different OpenStack operations<a class="headerlink" href="#installing-clients-for-different-openstack-operations" title="Permalink to this headline">¶</a></h2>
+<p>To install the clients for OpenStack Nova API, OpenStack Identity API, OpenStack Images API, OpenStack Networking API and OpenStackClient, execute the following commands:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">add</span><span class="o">-</span><span class="n">apt</span><span class="o">-</span><span class="n">repository</span> <span class="n">cloud</span><span class="o">-</span><span class="n">archive</span><span class="p">:</span><span class="n">rocky</span> <span class="o">-</span><span class="n">y</span>
+<span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">update</span>
+<span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">python</span><span class="o">-</span><span class="n">novaclient</span> <span class="n">python</span><span class="o">-</span><span class="n">keystoneclient</span> <span class="n">python</span><span class="o">-</span><span class="n">glanceclient</span> <span class="n">python</span><span class="o">-</span><span class="n">neutronclient</span> <span class="n">python</span><span class="o">-</span><span class="n">openstackclient</span> <span class="o">-</span><span class="n">y</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="environment-variables">
-<span id="cf-env-conf"></span><h2>4.1. Environment variables<a class="headerlink" href="#environment-variables" title="Permalink to this headline">¶</a></h2>
+<span id="cf-env-conf"></span><h2>4.2. Environment variables<a class="headerlink" href="#environment-variables" title="Permalink to this headline">¶</a></h2>
 <p>When accessing OpenStack from the command line, specific environment variables need to be set:</p>
 <ul class="simple">
 <li>OS_AUTH_URL</li>
@@ -221,7 +244,7 @@ export OS_AUTH_TYPE=password
 </pre></div>
 </div>
 <p>The environment variables can be enabled/sourced with the following command:</p>
-<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">source</span> <span class="n">openrc</span>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">source</span> <span class="n">openstack</span><span class="o">-</span><span class="n">bundles</span><span class="o">/</span><span class="n">stable</span><span class="o">/</span><span class="n">openstack</span><span class="o">-</span><span class="n">base</span><span class="o">/</span><span class="n">openrc</span>
 </pre></div>
 </div>
 <p>After the <strong>openrc</strong> is created, you can use OpenStack’s Horizon web UI to download the file, which automatically adjusts the environment variables. You should be loged with the given <em>username</em>. Right click on the <em>user</em> dropdown menu in the the upper right corner and select <strong>openrc -v3</strong> from the list.</p>
@@ -251,7 +274,7 @@ export OS_AUTH_TYPE=password
 </div>
 </div>
 <div class="section" id="define-an-external-network">
-<span id="cf-net-conf"></span><h2>4.2. Define an external network<a class="headerlink" href="#define-an-external-network" title="Permalink to this headline">¶</a></h2>
+<span id="cf-net-conf"></span><h2>4.3. Define an external network<a class="headerlink" href="#define-an-external-network" title="Permalink to this headline">¶</a></h2>
 <p>To allow OpenStack network access, it is necessary to enter external network settings.</p>
 <p>You should be logged as an <em>user</em> <strong>admin</strong> in the OpenStack Dashboard Horizon.
 To do this, you need to know the following:</p>
@@ -357,8 +380,37 @@ To do this, you need to know the following:</p>
 </div>
 </div>
 </div>
+<div class="section" id="cloud-images">
+<span id="cf-cloud-conf"></span><h2>4.4. Cloud images<a class="headerlink" href="#cloud-images" title="Permalink to this headline">¶</a></h2>
+<p>You need to download an <strong>Ubuntu image</strong> locally in order to be able to аdd it to a <strong>Glance</strong>. Canonical’s Ubuntu cloud images can be found here:</p>
+<p><a class="reference external" href="https://cloud-images.ubuntu.com">https://cloud-images.ubuntu.com</a></p>
+<p>You could use <code class="docutils literal notranslate"><span class="pre">wget</span></code> to download the image of <strong>Ubuntu 18.04 LTS (Bionic)</strong>:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wget</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">cloud</span><span class="o">-</span><span class="n">images</span><span class="o">.</span><span class="n">ubuntu</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">bionic</span><span class="o">/</span><span class="n">current</span><span class="o">/</span><span class="n">bionic</span><span class="o">-</span><span class="n">server</span><span class="o">-</span><span class="n">cloudimg</span><span class="o">-</span><span class="n">amd64</span><span class="o">.</span><span class="n">img</span>
+</pre></div>
+</div>
+<p>To add this image to Glance use the following command:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openstack</span> <span class="n">image</span> <span class="n">create</span> <span class="o">--</span><span class="n">public</span> <span class="o">--</span><span class="nb">min</span><span class="o">-</span><span class="n">disk</span> <span class="mi">3</span> <span class="o">--</span><span class="n">container</span><span class="o">-</span><span class="nb">format</span> <span class="n">bare</span> \
+<span class="o">--</span><span class="n">disk</span><span class="o">-</span><span class="nb">format</span> <span class="n">qcow2</span> <span class="o">--</span><span class="nb">property</span> <span class="n">architecture</span><span class="o">=</span><span class="n">x86_64</span> \
+<span class="o">--</span><span class="nb">property</span> <span class="n">hw_disk_bus</span><span class="o">=</span><span class="n">virtio</span> <span class="o">--</span><span class="nb">property</span> <span class="n">hw_vif_model</span><span class="o">=</span><span class="n">virtio</span> \
+<span class="o">--</span><span class="n">file</span> <span class="n">bionic</span><span class="o">-</span><span class="n">server</span><span class="o">-</span><span class="n">cloudimg</span><span class="o">-</span><span class="n">amd64</span><span class="o">.</span><span class="n">img</span> \
+<span class="s2">&quot;bionic x86_64&quot;</span>
+</pre></div>
+</div>
+<p>Typing <code class="docutils literal notranslate"><span class="pre">openstack</span> <span class="pre">image</span> <span class="pre">list</span></code> you can make sure the image was successfully imported:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">+--------------------------------------+---------------+--------+</span>
+<span class="o">|</span> <span class="n">ID</span>                                   <span class="o">|</span> <span class="n">Name</span>          <span class="o">|</span> <span class="n">Status</span> <span class="o">|</span>
+<span class="o">+--------------------------------------+---------------+--------+</span>
+<span class="o">|</span> <span class="n">d4244007</span><span class="o">-</span><span class="mi">5864</span><span class="o">-</span><span class="mi">4</span><span class="n">a2d</span><span class="o">-</span><span class="mi">9</span><span class="n">cfd</span><span class="o">-</span><span class="n">f008ade72df4</span> <span class="o">|</span> <span class="n">bionic</span> <span class="n">x86_64</span> <span class="o">|</span> <span class="n">active</span> <span class="o">|</span>
+<span class="o">+--------------------------------------+---------------+--------+</span>
+</pre></div>
+</div>
+<p>The <strong>Compute &gt; Images</strong> page of <strong>OpenStack’s Horizon web UI</strong> lists many more details about imported images. In particular, note their size as this will limit the minimum root storage size of any OpenStack flavours used to deploy them.</p>
+<div class="figure align-center">
+<img alt="Horizon image details" src="_images/4-horizon_image.png" />
+</div>
+</div>
 <div class="section" id="working-with-flavors">
-<span id="cf-domain-flavors"></span><h2>4.3. Working with flavors<a class="headerlink" href="#working-with-flavors" title="Permalink to this headline">¶</a></h2>
+<span id="cf-domain-flavors"></span><h2>4.5. Working with flavors<a class="headerlink" href="#working-with-flavors" title="Permalink to this headline">¶</a></h2>
 <p>The <strong>flavors</strong> define the compute, memory, and storage capacity of nova computing instances. A <strong>flavor</strong> is an available hardware configuration for a server. It defines the size of a virtual server that can be launched.
 Admin users can use the <code class="docutils literal notranslate"><span class="pre">openstack</span> <span class="pre">flavor</span></code> command to <a class="reference external" href="https://docs.openstack.org/nova/rocky/admin/flavors.html">create, customize and manage flavor</a>.</p>
 <div class="admonition hint">
@@ -442,7 +494,7 @@ Admin users can use the <code class="docutils literal notranslate"><span class="
 </table>
 </div>
 <div class="section" id="working-with-domains-and-projects">
-<span id="cf-domain-conf"></span><h2>4.4. Working with domains and projects<a class="headerlink" href="#working-with-domains-and-projects" title="Permalink to this headline">¶</a></h2>
+<span id="cf-domain-conf"></span><h2>4.6. Working with domains and projects<a class="headerlink" href="#working-with-domains-and-projects" title="Permalink to this headline">¶</a></h2>
 <p>The following is vital part of OpenStack operations:</p>
 <ul class="simple">
 <li><strong>Domains</strong> - abstract resources; a domain is a collection of users and projects that exist within the OpenStack environment.</li>
@@ -487,19 +539,17 @@ Admin users can use the <code class="docutils literal notranslate"><span class="
 </div>
 <div class="section" id="working-with-domains-and-projects-using-cli">
 <span id="cf-domain-conf-cli"></span><h3>Working with domains and projects using CLI:<a class="headerlink" href="#working-with-domains-and-projects-using-cli" title="Permalink to this headline">¶</a></h3>
-<p>To create a single domain with a single project and single user for a new deployment, start with the <strong>domain</strong>:</p>
+<p>To create a single <em>domain</em> with a single <em>project</em> and single <em>user</em> for a new deployment, start with the <em>domain</em>:</p>
 <div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openstack</span> <span class="n">domain</span> <span class="n">create</span> <span class="n">cf_domain</span>
 </pre></div>
 </div>
-<p>To add a <strong>project</strong> to the <strong>domain</strong>:</p>
-<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openstack</span> <span class="n">project</span> <span class="n">create</span> <span class="o">--</span><span class="n">domain</span> <span class="n">cf_domain</span> \
-    <span class="o">--</span><span class="n">description</span> <span class="s1">&#39;First Project&#39;</span> <span class="n">cf_domain</span>
+<p>To add a <em>project</em> <strong>cludfoundry</strong> to the <em>domain</em> <strong>cf_domain</strong>:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openstack</span> <span class="n">project</span> <span class="n">create</span> <span class="n">cloudfoundry</span> <span class="o">--</span><span class="n">domain</span> <span class="n">cf_domain</span>
 </pre></div>
 </div>
-<p>To add a <strong>user</strong> and assign that user to the <strong>project</strong>:</p>
-<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openstack</span> <span class="n">user</span> <span class="n">create</span> <span class="o">--</span><span class="n">domain</span> <span class="n">cf_domain</span> \
-    <span class="o">--</span><span class="n">project</span><span class="o">-</span><span class="n">domain</span> <span class="n">cf_domain</span> <span class="o">--</span><span class="n">project</span> <span class="n">cloudfoundry</span> \
-    <span class="o">--</span><span class="n">password</span><span class="o">-</span><span class="n">prompt</span> <span class="n">cf_domain</span>
+<p>To add a <em>user</em> <strong>eniware</strong> with a <em>role</em> <strong>member</strong> and assign that user to the <em>project</em> <strong>cloudfoundry</strong> within <strong>cf_domain</strong>:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openstack</span> <span class="n">user</span> <span class="n">create</span> <span class="n">eniware</span> <span class="o">--</span><span class="n">domain</span> <span class="n">cf_domain</span> <span class="o">--</span><span class="n">project</span> <span class="n">cloudfoundry</span> <span class="o">--</span><span class="n">password</span> <span class="n">your_password</span>
+<span class="n">openstack</span> <span class="n">role</span> <span class="n">add</span> <span class="o">--</span><span class="n">project</span> <span class="n">cloudfoundry</span> <span class="o">--</span><span class="n">project</span><span class="o">-</span><span class="n">domain</span> <span class="n">cf_domain</span> <span class="o">--</span><span class="n">user</span> <span class="n">eniware</span> <span class="o">--</span><span class="n">user</span><span class="o">-</span><span class="n">domain</span> <span class="n">cf_domain</span> <span class="n">Member</span>
 </pre></div>
 </div>
 <p>The output to the previous command will be similar to the following:</p>
@@ -518,6 +568,55 @@ Admin users can use the <code class="docutils literal notranslate"><span class="
 </div>
 <p>Every subsequent action will now be performed by <strong>eniware</strong> user within the new <strong>cf_project</strong> project.</p>
 </div>
+</div>
+<div class="section" id="view-and-manage-quotas">
+<span id="cf-quotas-conf"></span><h2>4.7. View and manage quotas<a class="headerlink" href="#view-and-manage-quotas" title="Permalink to this headline">¶</a></h2>
+<p>To prevent system capacities from being exhausted without notification, you can set up <strong>quotas</strong>. Quotas are operational limits. The <em>Compute</em> and <em>Block Storage service</em> quotas are described <a class="reference external" href="https://docs.openstack.org/horizon/rocky/admin/set-quotas.html">here</a>.</p>
+<div class="section" id="view-and-manage-quotas-using-web-ui">
+<span id="cf-quotas-confui"></span><h3>View and manage quotas using web UI:<a class="headerlink" href="#view-and-manage-quotas-using-web-ui" title="Permalink to this headline">¶</a></h3>
+<p>Log in to the Dashboard and select the <strong>admin</strong> <em>project</em> from the drop-down list. On the <strong>Admin</strong> tab, open the <strong>System</strong> tab and click the <strong>Defaults</strong> category. The default quota values are displayed.</p>
+<div class="admonition-todo admonition" id="index-0">
+<p class="first admonition-title">Todo</p>
+<p class="last">images froms web UI should be added - <strong>View default project quotas</strong>.</p>
+</div>
+<p>To update project quotas click the <strong>Update Defaults</strong> button. In the <strong>Update Default Quotas</strong> window, you can edit the default quota values.</p>
+<div class="admonition-todo admonition" id="index-1">
+<p class="first admonition-title">Todo</p>
+<p class="last">images froms web UI should be added - <strong>Update project quotas</strong>.</p>
+</div>
+<p>Click the <strong>Update Defaults</strong> button to save changes.</p>
+</div>
+<div class="section" id="view-and-manage-quotas-using-cli">
+<span id="cf-quotas-confcli"></span><h3>View and manage quotas using CLI:<a class="headerlink" href="#view-and-manage-quotas-using-cli" title="Permalink to this headline">¶</a></h3>
+<p>The dashboard does not show all possible project quotas. To view and update the <a class="reference external" href="https://docs.openstack.org/python-openstackclient/latest/cli/command-objects/quota.html">quotas</a> for a service, you can use  OpenStackClient CLI.</p>
+<p>To list all default quotas for all projects use the following command:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openstack</span> <span class="n">quota</span> <span class="n">show</span> <span class="o">--</span><span class="n">default</span>
+</pre></div>
+</div>
+<p>To list the currently set quota values for a <strong>cloudfondry</strong> <em>project</em> use the following command:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openstack</span> <span class="n">quota</span> <span class="n">show</span> <span class="n">cloudfoundry</span>
+</pre></div>
+</div>
+<p>To update quota values for a given existing project:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openstack</span> <span class="n">quota</span> <span class="nb">set</span> <span class="o">--</span><span class="n">QUOTA_NAME</span> <span class="n">QUOTA_VALUE</span> <span class="n">PROJECT_OR_CLASS</span>
+</pre></div>
+</div>
+<p>To update quotas for <strong>cloudfoundry</strong> <em>project</em> use the following commands:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openstack</span> <span class="n">quota</span> <span class="nb">set</span> <span class="o">--</span><span class="n">instances</span> <span class="mi">100</span> <span class="o">--</span><span class="n">cores</span> <span class="mi">96</span> <span class="o">--</span><span class="n">ram</span> <span class="mi">153600</span> <span class="o">--</span><span class="n">key</span><span class="o">-</span><span class="n">pairs</span> <span class="mi">100</span> <span class="n">cloudfoundry</span>
+<span class="n">openstack</span> <span class="n">quota</span> <span class="nb">set</span> <span class="o">--</span><span class="n">volumes</span> <span class="mi">100</span> <span class="o">--</span><span class="n">per</span><span class="o">-</span><span class="n">volume</span><span class="o">-</span><span class="n">gigabytes</span> <span class="mi">500</span> <span class="o">--</span><span class="n">gigabytes</span> <span class="mi">4096</span> <span class="n">cloudfoundry</span>
+<span class="n">openstack</span> <span class="n">quota</span> <span class="nb">set</span> <span class="o">--</span><span class="n">secgroup</span><span class="o">-</span><span class="n">rules</span> <span class="mi">100</span> <span class="o">--</span><span class="n">secgroups</span> <span class="mi">100</span> <span class="o">--</span><span class="n">networks</span> <span class="mi">500</span> <span class="o">--</span><span class="n">subnets</span> <span class="mi">1000</span> <span class="o">--</span><span class="n">ports</span> <span class="mi">2000</span> <span class="o">--</span><span class="n">routers</span> <span class="mi">1000</span> <span class="o">--</span><span class="n">vips</span> <span class="mi">100</span> <span class="o">--</span><span class="n">subnetpools</span> <span class="mi">500</span> <span class="n">cloudfoundry</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>The first command will update the the OpenStack <em>Compute service</em> quota <strong>instances</strong> - number of instances or amount of CPU that a for <strong>cloudfoundry</strong> <em>project</em> can use.</li>
+<li>The second one wiil update the OpenStack <em>Block Storage service</em> quotas - <strong>volumes</strong> allowed for the project.</li>
+<li>The third command will update the the OpenStack <em>Compute service</em> quotas - <strong>security group rules</strong> allowed for the project.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="next-steps">
+<h2>4.8. Next steps<a class="headerlink" href="#next-steps" title="Permalink to this headline">¶</a></h2>
+<p>You have now successfully deployed and configured OpenStack, taking full advantage of both Juju and MAAS. The next step is to <a class="reference internal" href="CFdeployment.html#cf-deply"><span class="std std-ref">deploy CloudFoundry with BOSH Director on OpenStack</span></a>.</p>
 </div>
 </div>
 
