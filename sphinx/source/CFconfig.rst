@@ -327,38 +327,10 @@ The **Compute > Images** page of **OpenStack’s Horizon web UI** lists many mor
 -------------------------------------------
 
 The **flavors** define the compute, memory, and storage capacity of nova computing instances. A **flavor** is an available hardware configuration for a server. It defines the size of a virtual server that can be launched.
-Admin users can use the ``openstack flavor`` command to `create, customize and manage flavor <https://docs.openstack.org/nova/rocky/admin/flavors.html>`_.
 
 .. hint:: For information on the flavors and flavor extra specs, refer to `Flavors <https://docs.openstack.org/nova/rocky/user/flavors.html>`_.
 
-To create a flavor using an ``openstack flavor create`` command, you should specify the following parameters:
-
-* flavour name
-* ID
-* RAM size
-* disk size
-* the number of vCPUs for the flavor
-
-For the purpose of OpenStack configuration and CloudFoundry deployment, you need to create flavors with the following names and configuration:
-
-.. code::
-
-	openstack flavor create --vcpus 1 --ram 3840 --disk 3 --ephemeral 10 minimal
-	openstack flavor create --vcpus 2 --ram 7680 --disk 3 --ephemeral 14 small
-	openstack flavor create --vcpus 2 --ram 7680 --disk 3 --ephemeral 50 small-50GB-ephemeral-disk
-	openstack flavor create --vcpus 4 --ram 31232 --disk 3 --ephemeral 10 small-highmem
-	openstack flavor create --vcpus 4 --ram 31232 --disk 3 --ephemeral 100 small-highmem-100GB-ephemeral-disk
-	openstack flavor create --vcpus 8 --ram 16384 --disk 160 --ephemeral 0 m1.xlarge
-
-
-To list the created flavors and show the ID and name, the amount of memory, the amount of disk space for the root partition and for the ephemeral partition, the swap, and the number of virtual CPUs for each flavor, type the command:
-
-
-.. code::
-
- openstack flavor list
-
-The following table lists the created flavors:
+The following flavors should be created:
 
 .. list-table::
     :widths: 20 5 7 7 7
@@ -400,6 +372,83 @@ The following table lists the created flavors:
       - 16384
       - 160
       - 0
+
+
+.. _cf-domain-flavors-GIU:
+
+Working with flavors using web UI:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+From the panel on the left, click on **Admin** and choose section **Compute**, subsection **Flavors**. Then press the button **+ Create Flavor**.
+
+
+After opening the **Create Flavor** window, you should enter the following settings (for **m1.xlarge** flavor, for example):
+   
+* Name: **m1.xlarge**
+* ID: *auto*
+* VCPUs: **8**
+* RAM (MB): **16384**
+* Root Disk (GB): **160**
+* Ephemeral Disk (GB): **0**
+* Swap Disk (MB): **0**
+* RX/TX Factor: **1** 
+
+.. _cf-domain-flavors-create:
+
+.. figure:: /images/4.5-cf-domain-flavors-create-1.png
+   :alt: Create flavor
+   :align: center
+
+In the **Flavor Access** tab select the project where the created flavor will be used:
+
+.. _cf-domain-flavors-access:
+
+.. figure:: /images/4.5-cf-domain-flavors-create-2.png
+   :alt: Flavor Access
+   :align: center
+
+.. note:: If no projects are selected, then the flavor will be available in all projects.
+
+Click the **Create Flavor** button to save changes.
+
+
+
+
+.. _cf-domain-flavors-CLI:
+
+Working with flavors using CLI:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Admin users can use the ``openstack flavor`` command to `create, customize and manage flavor <https://docs.openstack.org/nova/rocky/admin/flavors.html>`_.
+
+To create a flavor using an ``openstack flavor create`` command, you should specify the following parameters:
+
+* flavour name
+* ID
+* RAM size
+* disk size
+* the number of vCPUs for the flavor
+
+For the purpose of OpenStack configuration and CloudFoundry deployment, you need to create flavors with the following names and configuration:
+
+.. code::
+
+	openstack flavor create --vcpus 1 --ram 3840 --disk 3 --ephemeral 10 minimal
+	openstack flavor create --vcpus 2 --ram 7680 --disk 3 --ephemeral 14 small
+	openstack flavor create --vcpus 2 --ram 7680 --disk 3 --ephemeral 50 small-50GB-ephemeral-disk
+	openstack flavor create --vcpus 4 --ram 31232 --disk 3 --ephemeral 10 small-highmem
+	openstack flavor create --vcpus 4 --ram 31232 --disk 3 --ephemeral 100 small-highmem-100GB-ephemeral-disk
+	openstack flavor create --vcpus 8 --ram 16384 --disk 160 --ephemeral 0 m1.xlarge
+
+
+To list the created flavors and show the ID and name, the amount of memory, the amount of disk space for the root partition and for the ephemeral partition, the swap, and the number of virtual CPUs for each flavor, type the command:
+
+
+.. code::
+
+ openstack flavor list
+
+
 
 
 
@@ -551,15 +600,38 @@ To prevent system capacities from being exhausted without notification, you can 
 View and manage quotas using web UI:
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Log in to the Dashboard and select the **admin** *project* from the drop-down list. On the **Admin** tab, open the **System** tab and click the **Defaults** category. The default quota values are displayed.
+Log in to the Dashboard and select the **admin** *project* from the drop-down list. On the **Admin** tab, open the **System** tab and click the **Defaults** category. The default quota values are displayed:
 
-.. todo:: images froms web UI should be added - **View default project quotas**.
+* Compute Quotas:
 
-To update project quotas click the **Update Defaults** button. In the **Update Default Quotas** window, you can edit the default quota values.
+.. _cf-quotas-confUI-compute:
 
-.. todo:: images froms web UI should be added - **Update project quotas**.
+.. figure:: /images/4.7-cf-quotas-confUI-compute.png
+   :alt: Compute quotas
+   :align: center
 
-Click the **Update Defaults** button to save changes.
+* Volume Quotas:
+
+.. _cf-quotas-confUI-volume:
+
+.. figure:: /images/4.7-cf-quotas-confUI-volume.png
+   :alt: Volume quotas
+   :align: center
+
+* Network Quotas:
+
+.. _cf-quotas-confUI-network:
+
+.. figure:: /images/4.7-cf-quotas-confUI-network.png
+   :alt: Network quotas
+   :align: center
+   
+
+
+
+To update project quotas click the **Update Defaults** button. In the **Update Default Quotas** window, you can edit the default quota values. Click the **Update Defaults** button to save changes.
+
+.. note:: Network quotas can not be edited in this way because they depend on the :ref:`network settings<cf-net-conf>` that are configured
 
 
 

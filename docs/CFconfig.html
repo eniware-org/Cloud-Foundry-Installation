@@ -92,7 +92,11 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#cloud-images">4.4. Cloud images</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#working-with-flavors">4.5. Working with flavors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#working-with-flavors">4.5. Working with flavors</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#working-with-flavors-using-web-ui">Working with flavors using web UI:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#working-with-flavors-using-cli">Working with flavors using CLI:</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#working-with-domains-and-projects">4.6. Working with domains and projects</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#working-with-domains-and-projects-using-web-ui">Working with domains and projects using web UI:</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#working-with-domains-and-projects-using-cli">Working with domains and projects using CLI:</a></li>
@@ -411,34 +415,12 @@ To do this, you need to know the following:</p>
 </div>
 <div class="section" id="working-with-flavors">
 <span id="cf-domain-flavors"></span><h2>4.5. Working with flavors<a class="headerlink" href="#working-with-flavors" title="Permalink to this headline">¶</a></h2>
-<p>The <strong>flavors</strong> define the compute, memory, and storage capacity of nova computing instances. A <strong>flavor</strong> is an available hardware configuration for a server. It defines the size of a virtual server that can be launched.
-Admin users can use the <code class="docutils literal notranslate"><span class="pre">openstack</span> <span class="pre">flavor</span></code> command to <a class="reference external" href="https://docs.openstack.org/nova/rocky/admin/flavors.html">create, customize and manage flavor</a>.</p>
+<p>The <strong>flavors</strong> define the compute, memory, and storage capacity of nova computing instances. A <strong>flavor</strong> is an available hardware configuration for a server. It defines the size of a virtual server that can be launched.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
 <p class="last">For information on the flavors and flavor extra specs, refer to <a class="reference external" href="https://docs.openstack.org/nova/rocky/user/flavors.html">Flavors</a>.</p>
 </div>
-<p>To create a flavor using an <code class="docutils literal notranslate"><span class="pre">openstack</span> <span class="pre">flavor</span> <span class="pre">create</span></code> command, you should specify the following parameters:</p>
-<ul class="simple">
-<li>flavour name</li>
-<li>ID</li>
-<li>RAM size</li>
-<li>disk size</li>
-<li>the number of vCPUs for the flavor</li>
-</ul>
-<p>For the purpose of OpenStack configuration and CloudFoundry deployment, you need to create flavors with the following names and configuration:</p>
-<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openstack</span> <span class="n">flavor</span> <span class="n">create</span> <span class="o">--</span><span class="n">vcpus</span> <span class="mi">1</span> <span class="o">--</span><span class="n">ram</span> <span class="mi">3840</span> <span class="o">--</span><span class="n">disk</span> <span class="mi">3</span> <span class="o">--</span><span class="n">ephemeral</span> <span class="mi">10</span> <span class="n">minimal</span>
-<span class="n">openstack</span> <span class="n">flavor</span> <span class="n">create</span> <span class="o">--</span><span class="n">vcpus</span> <span class="mi">2</span> <span class="o">--</span><span class="n">ram</span> <span class="mi">7680</span> <span class="o">--</span><span class="n">disk</span> <span class="mi">3</span> <span class="o">--</span><span class="n">ephemeral</span> <span class="mi">14</span> <span class="n">small</span>
-<span class="n">openstack</span> <span class="n">flavor</span> <span class="n">create</span> <span class="o">--</span><span class="n">vcpus</span> <span class="mi">2</span> <span class="o">--</span><span class="n">ram</span> <span class="mi">7680</span> <span class="o">--</span><span class="n">disk</span> <span class="mi">3</span> <span class="o">--</span><span class="n">ephemeral</span> <span class="mi">50</span> <span class="n">small</span><span class="o">-</span><span class="mi">50</span><span class="n">GB</span><span class="o">-</span><span class="n">ephemeral</span><span class="o">-</span><span class="n">disk</span>
-<span class="n">openstack</span> <span class="n">flavor</span> <span class="n">create</span> <span class="o">--</span><span class="n">vcpus</span> <span class="mi">4</span> <span class="o">--</span><span class="n">ram</span> <span class="mi">31232</span> <span class="o">--</span><span class="n">disk</span> <span class="mi">3</span> <span class="o">--</span><span class="n">ephemeral</span> <span class="mi">10</span> <span class="n">small</span><span class="o">-</span><span class="n">highmem</span>
-<span class="n">openstack</span> <span class="n">flavor</span> <span class="n">create</span> <span class="o">--</span><span class="n">vcpus</span> <span class="mi">4</span> <span class="o">--</span><span class="n">ram</span> <span class="mi">31232</span> <span class="o">--</span><span class="n">disk</span> <span class="mi">3</span> <span class="o">--</span><span class="n">ephemeral</span> <span class="mi">100</span> <span class="n">small</span><span class="o">-</span><span class="n">highmem</span><span class="o">-</span><span class="mi">100</span><span class="n">GB</span><span class="o">-</span><span class="n">ephemeral</span><span class="o">-</span><span class="n">disk</span>
-<span class="n">openstack</span> <span class="n">flavor</span> <span class="n">create</span> <span class="o">--</span><span class="n">vcpus</span> <span class="mi">8</span> <span class="o">--</span><span class="n">ram</span> <span class="mi">16384</span> <span class="o">--</span><span class="n">disk</span> <span class="mi">160</span> <span class="o">--</span><span class="n">ephemeral</span> <span class="mi">0</span> <span class="n">m1</span><span class="o">.</span><span class="n">xlarge</span>
-</pre></div>
-</div>
-<p>To list the created flavors and show the ID and name, the amount of memory, the amount of disk space for the root partition and for the ephemeral partition, the swap, and the number of virtual CPUs for each flavor, type the command:</p>
-<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openstack</span> <span class="n">flavor</span> <span class="nb">list</span>
-</pre></div>
-</div>
-<p>The following table lists the created flavors:</p>
+<p>The following flavors should be created:</p>
 <table border="1" class="colwidths-given docutils">
 <colgroup>
 <col width="43%" />
@@ -492,6 +474,58 @@ Admin users can use the <code class="docutils literal notranslate"><span class="
 </tr>
 </tbody>
 </table>
+<div class="section" id="working-with-flavors-using-web-ui">
+<span id="cf-domain-flavors-giu"></span><h3>Working with flavors using web UI:<a class="headerlink" href="#working-with-flavors-using-web-ui" title="Permalink to this headline">¶</a></h3>
+<p>From the panel on the left, click on <strong>Admin</strong> and choose section <strong>Compute</strong>, subsection <strong>Flavors</strong>. Then press the button <strong>+ Create Flavor</strong>.</p>
+<p>After opening the <strong>Create Flavor</strong> window, you should enter the following settings (for <strong>m1.xlarge</strong> flavor, for example):</p>
+<ul class="simple">
+<li>Name: <strong>m1.xlarge</strong></li>
+<li>ID: <em>auto</em></li>
+<li>VCPUs: <strong>8</strong></li>
+<li>RAM (MB): <strong>16384</strong></li>
+<li>Root Disk (GB): <strong>160</strong></li>
+<li>Ephemeral Disk (GB): <strong>0</strong></li>
+<li>Swap Disk (MB): <strong>0</strong></li>
+<li>RX/TX Factor: <strong>1</strong></li>
+</ul>
+<div class="figure align-center" id="cf-domain-flavors-create">
+<img alt="Create flavor" src="_images/4.5-cf-domain-flavors-create-1.png" />
+</div>
+<p>In the <strong>Flavor Access</strong> tab select the project where the created flavor will be used:</p>
+<div class="figure align-center" id="cf-domain-flavors-access">
+<img alt="Flavor Access" src="_images/4.5-cf-domain-flavors-create-2.png" />
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If no projects are selected, then the flavor will be available in all projects.</p>
+</div>
+<p>Click the <strong>Create Flavor</strong> button to save changes.</p>
+</div>
+<div class="section" id="working-with-flavors-using-cli">
+<span id="cf-domain-flavors-cli"></span><h3>Working with flavors using CLI:<a class="headerlink" href="#working-with-flavors-using-cli" title="Permalink to this headline">¶</a></h3>
+<p>Admin users can use the <code class="docutils literal notranslate"><span class="pre">openstack</span> <span class="pre">flavor</span></code> command to <a class="reference external" href="https://docs.openstack.org/nova/rocky/admin/flavors.html">create, customize and manage flavor</a>.</p>
+<p>To create a flavor using an <code class="docutils literal notranslate"><span class="pre">openstack</span> <span class="pre">flavor</span> <span class="pre">create</span></code> command, you should specify the following parameters:</p>
+<ul class="simple">
+<li>flavour name</li>
+<li>ID</li>
+<li>RAM size</li>
+<li>disk size</li>
+<li>the number of vCPUs for the flavor</li>
+</ul>
+<p>For the purpose of OpenStack configuration and CloudFoundry deployment, you need to create flavors with the following names and configuration:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openstack</span> <span class="n">flavor</span> <span class="n">create</span> <span class="o">--</span><span class="n">vcpus</span> <span class="mi">1</span> <span class="o">--</span><span class="n">ram</span> <span class="mi">3840</span> <span class="o">--</span><span class="n">disk</span> <span class="mi">3</span> <span class="o">--</span><span class="n">ephemeral</span> <span class="mi">10</span> <span class="n">minimal</span>
+<span class="n">openstack</span> <span class="n">flavor</span> <span class="n">create</span> <span class="o">--</span><span class="n">vcpus</span> <span class="mi">2</span> <span class="o">--</span><span class="n">ram</span> <span class="mi">7680</span> <span class="o">--</span><span class="n">disk</span> <span class="mi">3</span> <span class="o">--</span><span class="n">ephemeral</span> <span class="mi">14</span> <span class="n">small</span>
+<span class="n">openstack</span> <span class="n">flavor</span> <span class="n">create</span> <span class="o">--</span><span class="n">vcpus</span> <span class="mi">2</span> <span class="o">--</span><span class="n">ram</span> <span class="mi">7680</span> <span class="o">--</span><span class="n">disk</span> <span class="mi">3</span> <span class="o">--</span><span class="n">ephemeral</span> <span class="mi">50</span> <span class="n">small</span><span class="o">-</span><span class="mi">50</span><span class="n">GB</span><span class="o">-</span><span class="n">ephemeral</span><span class="o">-</span><span class="n">disk</span>
+<span class="n">openstack</span> <span class="n">flavor</span> <span class="n">create</span> <span class="o">--</span><span class="n">vcpus</span> <span class="mi">4</span> <span class="o">--</span><span class="n">ram</span> <span class="mi">31232</span> <span class="o">--</span><span class="n">disk</span> <span class="mi">3</span> <span class="o">--</span><span class="n">ephemeral</span> <span class="mi">10</span> <span class="n">small</span><span class="o">-</span><span class="n">highmem</span>
+<span class="n">openstack</span> <span class="n">flavor</span> <span class="n">create</span> <span class="o">--</span><span class="n">vcpus</span> <span class="mi">4</span> <span class="o">--</span><span class="n">ram</span> <span class="mi">31232</span> <span class="o">--</span><span class="n">disk</span> <span class="mi">3</span> <span class="o">--</span><span class="n">ephemeral</span> <span class="mi">100</span> <span class="n">small</span><span class="o">-</span><span class="n">highmem</span><span class="o">-</span><span class="mi">100</span><span class="n">GB</span><span class="o">-</span><span class="n">ephemeral</span><span class="o">-</span><span class="n">disk</span>
+<span class="n">openstack</span> <span class="n">flavor</span> <span class="n">create</span> <span class="o">--</span><span class="n">vcpus</span> <span class="mi">8</span> <span class="o">--</span><span class="n">ram</span> <span class="mi">16384</span> <span class="o">--</span><span class="n">disk</span> <span class="mi">160</span> <span class="o">--</span><span class="n">ephemeral</span> <span class="mi">0</span> <span class="n">m1</span><span class="o">.</span><span class="n">xlarge</span>
+</pre></div>
+</div>
+<p>To list the created flavors and show the ID and name, the amount of memory, the amount of disk space for the root partition and for the ephemeral partition, the swap, and the number of virtual CPUs for each flavor, type the command:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openstack</span> <span class="n">flavor</span> <span class="nb">list</span>
+</pre></div>
+</div>
+</div>
 </div>
 <div class="section" id="working-with-domains-and-projects">
 <span id="cf-domain-conf"></span><h2>4.6. Working with domains and projects<a class="headerlink" href="#working-with-domains-and-projects" title="Permalink to this headline">¶</a></h2>
@@ -574,17 +608,30 @@ Admin users can use the <code class="docutils literal notranslate"><span class="
 <p>To prevent system capacities from being exhausted without notification, you can set up <strong>quotas</strong>. Quotas are operational limits. The <em>Compute</em> and <em>Block Storage service</em> quotas are described <a class="reference external" href="https://docs.openstack.org/horizon/rocky/admin/set-quotas.html">here</a>.</p>
 <div class="section" id="view-and-manage-quotas-using-web-ui">
 <span id="cf-quotas-confui"></span><h3>View and manage quotas using web UI:<a class="headerlink" href="#view-and-manage-quotas-using-web-ui" title="Permalink to this headline">¶</a></h3>
-<p>Log in to the Dashboard and select the <strong>admin</strong> <em>project</em> from the drop-down list. On the <strong>Admin</strong> tab, open the <strong>System</strong> tab and click the <strong>Defaults</strong> category. The default quota values are displayed.</p>
-<div class="admonition-todo admonition" id="index-0">
-<p class="first admonition-title">Todo</p>
-<p class="last">images froms web UI should be added - <strong>View default project quotas</strong>.</p>
+<p>Log in to the Dashboard and select the <strong>admin</strong> <em>project</em> from the drop-down list. On the <strong>Admin</strong> tab, open the <strong>System</strong> tab and click the <strong>Defaults</strong> category. The default quota values are displayed:</p>
+<ul class="simple">
+<li>Compute Quotas:</li>
+</ul>
+<div class="figure align-center" id="cf-quotas-confui-compute">
+<img alt="Compute quotas" src="_images/4.7-cf-quotas-confUI-compute.png" />
 </div>
-<p>To update project quotas click the <strong>Update Defaults</strong> button. In the <strong>Update Default Quotas</strong> window, you can edit the default quota values.</p>
-<div class="admonition-todo admonition" id="index-1">
-<p class="first admonition-title">Todo</p>
-<p class="last">images froms web UI should be added - <strong>Update project quotas</strong>.</p>
+<ul class="simple">
+<li>Volume Quotas:</li>
+</ul>
+<div class="figure align-center" id="cf-quotas-confui-volume">
+<img alt="Volume quotas" src="_images/4.7-cf-quotas-confUI-volume.png" />
 </div>
-<p>Click the <strong>Update Defaults</strong> button to save changes.</p>
+<ul class="simple">
+<li>Network Quotas:</li>
+</ul>
+<div class="figure align-center" id="cf-quotas-confui-network">
+<img alt="Network quotas" src="_images/4.7-cf-quotas-confUI-network.png" />
+</div>
+<p>To update project quotas click the <strong>Update Defaults</strong> button. In the <strong>Update Default Quotas</strong> window, you can edit the default quota values. Click the <strong>Update Defaults</strong> button to save changes.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Network quotas can not be edited in this way because they depend on the <a class="reference internal" href="#cf-net-conf"><span class="std std-ref">network settings</span></a> that are configured</p>
+</div>
 </div>
 <div class="section" id="view-and-manage-quotas-using-cli">
 <span id="cf-quotas-confcli"></span><h3>View and manage quotas using CLI:<a class="headerlink" href="#view-and-manage-quotas-using-cli" title="Permalink to this headline">¶</a></h3>
