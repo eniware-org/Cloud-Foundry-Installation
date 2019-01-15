@@ -12,9 +12,11 @@ The steps te be followed are:
 * Installing a client for `OpenStack Images API <https://docs.openstack.org/python-glanceclient/latest/>`_ (the **glanceclient** module) 
 * Installing a client for `OpenStack Networking API <https://docs.openstack.org/python-neutronclient/latest/>`_ (the **neutronclient** module)
 * Installing a `command-line client for OpenStack <https://docs.openstack.org/python-openstackclient/pike/>`_ (the **OpenStackClient** - OSC)  
-* Setting up the environment variables
-* Adding a domain, project and user
-* External network access and Ubuntu cloud image deployment 
+* Setting up the :ref:`environment variables<cf-env-conf>`
+* Creating the necessary :ref:`flavors<cf-domain-flavors>`
+* Adding a :ref:`domain, project and user<cf-domain-conf>`
+* Managing :ref:`quotas<cf-quotas-conf>`
+* :ref:`External network<cf-net-conf>` access and Ubuntu :ref:`cloud image<cf-cloud-conf>` deployment 
 
 Some of the procedures can be made either from the web UI (Horizon) or from the command line interface (CLI).
 
@@ -455,15 +457,15 @@ To list the created flavors and show the ID and name, the amount of memory, the 
 
 .. _cf-domain-conf:
 
-4.6. Working with domains and projects
--------------------------------------------
+4.6. Working with domains, projects and users
+-----------------------------------------------
 
 The following is vital part of OpenStack operations:
 
 * **Domains** - abstract resources; a domain is a collection of users and projects that exist within the OpenStack environment.
 * **Projects** - organizational units in the cloud to which you can assign users (a project is a group of zero or more users).
-* **users** - members of one or more projects. 
-* **roles** - define which actions users can perform. You assign roles to user-project pairs.
+* **Users** - members of one or more projects. 
+* **Roles** - define which actions users can perform. You assign roles to user-project pairs.
 
 
 
@@ -481,7 +483,7 @@ To create a **domain** using Dashboard, click on **Identity** from the panel on 
    :alt: Create domain
    :align: center
 
-You need to create domain with name **cf_domain** 
+You need to create domain with name **cf_domain**.
 
 After the **cf_domain** is created you need to locate it in the table with domains and press the corresponding bitton **Set Domain Context** from the **Actions** column. In this way, all subsequent operations will be executed in the context of this domain.
 
@@ -678,4 +680,4 @@ To update quotas for **cloudfoundry** *project* use the following commands:
 4.8. Next steps
 ----------------
    
-You have now successfully deployed and configured OpenStack, taking full advantage of both Juju and MAAS. The next step is to :ref:`deploy CloudFoundry with BOSH Director on OpenStack<cf-deply>`.
+You have now successfully deployed and configured OpenStack, taking full advantage of both Juju and MAAS. The next step is to :ref:`deploy CloudFoundry with BOSH Director on OpenStack<cf-deploy>`.

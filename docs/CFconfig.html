@@ -97,7 +97,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#working-with-flavors-using-cli">Working with flavors using CLI:</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#working-with-domains-and-projects">4.6. Working with domains and projects</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#working-with-domains-projects-and-users">4.6. Working with domains, projects and users</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#working-with-domains-and-projects-using-web-ui">Working with domains and projects using web UI:</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#working-with-domains-and-projects-using-cli">Working with domains and projects using CLI:</a></li>
 </ul>
@@ -186,9 +186,11 @@
 <li>Installing a client for <a class="reference external" href="https://docs.openstack.org/python-glanceclient/latest/">OpenStack Images API</a> (the <strong>glanceclient</strong> module)</li>
 <li>Installing a client for <a class="reference external" href="https://docs.openstack.org/python-neutronclient/latest/">OpenStack Networking API</a> (the <strong>neutronclient</strong> module)</li>
 <li>Installing a <a class="reference external" href="https://docs.openstack.org/python-openstackclient/pike/">command-line client for OpenStack</a> (the <strong>OpenStackClient</strong> - OSC)</li>
-<li>Setting up the environment variables</li>
-<li>Adding a domain, project and user</li>
-<li>External network access and Ubuntu cloud image deployment</li>
+<li>Setting up the <a class="reference internal" href="#cf-env-conf"><span class="std std-ref">environment variables</span></a></li>
+<li>Creating the necessary <a class="reference internal" href="#cf-domain-flavors"><span class="std std-ref">flavors</span></a></li>
+<li>Adding a <a class="reference internal" href="#cf-domain-conf"><span class="std std-ref">domain, project and user</span></a></li>
+<li>Managing <a class="reference internal" href="#cf-quotas-conf"><span class="std std-ref">quotas</span></a></li>
+<li><a class="reference internal" href="#cf-net-conf"><span class="std std-ref">External network</span></a> access and Ubuntu <a class="reference internal" href="#cf-cloud-conf"><span class="std std-ref">cloud image</span></a> deployment</li>
 </ul>
 <p>Some of the procedures can be made either from the web UI (Horizon) or from the command line interface (CLI).</p>
 <div class="section" id="installing-clients-for-different-openstack-operations">
@@ -527,14 +529,14 @@ To do this, you need to know the following:</p>
 </div>
 </div>
 </div>
-<div class="section" id="working-with-domains-and-projects">
-<span id="cf-domain-conf"></span><h2>4.6. Working with domains and projects<a class="headerlink" href="#working-with-domains-and-projects" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="working-with-domains-projects-and-users">
+<span id="cf-domain-conf"></span><h2>4.6. Working with domains, projects and users<a class="headerlink" href="#working-with-domains-projects-and-users" title="Permalink to this headline">¶</a></h2>
 <p>The following is vital part of OpenStack operations:</p>
 <ul class="simple">
 <li><strong>Domains</strong> - abstract resources; a domain is a collection of users and projects that exist within the OpenStack environment.</li>
 <li><strong>Projects</strong> - organizational units in the cloud to which you can assign users (a project is a group of zero or more users).</li>
-<li><strong>users</strong> - members of one or more projects.</li>
-<li><strong>roles</strong> - define which actions users can perform. You assign roles to user-project pairs.</li>
+<li><strong>Users</strong> - members of one or more projects.</li>
+<li><strong>Roles</strong> - define which actions users can perform. You assign roles to user-project pairs.</li>
 </ul>
 <div class="section" id="working-with-domains-and-projects-using-web-ui">
 <span id="cf-domain-conf-giu"></span><h3>Working with domains and projects using web UI:<a class="headerlink" href="#working-with-domains-and-projects-using-web-ui" title="Permalink to this headline">¶</a></h3>
@@ -542,7 +544,7 @@ To do this, you need to know the following:</p>
 <div class="figure align-center" id="cfconfig-domain-create">
 <img alt="Create domain" src="_images/4.6-cfconfig_domain_create.png" />
 </div>
-<p>You need to create domain with name <strong>cf_domain</strong></p>
+<p>You need to create domain with name <strong>cf_domain</strong>.</p>
 <p>After the <strong>cf_domain</strong> is created you need to locate it in the table with domains and press the corresponding bitton <strong>Set Domain Context</strong> from the <strong>Actions</strong> column. In this way, all subsequent operations will be executed in the context of this domain.</p>
 <div class="figure align-center" id="cfconfig-domain-context">
 <img alt="Set domain context" src="_images/4.7-cfconfig_domain_context.png" />
@@ -663,7 +665,7 @@ To do this, you need to know the following:</p>
 </div>
 <div class="section" id="next-steps">
 <h2>4.8. Next steps<a class="headerlink" href="#next-steps" title="Permalink to this headline">¶</a></h2>
-<p>You have now successfully deployed and configured OpenStack, taking full advantage of both Juju and MAAS. The next step is to <a class="reference internal" href="CFdeployment.html#cf-deply"><span class="std std-ref">deploy CloudFoundry with BOSH Director on OpenStack</span></a>.</p>
+<p>You have now successfully deployed and configured OpenStack, taking full advantage of both Juju and MAAS. The next step is to <a class="reference internal" href="CFdeployment.html#cf-deploy"><span class="std std-ref">deploy CloudFoundry with BOSH Director on OpenStack</span></a>.</p>
 </div>
 </div>
 
