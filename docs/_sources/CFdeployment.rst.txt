@@ -6,21 +6,23 @@
 
 .. todo:: Draft: to be deleted after the documentation is ready:
 
-	Done in Section :ref:`"4. Configure OpenStack<cf-config>`
-	1.Configure OpenStack Domain,Project, User, Network for the deployment
-
-	2.Validate the OpenStack configuration using:
-	https://github.com/eniware-org/cf-openstack-validator
-
-	3.Setup the OpenStack projects for the BOSH and CloudFoundry installation using TerraForm modules from here:
-	https://github.com/eniware-org/bosh-openstack-environment-templates
-
-	4. Install BOSH:
-	https://bosh.io/docs/init-openstack/#deploy
-
-	5. Prepare and upload ``cloud-config.yml`` to BOSH to finilize the cloud configuration.
-
-	6. Deploy CloudFoundry.
+  
+  1. Configure OpenStack Domain,Project, User, Network for the deployment - Done in Section :ref:`"4. Configure OpenStack"<cf-config>`
+  
+  2. Validate the OpenStack configuration using:
+  https://github.com/eniware-org/cf-openstack-validator : 
+  
+  * cf-openstack-validator installation done in section :ref:`5.2. CF-OpenStack-Validator installation<cf-deploy-cfval-install>`
+  
+  3. Setup the OpenStack projects for the BOSH and CloudFoundry installation using TerraForm modules from here:
+  https://github.com/eniware-org/bosh-openstack-environment-templates
+  
+  4. Install BOSH:
+  https://bosh.io/docs/init-openstack/#deploy
+  
+  5. Prepare and upload ``cloud-config.yml`` to BOSH to finilize the cloud configuration.
+  
+  6. Deploy CloudFoundry.
 
 
 In :ref:`previous section<cf-config>` we've configured OpenStack for use within a production environment. Various types of :ref:`clients<cf-clients-install>` were installed for different OpenStack operations. We have set :ref:`environment variables<cf-env-conf>`, :ref:`external network<cf-net-conf>`, :ref:`flavors<cf-domain-flavors>`, :ref:`domain, project and user<cf-domain-conf>`.
@@ -55,7 +57,7 @@ To be able to proceed, you need to the following:
 .. _cf-deploy-cfval-pre:
 
 5.2.1. Prerequisites for CF-OpenStack-Validator
--------------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 OpenStack configuration requirements are as follows:
 
@@ -84,10 +86,10 @@ The validator runs on Linux. Please ensure that the following packages are insta
 * `ssh <https://packages.ubuntu.com/bionic/ssh>`_
 
 
-.. _cf-deploy-cfval-install:
+.. _cf-deploy-cfval-command:
 
 5.2.2. Installation of CF-OpenStack-Validator
--------------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 To clone the CF-OpenStack-Validator repository:
 
@@ -137,7 +139,7 @@ To start the validation process type the following command:
 .. _cf-deploy-cfval-conf:
 
 5.2.3. Additional configurations
---------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 * **CPI:**
  
