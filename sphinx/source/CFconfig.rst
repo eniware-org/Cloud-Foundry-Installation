@@ -103,6 +103,9 @@ After the **openrc** is created, you can use OpenStack’s Horizon web UI to dow
 
 .. note:: If the **openrc** file is manually edited, it is important that all variables are correctly entered.
 
+
+.. _neutron-region:
+
 You can check the variables have been set correctly by seeing if your OpenStack endpoints are visible with the ``openstack endpoint list`` command. The output will look something like this:
 
 
@@ -221,6 +224,10 @@ To define a network called **ext_net** type the following command:
 
  openstack network create ext_net --share --external
 
+
+
+.. _ext_net-id:
+
 The output from this command will show the various fields and values for the chosen configuration option. To show the new network ID alongside its name type the command ``openstack network list``:
 
 
@@ -333,6 +340,8 @@ The **flavors** define the compute, memory, and storage capacity of nova computi
 .. hint:: For information on the flavors and flavor extra specs, refer to `Flavors <https://docs.openstack.org/nova/rocky/user/flavors.html>`_.
 
 The following flavors should be created:
+
+.. _flavours-required:
 
 .. list-table::
     :widths: 20 5 7 7 7

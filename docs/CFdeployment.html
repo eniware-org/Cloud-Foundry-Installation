@@ -93,9 +93,18 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#validate-the-openstack-configuration">5.3. Validate the OpenStack configuration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#prepare-openstack-resources-for-bosh-and-cloud-foundry-via-terraform">5.4. Prepare OpenStack resources for BOSH and Cloud Foundry via Terraform</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#bosh">5.4.1. BOSH</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#cloud-foundry">5.4.2. Cloud Foundry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#prepare-openstack-environment-for-bosh-and-cloud-foundry-via-terraform">5.4. Prepare OpenStack environment for BOSH and Cloud Foundry via Terraform</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#install-terraform-module">5.4.1. Install Terraform module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#openstack-environment-for-bosh">5.4.2. OpenStack environment for BOSH</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#setup-an-openstack-project-to-install-bosh">Setup an OpenStack project to install BOSH:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#terraform-tempalte-file-configuration-for-bosh">Terraform tempalte file configuration for BOSH:</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#openstack-environment-for-cloud-foundry">5.4.3. OpenStack environment for Cloud Foundry</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#setup-an-openstack-project-to-install-cloud-foundry">Setup an OpenStack project to install Cloud Foundry:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#terraform-tempalte-file-configuration-for-cloud-foundry">Terraform tempalte file configuration for Cloud Foundry:</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#install-bosh">5.5. Install BOSH</a></li>
@@ -210,7 +219,7 @@
 <ul class="simple">
 <li><a class="reference internal" href="OpenStack.html#openstack-deploy"><span class="std std-ref">Keystone</span></a> v.2/v.3 Juju charm installed.</li>
 <li>Created <a class="reference internal" href="CFconfig.html#cf-domain-conf"><span class="std std-ref">OpenStack project</span></a>.</li>
-<li>Created user with access to the previously created project (ideally you don’t want to run as admin).</li>
+<li>Created <em>user</em> with access to the previously created <em>project</em> (ideally you don’t want to run as admin).</li>
 <li>Created network - connect the network with a router to your external network.</li>
 <li>Allocated a floating IP.</li>
 <li>Allowed ssh access in the <em>default</em> security group - create a key pair by executing:</li>
@@ -264,10 +273,6 @@
 $ bundle install
 </pre></div>
 </div>
-<p>To start the validation process type the following command:</p>
-<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span>$ ./validate --stemcell bosh-stemcell-&lt;xxx&gt;-openstack-kvm-ubuntu-trusty-go_agent.tgz --config validator.yml
-</pre></div>
-</div>
 </div>
 <div class="section" id="additional-configurations">
 <span id="cf-deploy-cfval-conf"></span><h3>5.2.3. Additional configurations<a class="headerlink" href="#additional-configurations" title="Permalink to this headline">¶</a></h3>
@@ -296,19 +301,223 @@ $ bundle install
 <span id="cf-deploy-cfval"></span><h2>5.3. Validate the OpenStack configuration<a class="headerlink" href="#validate-the-openstack-configuration" title="Permalink to this headline">¶</a></h2>
 <p>Before deploying Cloud Foundry, make sure to successfully run the <a class="reference external" href="https://github.com/eniware-org/cf-openstack-validator">CF-OpenStack-Validator</a> against your project:</p>
 <ul class="simple">
-<li>Make sure you have the required flavors on OpenStack by enabling the <a class="reference external" href="https://github.com/eniware-org/cf-openstack-validator/tree/master/extensions/flavors">flavors extension</a> with the <a class="reference external" href="https://github.com/eniware-org/cf-deployment/blob/master/iaas-support/openstack/flavors.yml">flavors.yml</a> file in this directory. Flavor names need to match those specified in the cloud config.</li>
+<li>Make sure you have the <a class="reference internal" href="CFconfig.html#flavours-required"><span class="std std-ref">required flavors</span></a> on OpenStack by enabling the <a class="reference external" href="https://github.com/eniware-org/cf-openstack-validator/tree/master/extensions/flavors">flavors extension</a> with the <a class="reference external" href="https://github.com/eniware-org/cf-deployment/blob/master/iaas-support/openstack/flavors.yml">flavors.yml</a> file in this directory. Flavor names need to match those specified in the cloud config.</li>
 <li>If you plan using the <a class="reference external" href="https://github.com/eniware-org/cf-deployment/blob/master/operations/use-swift-blobstore.yml">Swift ops file</a> to enable Swift as blobstore for the Cloud Controller, you should also run the <a class="reference external" href="https://github.com/eniware-org/cf-openstack-validator/tree/master/extensions/object_storage">Swift extension</a>.</li>
 </ul>
+<p>To <strong>start the validation process</strong> type the following command:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span>$ ./validate --stemcell bosh-stemcell-&lt;xxx&gt;-openstack-kvm-ubuntu-trusty-go_agent.tgz --config validator.yml
+</pre></div>
 </div>
-<div class="section" id="prepare-openstack-resources-for-bosh-and-cloud-foundry-via-terraform">
-<span id="cf-deploy-terraform"></span><h2>5.4. Prepare OpenStack resources for BOSH and Cloud Foundry via Terraform<a class="headerlink" href="#prepare-openstack-resources-for-bosh-and-cloud-foundry-via-terraform" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="bosh">
-<h3>5.4.1. BOSH<a class="headerlink" href="#bosh" title="Permalink to this headline">¶</a></h3>
-<p>To setup an OpenStack project to install BOSH please use the following <a class="reference external" href="https://github.com/cloudfoundry-incubator/bosh-openstack-environment-templates/tree/master/bosh-init-tf">Terraform module</a>. Adapt <code class="docutils literal notranslate"><span class="pre">terraform.tfvars.template</span></code> to your needs.</p>
 </div>
-<div class="section" id="cloud-foundry">
-<h3>5.4.2. Cloud Foundry<a class="headerlink" href="#cloud-foundry" title="Permalink to this headline">¶</a></h3>
-<p>To setup the project to install Cloud Foundry please use the following <a class="reference external" href="https://github.com/cloudfoundry-incubator/bosh-openstack-environment-templates/tree/master/cf-deployment-tf">Terraform module</a>. Adapt <code class="docutils literal notranslate"><span class="pre">terraform.tfvars.template</span></code> to your needs. Variable <code class="docutils literal notranslate"><span class="pre">bosh_router_id</span></code> is output of the previous BOSH terraform module.</p>
+<div class="section" id="prepare-openstack-environment-for-bosh-and-cloud-foundry-via-terraform">
+<span id="cf-deploy-terraform"></span><h2>5.4. Prepare OpenStack environment for BOSH and Cloud Foundry via Terraform<a class="headerlink" href="#prepare-openstack-environment-for-bosh-and-cloud-foundry-via-terraform" title="Permalink to this headline">¶</a></h2>
+<p>You can use a <strong>Terraform environment template</strong> to configure your OpenStack project automatically. You will need to create a <code class="docutils literal notranslate"><span class="pre">terraform.tfvars</span></code> file with information about the environment.</p>
+<div class="admonition important">
+<p class="first admonition-title">Important</p>
+<p class="last">The terraform scripts will output the OpenStack resource information required for the BOSH manifest. Make sure to treat the created <code class="docutils literal notranslate"><span class="pre">terraform.tfstate</span></code> files with care.</p>
+</div>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">Instead of using Terraform, you can prepare an OpenStack environment <strong>manually</strong> as described <a class="reference external" href="https://bosh.io/docs/init-openstack/#configuration-of-a-new-openstack-project">here</a>.</p>
+</div>
+<div class="section" id="install-terraform-module">
+<span id="cf-deploy-terraform-inst"></span><h3>5.4.1. Install Terraform module<a class="headerlink" href="#install-terraform-module" title="Permalink to this headline">¶</a></h3>
+<p>Make sure you have updated package database and installed unzip package:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">update</span>
+<span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">git</span> <span class="n">unzip</span>
+</pre></div>
+</div>
+<p>To install the <strong>Terraform</strong> module:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">eniware</span><span class="o">-</span><span class="n">org</span><span class="o">/</span><span class="n">bosh</span><span class="o">-</span><span class="n">openstack</span><span class="o">-</span><span class="n">environment</span><span class="o">-</span><span class="n">templates</span><span class="o">.</span><span class="n">git</span>
+<span class="n">wget</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">releases</span><span class="o">.</span><span class="n">hashicorp</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">terraform</span><span class="o">/</span><span class="mf">0.11</span><span class="o">.</span><span class="mi">11</span><span class="o">/</span><span class="n">terraform_0</span><span class="o">.</span><span class="mf">11.11</span><span class="n">_linux_amd64</span><span class="o">.</span><span class="n">zip</span>
+<span class="n">unzip</span> <span class="n">terraform_0</span><span class="o">.</span><span class="mf">11.11</span><span class="n">_linux_amd64</span><span class="o">.</span><span class="n">zip</span>
+<span class="n">chmod</span> <span class="o">+</span><span class="n">x</span> <span class="n">terraform</span>
+<span class="n">sudo</span> <span class="n">mv</span> <span class="n">terraform</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="openstack-environment-for-bosh">
+<span id="cf-deploy-bosh-env"></span><h3>5.4.2. OpenStack environment for BOSH<a class="headerlink" href="#openstack-environment-for-bosh" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="setup-an-openstack-project-to-install-bosh">
+<span id="cf-deploy-bosh-env-set"></span><h4>Setup an OpenStack project to install BOSH:<a class="headerlink" href="#setup-an-openstack-project-to-install-bosh" title="Permalink to this headline">¶</a></h4>
+<p>To setup an OpenStack project to install BOSH please use the following <a class="reference external" href="https://github.com/eniware-org/bosh-openstack-environment-templates/tree/master/bosh-init-tf">Terraform module</a>. Adapt <code class="docutils literal notranslate"><span class="pre">terraform.tfvars.template</span></code> to your needs.</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>Create a working folder:</li>
+</ol>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkdir</span> <span class="n">tmp</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li>Copy the <a class="reference internal" href="#terraform-tfvars-bosh"><span class="std std-ref">template file</span></a>:</li>
+</ol>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cp</span> <span class="n">bosh</span><span class="o">-</span><span class="n">openstack</span><span class="o">-</span><span class="n">environment</span><span class="o">-</span><span class="n">templates</span><span class="o">/</span><span class="n">bosh</span><span class="o">-</span><span class="n">init</span><span class="o">-</span><span class="n">tf</span><span class="o">/</span><span class="n">terraform</span><span class="o">.</span><span class="n">tfvars</span><span class="o">.</span><span class="n">template</span> <span class="n">tmp</span><span class="o">/</span><span class="n">terraform</span><span class="o">.</span><span class="n">tfvars</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li>Generate a key pair executing the following script:</li>
+</ol>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sh</span> <span class="n">bosh</span><span class="o">-</span><span class="n">openstack</span><span class="o">-</span><span class="n">environment</span><span class="o">-</span><span class="n">templates</span><span class="o">/</span><span class="n">bosh</span><span class="o">-</span><span class="n">init</span><span class="o">-</span><span class="n">cf</span><span class="o">/</span><span class="n">generate_ssh_keypair</span><span class="o">.</span><span class="n">sh</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li>Move the generated key pair to your working folder <code class="docutils literal notranslate"><span class="pre">tmp</span></code>:</li>
+</ol>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mv</span> <span class="n">bosh</span><span class="o">.*</span> <span class="n">tmp</span><span class="o">/</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="5">
+<li>Navigate to the working folder <code class="docutils literal notranslate"><span class="pre">tmp</span></code>:</li>
+</ol>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">tmp</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="6">
+<li>Configure the <a class="reference internal" href="#terraform-tfvars-bosh"><span class="std std-ref">Terraform environment template</span></a> <code class="docutils literal notranslate"><span class="pre">terraform.tfvars</span></code>.</li>
+<li>Run the following commands:</li>
+</ol>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">terraform</span> <span class="n">init</span> <span class="o">../</span><span class="n">bosh</span><span class="o">-</span><span class="n">openstack</span><span class="o">-</span><span class="n">environment</span><span class="o">-</span><span class="n">templates</span><span class="o">/</span><span class="n">bosh</span><span class="o">-</span><span class="n">init</span><span class="o">-</span><span class="n">tf</span><span class="o">/</span>
+<span class="n">terraform</span> <span class="n">apply</span> <span class="o">../</span><span class="n">bosh</span><span class="o">-</span><span class="n">openstack</span><span class="o">-</span><span class="n">environment</span><span class="o">-</span><span class="n">templates</span><span class="o">/</span><span class="n">bosh</span><span class="o">-</span><span class="n">init</span><span class="o">-</span><span class="n">tf</span><span class="o">/</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="8">
+<li>Save the <code class="docutils literal notranslate"><span class="pre">terraform.tfvars</span></code> and <code class="docutils literal notranslate"><span class="pre">terraform.tfstate</span></code> files for <strong>bosh-init-tf</strong>:</li>
+</ol>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mv</span> <span class="n">terraform</span><span class="o">.</span><span class="n">tfvars</span> <span class="n">bosh_terraform</span><span class="o">.</span><span class="n">tfvars</span>
+<span class="n">mv</span> <span class="n">terraform</span><span class="o">.</span><span class="n">tfstate</span> <span class="n">bosh_terraform</span><span class="o">.</span><span class="n">tfstate</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="terraform-tempalte-file-configuration-for-bosh">
+<span id="terraform-tfvars-bosh"></span><h4>Terraform tempalte file configuration for BOSH:<a class="headerlink" href="#terraform-tempalte-file-configuration-for-bosh" title="Permalink to this headline">¶</a></h4>
+<p>The content of the <a class="reference external" href="https://github.com/eniware-org/bosh-openstack-environment-templates/blob/master/bosh-init-tf/terraform.tfvars.template">terraform tempalte file</a> <code class="docutils literal notranslate"><span class="pre">terraform.tfvars</span></code> for BOSH is as follows:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">auth_url</span> <span class="o">=</span> <span class="s2">&quot;&lt;auth_url&gt;&quot;</span>
+<span class="n">domain_name</span> <span class="o">=</span> <span class="s2">&quot;&lt;domain_name&gt;&quot;</span>
+<span class="n">user_name</span> <span class="o">=</span> <span class="s2">&quot;&lt;ostack_user&gt;&quot;</span>
+<span class="n">password</span> <span class="o">=</span> <span class="s2">&quot;&lt;ostack_pw&gt;&quot;</span>
+<span class="n">tenant_name</span> <span class="o">=</span> <span class="s2">&quot;&lt;ostack_tenant_name&gt;&quot;</span>
+<span class="n">region_name</span> <span class="o">=</span> <span class="s2">&quot;&lt;region_name&gt;&quot;</span>
+<span class="n">availability_zone</span> <span class="o">=</span> <span class="s2">&quot;&lt;availability_zone&gt;&quot;</span>
+
+<span class="n">ext_net_name</span> <span class="o">=</span> <span class="s2">&quot;&lt;ext_net_name&gt;&quot;</span>
+<span class="n">ext_net_id</span> <span class="o">=</span> <span class="s2">&quot;&lt;ext_net_id&gt;&quot;</span>
+
+<span class="c1"># in case your OpenStack needs custom nameservers</span>
+<span class="c1"># dns_nameservers = 8.8.8.8</span>
+
+<span class="c1"># Disambiguate keypairs with this suffix</span>
+<span class="c1"># keypair_suffix = &quot;&lt;keypair_suffix&gt;&quot;</span>
+
+<span class="c1"># Disambiguate security groups with this suffix</span>
+<span class="c1"># security_group_suffix = &quot;&lt;security_group_suffix&gt;&quot;</span>
+
+<span class="c1"># in case of self signed certificate select one of the following options</span>
+<span class="c1"># cacert_file = &quot;&lt;path-to-certificate&gt;&quot;</span>
+<span class="c1"># insecure = &quot;true&quot;</span>
+</pre></div>
+</div>
+<p>To edit the <code class="docutils literal notranslate"><span class="pre">terraform.tfvars</span></code> for BOSH using the described in this documentation scenario:</p>
+<div class="code highlight-default notranslate" id="terraform-tfvars-bosh-example"><div class="highlight"><pre><span></span><span class="n">nano</span> <span class="n">terraform</span><span class="o">.</span><span class="n">tfvars</span>
+</pre></div>
+</div>
+<p>Enter the following settings:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">auth_url</span><span class="o">=</span><span class="s2">&quot;http://192.168.40.228:5000/v3&quot;</span>
+<span class="n">domain_name</span><span class="o">=</span><span class="s2">&quot;cf_domain&quot;</span>
+<span class="n">user_name</span><span class="o">=</span><span class="s2">&quot;eniware&quot;</span>
+<span class="n">password</span><span class="o">=</span> <span class="o">&lt;</span><span class="n">your_password</span><span class="o">&gt;</span>
+<span class="n">tenant_name</span><span class="o">=</span><span class="s2">&quot;cloudfoundry&quot;</span>
+<span class="n">region_name</span><span class="o">=</span><span class="s2">&quot;RegionOne&quot;</span>
+<span class="n">availability_zone</span><span class="o">=</span><span class="s2">&quot;nova&quot;</span>
+<span class="n">ext_net_name</span><span class="o">=</span><span class="s2">&quot;ext_net&quot;</span>
+<span class="n">ext_net_id</span><span class="o">=</span><span class="s2">&quot;db178716-7d8a-444b-854a-685feb5bf7ea&quot;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">auth_url</span></code> is the <a class="reference internal" href="OpenStack.html#openstack-test"><span class="std std-ref">URL of the Keystone service</span></a>, which is <code class="docutils literal notranslate"><span class="pre">http://192.168.40.228:5000/v3</span></code> in our case (it can be retrieved by using <code class="docutils literal notranslate"><span class="pre">juju</span> <span class="pre">status</span> <span class="pre">|</span> <span class="pre">grep</span> <span class="pre">keystone/0</span></code> command).</li>
+<li>The <a class="reference internal" href="CFconfig.html#cf-domain-conf"><span class="std std-ref">created</span></a> <em>domain</em> <strong>cf_domain</strong>, with <em>project</em> <strong>cloudfondry</strong> and <em>user</em> <strong>eniware</strong> are set in the template in the <code class="docutils literal notranslate"><span class="pre">domain_name</span></code>, <code class="docutils literal notranslate"><span class="pre">user_name</span></code>, <code class="docutils literal notranslate"><span class="pre">password</span></code>, and <code class="docutils literal notranslate"><span class="pre">tenant_name</span></code> fields.</li>
+<li><code class="docutils literal notranslate"><span class="pre">region_name</span></code> can be retrieved when editing the Neutron config file or from <a class="reference internal" href="CFconfig.html#neutron-region"><span class="std std-ref">here</span></a>.</li>
+<li>The <a class="reference internal" href="CFconfig.html#cf-net-conf"><span class="std std-ref">defined external network</span></a> is set in <code class="docutils literal notranslate"><span class="pre">ext_net_name</span></code> filed.</li>
+<li>The <code class="docutils literal notranslate"><span class="pre">ext_name_id</span></code> identificator can be retrieved from the OpenStack web UI (go to <em>Project &gt; Network &gt; Networks</em>, click on <strong>ext_net</strong> and go to <strong>Overview</strong> tab) or by using the <a class="reference internal" href="CFconfig.html#ext-net-id"><span class="std std-ref">command</span></a> <code class="docutils literal notranslate"><span class="pre">openstack</span> <span class="pre">network</span> <span class="pre">list</span></code>.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="openstack-environment-for-cloud-foundry">
+<span id="cf-deploy-cf-env"></span><h3>5.4.3. OpenStack environment for Cloud Foundry<a class="headerlink" href="#openstack-environment-for-cloud-foundry" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="setup-an-openstack-project-to-install-cloud-foundry">
+<span id="cf-deploy-cf-env-set"></span><h4>Setup an OpenStack project to install Cloud Foundry:<a class="headerlink" href="#setup-an-openstack-project-to-install-cloud-foundry" title="Permalink to this headline">¶</a></h4>
+<p>To setup the project to install Cloud Foundry please use the following <a class="reference external" href="https://github.com/eniware-org/bosh-openstack-environment-templates/tree/master/cf-deployment-tf">Terraform module</a>. Adapt <code class="docutils literal notranslate"><span class="pre">terraform.tfvars.template</span></code> to your needs. Variable <code class="docutils literal notranslate"><span class="pre">bosh_router_id</span></code> is output of the previous BOSH terraform module.</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>Copy the <a class="reference internal" href="#terraform-tfvars-cf"><span class="std std-ref">template file</span></a> <code class="docutils literal notranslate"><span class="pre">terraform.tfvars</span></code> file for <strong>cf-deployment-tf</strong>:</li>
+</ol>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cp</span> <span class="o">../</span><span class="n">bosh</span><span class="o">-</span><span class="n">openstack</span><span class="o">-</span><span class="n">environment</span><span class="o">-</span><span class="n">templates</span><span class="o">/</span><span class="n">cf</span><span class="o">-</span><span class="n">deployment</span><span class="o">-</span><span class="n">tf</span><span class="o">/</span><span class="n">terraform</span><span class="o">.</span><span class="n">tfvars</span><span class="o">.</span><span class="n">template</span> <span class="o">./</span><span class="n">terraform</span><span class="o">.</span><span class="n">tfvars</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li>Configure the <a class="reference internal" href="#terraform-tfvars-cf"><span class="std std-ref">Terraform environment template</span></a> <code class="docutils literal notranslate"><span class="pre">terraform.tfvars</span></code> for <strong>cf-deployment-tf</strong>:</li>
+<li>Run the following commands:</li>
+</ol>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">terraform</span> <span class="n">init</span> <span class="o">../</span><span class="n">bosh</span><span class="o">-</span><span class="n">openstack</span><span class="o">-</span><span class="n">environment</span><span class="o">-</span><span class="n">templates</span><span class="o">/</span><span class="n">cf</span><span class="o">-</span><span class="n">deployment</span><span class="o">-</span><span class="n">tf</span><span class="o">/</span>
+<span class="n">terraform</span> <span class="n">apply</span> <span class="o">../</span><span class="n">bosh</span><span class="o">-</span><span class="n">openstack</span><span class="o">-</span><span class="n">environment</span><span class="o">-</span><span class="n">templates</span><span class="o">/</span><span class="n">cf</span><span class="o">-</span><span class="n">deployment</span><span class="o">-</span><span class="n">tf</span><span class="o">/</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="terraform-tempalte-file-configuration-for-cloud-foundry">
+<span id="terraform-tfvars-cf"></span><h4>Terraform tempalte file configuration for Cloud Foundry:<a class="headerlink" href="#terraform-tempalte-file-configuration-for-cloud-foundry" title="Permalink to this headline">¶</a></h4>
+<p>The content of the <a class="reference external" href="https://github.com/eniware-org/bosh-openstack-environment-templates/blob/master/cf-deployment-tf/terraform.tfvars.template">terraform tempalte file</a> <code class="docutils literal notranslate"><span class="pre">terraform.tfvars</span></code> for Cloud Foundry is as follows:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">auth_url</span> <span class="o">=</span> <span class="s2">&quot;&lt;auth-url&gt;&quot;</span>
+<span class="n">domain_name</span> <span class="o">=</span> <span class="s2">&quot;&lt;domain&gt;&quot;</span>
+<span class="n">user_name</span> <span class="o">=</span> <span class="s2">&quot;&lt;user&gt;&quot;</span>
+<span class="n">password</span> <span class="o">=</span> <span class="s2">&quot;&lt;password&gt;&quot;</span>
+<span class="n">project_name</span> <span class="o">=</span> <span class="s2">&quot;&lt;project-name&gt;&quot;</span>
+<span class="n">region_name</span> <span class="o">=</span> <span class="s2">&quot;&lt;region-name&gt;&quot;</span>
+<span class="n">availability_zones</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&lt;az-1&gt;&quot;</span><span class="p">,</span><span class="s2">&quot;&lt;az-2&gt;&quot;</span><span class="p">,</span><span class="s2">&quot;&lt;az-3&gt;&quot;</span><span class="p">]</span>
+<span class="n">ext_net_name</span> <span class="o">=</span> <span class="s2">&quot;&lt;external-network-name&gt;&quot;</span>
+
+<span class="c1"># the OpenStack router id which can be used to access the BOSH network</span>
+<span class="n">bosh_router_id</span> <span class="o">=</span> <span class="s2">&quot;&lt;bosh-router-id&gt;&quot;</span>
+
+<span class="c1"># in case Openstack has its own DNS servers</span>
+<span class="n">dns_nameservers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&lt;dns-server-1&gt;&quot;</span><span class="p">,</span><span class="s2">&quot;&lt;dns-server-2&gt;&quot;</span><span class="p">]</span>
+
+<span class="c1"># does BOSH use a local blobstore? Set to &#39;false&#39;, if your BOSH Director uses e.g. S3 to store its blobs</span>
+<span class="n">use_local_blobstore</span> <span class="o">=</span> <span class="s2">&quot;&lt;true or false&gt;&quot;</span> <span class="c1">#default is true</span>
+
+<span class="c1"># enable TCP routing setup</span>
+<span class="n">use_tcp_router</span> <span class="o">=</span> <span class="s2">&quot;&lt;true or false&gt;&quot;</span> <span class="c1">#default is true</span>
+<span class="n">num_tcp_ports</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">number</span><span class="o">&gt;</span> <span class="c1">#default is 100, needs to be &gt; 0</span>
+
+<span class="c1"># in case of self signed certificate select one of the following options</span>
+<span class="c1"># cacert_file = &quot;&lt;path-to-certificate&gt;&quot;</span>
+<span class="c1"># insecure = &quot;true&quot;</span>
+</pre></div>
+</div>
+<p>To edit the <code class="docutils literal notranslate"><span class="pre">terraform.tfvars</span></code> for Cloud Foundry using the described in this documentation scenario:</p>
+<div class="code highlight-default notranslate" id="terraform-tfvars-cf-example"><div class="highlight"><pre><span></span><span class="n">nano</span> <span class="n">terraform</span><span class="o">.</span><span class="n">tfvars</span>
+</pre></div>
+</div>
+<p>Enter the following settings:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">auth_url</span><span class="o">=</span><span class="s2">&quot;http://192.168.40.228:5000/v3&quot;</span>
+<span class="n">domain_name</span><span class="o">=</span><span class="s2">&quot;cf_domain&quot;</span>
+<span class="n">user_name</span><span class="o">=</span><span class="s2">&quot;eniware&quot;</span>
+<span class="n">password</span><span class="o">=</span> <span class="o">&lt;</span><span class="n">your_password</span><span class="o">&gt;</span>
+<span class="n">tenant_name</span><span class="o">=</span><span class="s2">&quot;cloudfoundry&quot;</span>
+<span class="n">region_name</span><span class="o">=</span><span class="s2">&quot;RegionOne&quot;</span>
+<span class="n">availability_zones</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;nova&quot;</span><span class="p">,</span> <span class="s2">&quot;nova&quot;</span><span class="p">,</span> <span class="s2">&quot;nova&quot;</span><span class="p">]</span>
+<span class="n">bosh_router_id</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="n">dns_nameservers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;8.8.8.8&quot;</span><span class="p">]</span>
+<span class="n">use_local_blobstore</span> <span class="o">=</span> <span class="s2">&quot;true&quot;</span>
+<span class="n">use_tcp_router</span> <span class="o">=</span> <span class="s2">&quot;true&quot;</span>
+<span class="n">num_tcp_ports</span> <span class="o">=</span> <span class="mi">100</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">auth_url</span></code>, <code class="docutils literal notranslate"><span class="pre">domain_name</span></code>, <code class="docutils literal notranslate"><span class="pre">user_name</span></code>, <code class="docutils literal notranslate"><span class="pre">password</span></code>, <code class="docutils literal notranslate"><span class="pre">tenant_name</span></code>, and <code class="docutils literal notranslate"><span class="pre">region_name</span></code> are the same as in <code class="docutils literal notranslate"><span class="pre">terraform.tfvars</span></code> <a class="reference internal" href="#terraform-tfvars-bosh-example"><span class="std std-ref">template file for BOSH</span></a>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">bosh_router_id</span></code> can be retrieved from the output of the previous <a class="reference internal" href="#terraform-tfvars-bosh-example"><span class="std std-ref">terraform script</span></a> for BOSH.</li>
+</ul>
+</div>
 </div>
 </div>
 <div class="section" id="install-bosh">

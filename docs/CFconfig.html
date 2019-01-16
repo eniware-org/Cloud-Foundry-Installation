@@ -258,7 +258,7 @@ export OS_AUTH_TYPE=password
 <p class="first admonition-title">Note</p>
 <p class="last">If the <strong>openrc</strong> file is manually edited, it is important that all variables are correctly entered.</p>
 </div>
-<p>You can check the variables have been set correctly by seeing if your OpenStack endpoints are visible with the <code class="docutils literal notranslate"><span class="pre">openstack</span> <span class="pre">endpoint</span> <span class="pre">list</span></code> command. The output will look something like this:</p>
+<p id="neutron-region">You can check the variables have been set correctly by seeing if your OpenStack endpoints are visible with the <code class="docutils literal notranslate"><span class="pre">openstack</span> <span class="pre">endpoint</span> <span class="pre">list</span></code> command. The output will look something like this:</p>
 <div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">+----------------------------------+-----------+--------------+--------------+</span>
 <span class="o">|</span> <span class="n">ID</span>                               <span class="o">|</span> <span class="n">Region</span>    <span class="o">|</span> <span class="n">Service</span> <span class="n">Name</span> <span class="o">|</span> <span class="n">Service</span> <span class="n">Type</span> <span class="o">|</span>
 <span class="o">+----------------------------------+-----------+--------------+--------------+</span>
@@ -337,7 +337,7 @@ To do this, you need to know the following:</p>
 <div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openstack</span> <span class="n">network</span> <span class="n">create</span> <span class="n">ext_net</span> <span class="o">--</span><span class="n">share</span> <span class="o">--</span><span class="n">external</span>
 </pre></div>
 </div>
-<p>The output from this command will show the various fields and values for the chosen configuration option. To show the new network ID alongside its name type the command <code class="docutils literal notranslate"><span class="pre">openstack</span> <span class="pre">network</span> <span class="pre">list</span></code>:</p>
+<p id="ext-net-id">The output from this command will show the various fields and values for the chosen configuration option. To show the new network ID alongside its name type the command <code class="docutils literal notranslate"><span class="pre">openstack</span> <span class="pre">network</span> <span class="pre">list</span></code>:</p>
 <div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">+--------------------------------------+---------+---------+</span>
 <span class="o">|</span> <span class="n">ID</span>                                   <span class="o">|</span> <span class="n">Name</span>    <span class="o">|</span> <span class="n">Subnets</span> <span class="o">|</span>
 <span class="o">+--------------------------------------+---------+---------+</span>
@@ -423,7 +423,7 @@ To do this, you need to know the following:</p>
 <p class="last">For information on the flavors and flavor extra specs, refer to <a class="reference external" href="https://docs.openstack.org/nova/rocky/user/flavors.html">Flavors</a>.</p>
 </div>
 <p>The following flavors should be created:</p>
-<table border="1" class="colwidths-given docutils">
+<table border="1" class="colwidths-given docutils" id="flavours-required">
 <colgroup>
 <col width="43%" />
 <col width="11%" />

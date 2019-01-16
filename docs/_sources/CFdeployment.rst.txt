@@ -63,7 +63,7 @@ OpenStack configuration requirements are as follows:
 
 * :ref:`Keystone<openstack-deploy>` v.2/v.3 Juju charm installed.
 * Created :ref:`OpenStack project<cf-domain-conf>`.
-* Created user with access to the previously created project (ideally you don't want to run as admin).
+* Created *user* with access to the previously created *project* (ideally you don't want to run as admin).
 * Created network - connect the network with a router to your external network.
 * Allocated a floating IP.
 * Allowed ssh access in the *default* security group - create a key pair by executing:
@@ -129,11 +129,6 @@ Install the following dependencies:
  $ bundle install
 
 
-To start the validation process type the following command:
-
-.. code::
- 
- $ ./validate --stemcell bosh-stemcell-<xxx>-openstack-kvm-ubuntu-trusty-go_agent.tgz --config validator.yml
 
 
 .. _cf-deploy-cfval-conf:
@@ -172,27 +167,281 @@ You can find more additional OpenStack related configuration options for possibl
 
 Before deploying Cloud Foundry, make sure to successfully run the `CF-OpenStack-Validator <https://github.com/eniware-org/cf-openstack-validator>`_ against your project:
 
-* Make sure you have the required flavors on OpenStack by enabling the `flavors extension <https://github.com/eniware-org/cf-openstack-validator/tree/master/extensions/flavors>`_ with the `flavors.yml <https://github.com/eniware-org/cf-deployment/blob/master/iaas-support/openstack/flavors.yml>`_ file in this directory. Flavor names need to match those specified in the cloud config.
+* Make sure you have the :ref:`required flavors<flavours-required>` on OpenStack by enabling the `flavors extension <https://github.com/eniware-org/cf-openstack-validator/tree/master/extensions/flavors>`_ with the `flavors.yml <https://github.com/eniware-org/cf-deployment/blob/master/iaas-support/openstack/flavors.yml>`_ file in this directory. Flavor names need to match those specified in the cloud config.
 * If you plan using the `Swift ops file <https://github.com/eniware-org/cf-deployment/blob/master/operations/use-swift-blobstore.yml>`_ to enable Swift as blobstore for the Cloud Controller, you should also run the `Swift extension <https://github.com/eniware-org/cf-openstack-validator/tree/master/extensions/object_storage>`_.
 
+
+To **start the validation process** type the following command:
+
+.. code::
+ 
+ $ ./validate --stemcell bosh-stemcell-<xxx>-openstack-kvm-ubuntu-trusty-go_agent.tgz --config validator.yml
 
 
 
 .. _cf-deploy-terraform:
 
-5.4. Prepare OpenStack resources for BOSH and Cloud Foundry via Terraform 
+5.4. Prepare OpenStack environment for BOSH and Cloud Foundry via Terraform 
 --------------------------------------------------------------------------------
 
-5.4.1. BOSH
-^^^^^^^^^^^^^
 
-To setup an OpenStack project to install BOSH please use the following `Terraform module <https://github.com/cloudfoundry-incubator/bosh-openstack-environment-templates/tree/master/bosh-init-tf>`_. Adapt ``terraform.tfvars.template`` to your needs.
+You can use a **Terraform environment template** to configure your OpenStack project automatically. You will need to create a ``terraform.tfvars`` file with information about the environment. 
+
+.. important:: The terraform scripts will output the OpenStack resource information required for the BOSH manifest. Make sure to treat the created ``terraform.tfstate`` files with care.
+
+.. hint:: Instead of using Terraform, you can prepare an OpenStack environment **manually** as described `here <https://bosh.io/docs/init-openstack/#configuration-of-a-new-openstack-project>`_.
 
 
-5.4.2. Cloud Foundry
-^^^^^^^^^^^^^^^^^^^^^^
+.. _cf-deploy-terraform-inst:
 
-To setup the project to install Cloud Foundry please use the following `Terraform module <https://github.com/cloudfoundry-incubator/bosh-openstack-environment-templates/tree/master/cf-deployment-tf>`_. Adapt ``terraform.tfvars.template`` to your needs. Variable ``bosh_router_id`` is output of the previous BOSH terraform module.
+5.4.1. Install Terraform module
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Make sure you have updated package database and installed unzip package:
+
+.. code:: 
+
+ sudo apt-get update       
+ sudo apt-get install -y git unzip
+
+To install the **Terraform** module:
+
+.. code:: 
+ 
+  git clone https://github.com/eniware-org/bosh-openstack-environment-templates.git
+  wget https://releases.hashicorp.com/terraform/0.11.11/terraform_0.11.11_linux_amd64.zip
+  unzip terraform_0.11.11_linux_amd64.zip
+  chmod +x terraform
+  sudo mv terraform /usr/local/bin/ 
+
+
+
+.. _cf-deploy-bosh-env:
+
+5.4.2. OpenStack environment for BOSH
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. _cf-deploy-bosh-env-set:
+
+Setup an OpenStack project to install BOSH:
+++++++++++++++++++++++++++++++++++++++++++++++
+
+To setup an OpenStack project to install BOSH please use the following `Terraform module <https://github.com/eniware-org/bosh-openstack-environment-templates/tree/master/bosh-init-tf>`_. Adapt ``terraform.tfvars.template`` to your needs.
+
+ 1. Create a working folder:
+   
+ .. code:: 
+  
+   mkdir tmp
+
+ 2. Copy the :ref:`template file<terraform.tfvars-bosh>`:
+ 
+ .. code::
+ 
+   cp bosh-openstack-environment-templates/bosh-init-tf/terraform.tfvars.template tmp/terraform.tfvars
+   
+ 3. Generate a key pair executing the following script:
+ 
+ .. code::
+ 
+   sh bosh-openstack-environment-templates/bosh-init-cf/generate_ssh_keypair.sh
+   
+ 4. Move the generated key pair to your working folder ``tmp``:
+ 
+ .. code::
+ 
+   mv bosh.* tmp/
+   
+ 5. Navigate to the working folder ``tmp``:
+ 
+ .. code::
+ 
+   cd tmp
+   
+ 6. Configure the :ref:`Terraform environment template<terraform.tfvars-bosh>` ``terraform.tfvars``.  
+ 
+ 7. Run the following commands:
+ 
+ .. code::
+ 
+   terraform init ../bosh-openstack-environment-templates/bosh-init-tf/
+   terraform apply ../bosh-openstack-environment-templates/bosh-init-tf/
+
+ 8. Save the ``terraform.tfvars`` and ``terraform.tfstate`` files for **bosh-init-tf**:
+ 
+ .. code::
+ 
+     mv terraform.tfvars bosh_terraform.tfvars
+     mv terraform.tfstate bosh_terraform.tfstate
+
+
+.. _terraform.tfvars-bosh:
+
+Terraform tempalte file configuration for BOSH: 
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+The content of the `terraform tempalte file <https://github.com/eniware-org/bosh-openstack-environment-templates/blob/master/bosh-init-tf/terraform.tfvars.template>`_ ``terraform.tfvars`` for BOSH is as follows:
+
+.. code::
+
+	auth_url = "<auth_url>"
+	domain_name = "<domain_name>"
+	user_name = "<ostack_user>"
+	password = "<ostack_pw>"
+	tenant_name = "<ostack_tenant_name>"
+	region_name = "<region_name>"
+	availability_zone = "<availability_zone>"
+
+	ext_net_name = "<ext_net_name>"
+	ext_net_id = "<ext_net_id>"
+
+	# in case your OpenStack needs custom nameservers
+	# dns_nameservers = 8.8.8.8
+
+	# Disambiguate keypairs with this suffix
+	# keypair_suffix = "<keypair_suffix>"
+
+	# Disambiguate security groups with this suffix
+	# security_group_suffix = "<security_group_suffix>"
+
+	# in case of self signed certificate select one of the following options
+	# cacert_file = "<path-to-certificate>"
+	# insecure = "true"
+
+	
+To edit the ``terraform.tfvars`` for BOSH using the described in this documentation scenario:
+
+.. _terraform.tfvars-bosh-example:
+
+.. code::
+
+ nano terraform.tfvars
+
+Enter the following settings:
+
+.. code::
+
+     auth_url="http://192.168.40.228:5000/v3"
+     domain_name="cf_domain"
+     user_name="eniware"
+     password= <your_password>
+     tenant_name="cloudfoundry"
+     region_name="RegionOne"
+     availability_zone="nova"
+     ext_net_name="ext_net"
+     ext_net_id="db178716-7d8a-444b-854a-685feb5bf7ea"   
+
+* ``auth_url`` is the :ref:`URL of the Keystone service<openstack-test>`, which is ``http://192.168.40.228:5000/v3`` in our case (it can be retrieved by using ``juju status | grep keystone/0`` command).
+* The :ref:`created<cf-domain-conf>` *domain* **cf_domain**, with *project* **cloudfondry** and *user* **eniware** are set in the template in the ``domain_name``, ``user_name``, ``password``, and ``tenant_name`` fields.
+* ``region_name`` can be retrieved when editing the Neutron config file or from :ref:`here<neutron-region>`.
+* The :ref:`defined external network<cf-net-conf>` is set in ``ext_net_name`` filed.
+* The ``ext_name_id`` identificator can be retrieved from the OpenStack web UI (go to *Project > Network > Networks*, click on **ext_net** and go to **Overview** tab) or by using the :ref:`command<ext_net-id>` ``openstack network list``.
+
+
+
+
+
+.. _cf-deploy-cf-env:
+
+5.4.3. OpenStack environment for Cloud Foundry
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+.. _cf-deploy-cf-env-set:
+
+Setup an OpenStack project to install Cloud Foundry:
++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+To setup the project to install Cloud Foundry please use the following `Terraform module <https://github.com/eniware-org/bosh-openstack-environment-templates/tree/master/cf-deployment-tf>`_. Adapt ``terraform.tfvars.template`` to your needs. Variable ``bosh_router_id`` is output of the previous BOSH terraform module.
+
+ 1. Copy the :ref:`template file<terraform.tfvars-cf>` ``terraform.tfvars`` file for **cf-deployment-tf**:
+ 
+ .. code:: 
+ 
+      cp ../bosh-openstack-environment-templates/cf-deployment-tf/terraform.tfvars.template ./terraform.tfvars
+
+ 2. Configure the :ref:`Terraform environment template<terraform.tfvars-cf>` ``terraform.tfvars`` for **cf-deployment-tf**:
+ 
+ 3. Run the following commands:
+ 
+ .. code::
+ 
+    
+    terraform init ../bosh-openstack-environment-templates/cf-deployment-tf/
+    terraform apply ../bosh-openstack-environment-templates/cf-deployment-tf/
+
+
+
+
+.. _terraform.tfvars-cf:
+
+Terraform tempalte file configuration for Cloud Foundry: 
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+The content of the `terraform tempalte file <https://github.com/eniware-org/bosh-openstack-environment-templates/blob/master/cf-deployment-tf/terraform.tfvars.template>`_ ``terraform.tfvars`` for Cloud Foundry is as follows:
+
+.. code::
+
+	auth_url = "<auth-url>"
+	domain_name = "<domain>"
+	user_name = "<user>"
+	password = "<password>"
+	project_name = "<project-name>"
+	region_name = "<region-name>"
+	availability_zones = ["<az-1>","<az-2>","<az-3>"]
+	ext_net_name = "<external-network-name>"
+
+	# the OpenStack router id which can be used to access the BOSH network
+	bosh_router_id = "<bosh-router-id>"
+
+	# in case Openstack has its own DNS servers
+	dns_nameservers = ["<dns-server-1>","<dns-server-2>"]
+
+	# does BOSH use a local blobstore? Set to 'false', if your BOSH Director uses e.g. S3 to store its blobs
+	use_local_blobstore = "<true or false>" #default is true
+
+	# enable TCP routing setup
+	use_tcp_router = "<true or false>" #default is true
+	num_tcp_ports = <number> #default is 100, needs to be > 0
+
+	# in case of self signed certificate select one of the following options
+	# cacert_file = "<path-to-certificate>"
+	# insecure = "true"
+
+
+
+To edit the ``terraform.tfvars`` for Cloud Foundry using the described in this documentation scenario:
+
+.. _terraform.tfvars-cf-example:
+
+.. code::
+
+ nano terraform.tfvars
+
+Enter the following settings:
+
+.. code::
+ 
+    
+    auth_url="http://192.168.40.228:5000/v3"
+    domain_name="cf_domain"
+    user_name="eniware"
+    password= <your_password>
+    tenant_name="cloudfoundry"
+    region_name="RegionOne"
+    availability_zones = ["nova", "nova", "nova"]
+    bosh_router_id = ""
+    dns_nameservers = ["8.8.8.8"]
+    use_local_blobstore = "true"
+    use_tcp_router = "true"
+    num_tcp_ports = 100
+
+* ``auth_url``, ``domain_name``, ``user_name``, ``password``, ``tenant_name``, and ``region_name`` are the same as in ``terraform.tfvars`` :ref:`template file for BOSH<terraform.tfvars-bosh-example>`.
+* ``bosh_router_id`` can be retrieved from the output of the previous :ref:`terraform script<terraform.tfvars-bosh-example>` for BOSH.
+
+
+
+
 
 
 
